@@ -1,0 +1,44 @@
+# Secretos y configuración local
+.env
+.env.*
+!.env.example
+appsettings.Development.json
+appsettings.Local.json
+local.properties
+*.keystore
+*.jks
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# Node / web
+node_modules/
+dist/
+.vite/
+.next/
+coverage/
+
+# Java / Android / Gradle
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+
+# Python
+__pycache__/
+.venv/
+
+# IDEs y SO
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.iml
+.DS_Store
+Thumbs.db
+*.log
