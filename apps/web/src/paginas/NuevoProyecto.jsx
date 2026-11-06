@@ -1,25 +1,19 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { api, ErrorApi, mensajeDe } from '../api'
 import { Aviso, Campo, Tarjeta } from '../componentes'
 
-type Linea = 'Engorde' | 'Lecheria'
+// Cada campo numérico se describe con { clave, etiqueta, paso?, placeholder? }.
+// `clave` es el nombre que espera la API; `paso` es el step del input (1 = solo enteros).
 
-interface DefCampo {
-  clave: string
-  etiqueta: string
-  paso?: string
-  placeholder?: string
-}
-
-const comunes: DefCampo[] = [
+const comunes = [
   { clave: 'montoRequeridoBs', etiqueta: 'Monto requerido (Bs)', placeholder: '100000' },
   { clave: 'montoMinimoBs', etiqueta: 'Inversión mínima (Bs)', placeholder: '100' },
   { clave: 'plazoMeses', etiqueta: 'Plazo (meses)', paso: '1', placeholder: '10' },
 ]
 
 // RF-07: al elegir la línea solo se muestran sus campos.
-const porLinea: Record<Linea, DefCampo[]> = {
+const porLinea = {
   Engorde: [
     { clave: 'cantidadAnimales', etiqueta: 'Cabezas de ganado', paso: '1', placeholder: '120' },
     { clave: 'pesoInicialKg', etiqueta: 'Peso inicial promedio (kg)', placeholder: '180' },
@@ -33,26 +27,26 @@ const porLinea: Record<Linea, DefCampo[]> = {
   ],
 }
 
-const pascal = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+const pascal = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 
 /** RF-07: ficha del proyecto guardada como borrador (mockup 03a). */
 export default function NuevoProyecto() {
   const navegar = useNavigate()
-  const [linea, setLinea] = useState<Linea>('Engorde')
+  const [linea, setLinea] = useState('Engorde')
   const [nombre, setNombre] = useState('')
   const [ubicacion, setUbicacion] = useState('')
-  const [valores, setValores] = useState<Record<string, string>>({})
-  const [campos, setCampos] = useState<Record<string, string[]>>({})
+  const [valores, setValores] = useState({})
+  const [campos, setCampos] = useState({})
   const [error, setError] = useState('')
 
-  const limpiar = (campo: string) => {
+  const limpiar = (campo) => {
     if (!campos[campo]) return
     const { [campo]: _, ...resto } = campos
     setCampos(resto)
     if (Object.keys(resto).length === 0) setError('')
   }
 
-  async function guardar(e: FormEvent) {
+  async function guardar(e) {
     e.preventDefault()
     setError('')
     setCampos({})
@@ -70,7 +64,7 @@ export default function NuevoProyecto() {
     }
   }
 
-  const input = (c: DefCampo) => (
+  const input = (c) => (
     <Campo key={c.clave} etiqueta={c.etiqueta} error={campos[pascal(c.clave)]}>
       <input
         type="number"
@@ -92,7 +86,7 @@ export default function NuevoProyecto() {
       <form onSubmit={guardar} className="formulario" noValidate>
         <Campo etiqueta="Línea">
           <div className="segmentado" role="radiogroup">
-            {(['Engorde', 'Lecheria'] as Linea[]).map((l) => (
+            {['Engorde', 'Lecheria'].map((l) => (
               <button type="button" key={l} role="radio" aria-checked={linea === l} className={linea === l ? 'activo' : ''} onClick={() => {
                   setLinea(l)
                   setCampos({})

@@ -1,32 +1,26 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { api, formatoFecha, mensajeDe } from '../api'
 import { Aviso, Campo, Tarjeta } from '../componentes'
 
-interface Documento {
-  id: string
-  tipo: 'Runsa' | 'TituloPropiedad' | 'ContratoAlquiler'
-  nombreOriginal: string
-  estado: 'Pendiente' | 'Aprobado' | 'Rechazado'
-  motivo: string | null
-  subidoEn: string
-}
+// Cada documento llega como { id, tipo, nombreOriginal, estado, motivo, subidoEn }.
+// estado: 'Pendiente' | 'Aprobado' | 'Rechazado'
 
-const tipos = { Runsa: 'Registro RUNSA', TituloPropiedad: 'Título del predio', ContratoAlquiler: 'Contrato de alquiler' } as const
+const tipos = { Runsa: 'Registro RUNSA', TituloPropiedad: 'Título del predio', ContratoAlquiler: 'Contrato de alquiler' }
 
 /** RF-05: documentos del productor y del predio (mockup 03b). */
 export default function Documentos() {
-  const [docs, setDocs] = useState<Documento[]>([])
-  const [tipo, setTipo] = useState<keyof typeof tipos>('Runsa')
-  const [archivo, setArchivo] = useState<File | null>(null)
+  const [docs, setDocs] = useState([])
+  const [tipo, setTipo] = useState('Runsa')
+  const [archivo, setArchivo] = useState(null)
   const [error, setError] = useState('')
   const [ok, setOk] = useState('')
 
-  const cargar = () => api<Documento[]>('/productor/documentos').then(setDocs)
+  const cargar = () => api('/productor/documentos').then(setDocs)
   useEffect(() => {
-    void cargar()
+    cargar()
   }, [])
 
-  async function subir(e: FormEvent) {
+  async function subir(e) {
     e.preventDefault()
     setError('')
     setOk('')
@@ -38,20 +32,20 @@ export default function Documentos() {
       await api('/productor/documentos', { form })
       setOk(`${tipos[tipo]} cargado. Queda pendiente de revisión.`)
       setArchivo(null)
-      ;(e.target as HTMLFormElement).reset()
+      e.target.reset()
       await cargar()
     } catch (err) {
       setError(mensajeDe(err))
     }
   }
 
-  const ultimo = (t: keyof typeof tipos) => docs.find((d) => d.tipo === t)
+  const ultimo = (t) => docs.find((d) => d.tipo === t)
 
   return (
     <Tarjeta titulo="Documentos del predio" subtitulo="Sin RUNSA y título o contrato aprobados, el proyecto no pasa a evaluación técnica.">
       <table className="tabla">
         <tbody>
-          {(Object.keys(tipos) as (keyof typeof tipos)[]).map((t) => {
+          {Object.keys(tipos).map((t) => {
             const d = ultimo(t)
             return (
               <tr key={t}>
@@ -68,7 +62,7 @@ export default function Documentos() {
 
       <form onSubmit={subir} className="formulario">
         <Campo etiqueta="Tipo de documento">
-          <select value={tipo} onChange={(e) => setTipo(e.target.value as keyof typeof tipos)}>
+          <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
             {Object.entries(tipos).map(([k, v]) => (
               <option key={k} value={k}>
                 {v}

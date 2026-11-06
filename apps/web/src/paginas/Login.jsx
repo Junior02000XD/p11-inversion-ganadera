@@ -1,13 +1,8 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router'
-import { api, ErrorApi, formatoHora, mensajeDe, type UsuarioActual } from '../api'
+import { api, ErrorApi, formatoHora, mensajeDe } from '../api'
 import { Aviso, Campo, Tarjeta } from '../componentes'
 import { useSesion } from '../sesion'
-
-interface LoginOk {
-  token: string
-  usuario: UsuarioActual
-}
 
 /** RF-02: inicio de sesión con aviso de intentos restantes y bloqueo al 5.º fallo (mockup 02a). */
 export default function Login() {
@@ -22,22 +17,23 @@ export default function Login() {
 
   if (usuario) return <Navigate to="/inicio" replace />
 
-  async function enviar(e: FormEvent) {
+  async function enviar(e) {
     e.preventDefault()
     setEnviando(true)
     setError('')
     setBloqueado(false)
     setRequiereOtp(false)
     try {
-      const sesion = await api<LoginOk>('/auth/login', { cuerpo: { correo, contrasena } })
+      // Respuesta: { token, usuario }
+      const sesion = await api('/auth/login', { cuerpo: { correo, contrasena } })
       entrar(sesion.token, sesion.usuario)
       navegar('/inicio')
     } catch (err) {
       if (!(err instanceof ErrorApi)) return setError(mensajeDe(err))
-      const restantes = err.datos.intentosRestantes as number | null | undefined
+      const restantes = err.datos.intentosRestantes
       if (err.status === 423) {
         setBloqueado(true)
-        const hasta = err.datos.bloqueadoHasta as string | undefined
+        const hasta = err.datos.bloqueadoHasta
         setError(
           hasta
             ? `Tu cuenta quedó bloqueada por intentos fallidos. Vuelve a intentarlo a las ${formatoHora(hasta)}. Te avisamos por correo.`

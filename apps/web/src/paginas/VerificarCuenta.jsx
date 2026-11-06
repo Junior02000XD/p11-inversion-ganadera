@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { api, mensajeDe, type Respuesta } from '../api'
+import { api, mensajeDe } from '../api'
 import { Aviso, Campo, Tarjeta } from '../componentes'
 
 /** RNF-01: confirmación de la cuenta con el código de 6 dígitos enviado por correo (mockup 01b). */
@@ -12,12 +12,12 @@ export default function VerificarCuenta() {
   const [ok, setOk] = useState('')
   const [confirmada, setConfirmada] = useState(false)
 
-  async function validar(e: FormEvent) {
+  async function validar(e) {
     e.preventDefault()
     setError('')
     setOk('')
     try {
-      const r = await api<Respuesta>('/auth/otp/verificar', { cuerpo: { correo, codigo } })
+      const r = await api('/auth/otp/verificar', { cuerpo: { correo, codigo } })
       setOk(r.mensaje)
       setConfirmada(true)
     } catch (err) {
@@ -28,7 +28,7 @@ export default function VerificarCuenta() {
   async function reenviar() {
     setError('')
     try {
-      const r = await api<Respuesta>('/auth/otp/reenviar', { cuerpo: { correo } })
+      const r = await api('/auth/otp/reenviar', { cuerpo: { correo } })
       setOk(r.mensaje)
     } catch (err) {
       setError(mensajeDe(err))

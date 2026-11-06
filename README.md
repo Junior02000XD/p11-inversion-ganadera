@@ -31,7 +31,7 @@ docker-compose.yml  Base de datos y correo de prueba para desarrollo
 | API (`apps/api/`) | ASP.NET Core (.NET 10) | Confirmado |
 | Base de datos | PostgreSQL | Confirmado |
 | Autenticación | ASP.NET Core Identity + JWT | Confirmado |
-| Cliente web (`apps/web/`) | React + Vite + TypeScript | Confirmado |
+| Cliente web (`apps/web/`) | React + Vite + JavaScript | Confirmado |
 | Cliente Android (`apps/android/`) | Java nativo (Retrofit + Room + WorkManager) | Confirmado; se inicia en el Sprint 3 |
 
 ## Cómo levantar todo en local

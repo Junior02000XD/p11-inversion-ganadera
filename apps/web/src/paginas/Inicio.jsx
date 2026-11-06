@@ -43,22 +43,36 @@ export default function Inicio() {
             <Link className="boton" to="/documentos">
               Documentos del predio
             </Link>
+            <Link className="boton boton-secundario" to="/avance">
+              Registrar avance del lote
+            </Link>
+            <Link className="boton boton-secundario" to="/incidencias/nueva">
+              Reportar incidencia
+            </Link>
           </>
         )}
         {usuario.rol === 'Inversionista' && (
           <>
-            <button className="boton" disabled title="Sprint 2">
+            <Link className="boton" to="/catalogo">
               Explorar proyectos
-            </button>
-            <button className="boton" disabled title="Sprint 3">
+            </Link>
+            <Link className="boton" to="/portafolio">
               Mi portafolio
-            </button>
+            </Link>
           </>
         )}
         {usuario.rol === 'Analista' && (
-          <Link className="boton" to="/analista">
-            Revisiones pendientes
-          </Link>
+          <>
+            <Link className="boton" to="/analista">
+              Identidad y documentos pendientes
+            </Link>
+            <Link className="boton" to="/evaluacion">
+              Proyectos por evaluar
+            </Link>
+            <Link className="boton boton-secundario" to="/liquidaciones/chiquitania">
+              Liquidaciones
+            </Link>
+          </>
         )}
         {usuario.rol === 'Administrador' && (
           <Link className="boton" to="/admin/usuarios">
@@ -66,7 +80,6 @@ export default function Inicio() {
           </Link>
         )}
       </nav>
-      {usuario.rol === 'Inversionista' && <p className="nota">El catálogo y el portafolio llegan en los próximos sprints.</p>}
     </Tarjeta>
   )
 }

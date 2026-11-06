@@ -3,30 +3,20 @@ import { Link, useLocation } from 'react-router'
 import { api, formatoBs, formatoFecha, mensajeDe } from '../api'
 import { Aviso, Tarjeta } from '../componentes'
 
-interface Proyecto {
-  id: string
-  linea: 'Engorde' | 'Lecheria'
-  nombre: string
-  ubicacion: string
-  montoRequeridoBs: number
-  plazoMeses: number
-  estado: 'Borrador' | 'EnRevision'
-  creadoEn: string
-  cantidadAnimales: number | null
-  vacasEnOrdeno: number | null
-}
+// Cada proyecto llega como { id, linea, nombre, ubicacion, montoRequeridoBs, plazoMeses,
+// estado, creadoEn, cantidadAnimales, vacasEnOrdeno }. linea: 'Engorde' | 'Lecheria'.
 
 export default function MisProyectos() {
   const location = useLocation()
-  const [proyectos, setProyectos] = useState<Proyecto[] | null>(null)
-  const [mensajes, setMensajes] = useState<Record<string, { tipo: 'ok' | 'error'; texto: string }>>({})
+  const [proyectos, setProyectos] = useState(null)
+  const [mensajes, setMensajes] = useState({})
 
-  const cargar = () => api<Proyecto[]>('/proyectos').then(setProyectos)
+  const cargar = () => api('/proyectos').then(setProyectos)
   useEffect(() => {
-    void cargar()
+    cargar()
   }, [])
 
-  async function enviarARevision(id: string) {
+  async function enviarARevision(id) {
     try {
       await api(`/proyectos/${id}/enviar-revision`, { metodo: 'POST' })
       setMensajes({ ...mensajes, [id]: { tipo: 'ok', texto: 'Enviado a evaluación técnica.' } })
@@ -36,7 +26,8 @@ export default function MisProyectos() {
     }
   }
 
-  const creado = (location.state as { creado?: string } | null)?.creado
+  // NuevoProyecto nos manda el nombre del proyecto recién creado para mostrar el aviso.
+  const creado = location.state?.creado
 
   return (
     <Tarjeta titulo="Mis proyectos" ancha>

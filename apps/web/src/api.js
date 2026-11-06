@@ -1,40 +1,30 @@
 // Cliente de la API: agrega el token y convierte las respuestas de error en mensajes legibles.
-
-export type Rol = 'Inversionista' | 'Productor' | 'Analista' | 'Administrador'
-export type EstadoVerificacion = 'Pendiente' | 'EnRevision' | 'Verificado' | 'Rechazado'
-
-export interface UsuarioActual {
-  id: string
-  nombre: string
-  correo: string
-  rol: Rol
-  estadoVerificacion: EstadoVerificacion
-  consintio: boolean
-}
-
-export interface Respuesta {
-  mensaje: string
-}
+//
+// Roles: 'Inversionista' | 'Productor' | 'Analista' | 'Administrador'
+// Estados de verificación: 'Pendiente' | 'EnRevision' | 'Verificado' | 'Rechazado'
+// El usuario actual (GET /auth/yo) llega como { id, nombre, correo, rol, estadoVerificacion, consintio }.
 
 export class ErrorApi extends Error {
-  constructor(
-    public status: number,
-    mensaje: string,
-    /** Cuerpo de la respuesta, para leer campos extra como `intentosRestantes`. */
-    public datos: Record<string, unknown> = {},
-    /** Errores de validación por campo (`errors` de ASP.NET Core). */
-    public campos: Record<string, string[]> = {},
-  ) {
+  /**
+   * @param status código HTTP (0 si no hubo conexión)
+   * @param mensaje texto para mostrar al usuario
+   * @param datos cuerpo de la respuesta, para leer campos extra como `intentosRestantes`
+   * @param campos errores de validación por campo (`errors` de ASP.NET Core)
+   */
+  constructor(status, mensaje, datos = {}, campos = {}) {
     super(mensaje)
+    this.status = status
+    this.datos = datos
+    this.campos = campos
   }
 }
 
 // El token vive en sessionStorage: sobrevive a recargar la página, no a cerrar la pestaña.
 // Si el navegador bloquea el almacenamiento, la sesión queda solo en memoria.
 const CLAVE_TOKEN = 'p11.token'
-let token: string | null = leerToken()
+let token = leerToken()
 
-function leerToken(): string | null {
+function leerToken() {
   try {
     return sessionStorage.getItem(CLAVE_TOKEN)
   } catch {
@@ -42,7 +32,7 @@ function leerToken(): string | null {
   }
 }
 
-export function guardarToken(nuevo: string | null) {
+export function guardarToken(nuevo) {
   token = nuevo
   try {
     if (nuevo) sessionStorage.setItem(CLAVE_TOKEN, nuevo)
@@ -54,7 +44,7 @@ export function guardarToken(nuevo: string | null) {
 
 export const hayToken = () => token !== null
 
-async function pedir(ruta: string, init: RequestInit = {}): Promise<Response> {
+async function pedir(ruta, init = {}) {
   const headers = new Headers(init.headers)
   if (token) headers.set('Authorization', `Bearer ${token}`)
   try {
@@ -64,11 +54,11 @@ async function pedir(ruta: string, init: RequestInit = {}): Promise<Response> {
   }
 }
 
-async function error(r: Response, ruta: string): Promise<ErrorApi> {
+async function error(r, ruta) {
   // Un 401 fuera del login significa que el token venció o es inválido.
   if (r.status === 401 && !ruta.startsWith('/auth/')) guardarToken(null)
   const datos = await r.json().catch(() => ({}))
-  const campos: Record<string, string[]> = datos.errors ?? {}
+  const campos = datos.errors ?? {}
   const mensaje =
     datos.mensaje ??
     (Object.keys(campos).length > 0 ? 'Revisa los campos marcados.' : null) ??
@@ -77,8 +67,8 @@ async function error(r: Response, ruta: string): Promise<ErrorApi> {
 }
 
 /** Llama a la API. Con `cuerpo` envía JSON; con `form`, multipart (archivos). */
-export async function api<T>(ruta: string, opciones: { metodo?: string; cuerpo?: unknown; form?: FormData } = {}): Promise<T> {
-  const init: RequestInit = { method: opciones.metodo ?? 'GET' }
+export async function api(ruta, opciones = {}) {
+  const init = { method: opciones.metodo ?? 'GET' }
   if (opciones.form) {
     init.method = opciones.metodo ?? 'POST'
     init.body = opciones.form
@@ -90,11 +80,11 @@ export async function api<T>(ruta: string, opciones: { metodo?: string; cuerpo?:
 
   const r = await pedir(ruta, init)
   if (!r.ok) throw await error(r, ruta)
-  return (r.status === 204 ? {} : await r.json()) as T
+  return r.status === 204 ? {} : await r.json()
 }
 
 /** Descarga un archivo protegido y lo abre en una pestaña nueva. */
-export async function abrirArchivo(ruta: string) {
+export async function abrirArchivo(ruta) {
   const r = await pedir(ruta)
   if (!r.ok) throw await error(r, ruta)
   const url = URL.createObjectURL(await r.blob())
@@ -102,15 +92,15 @@ export async function abrirArchivo(ruta: string) {
   setTimeout(() => URL.revokeObjectURL(url), 60_000)
 }
 
-export const mensajeDe = (err: unknown) => (err instanceof ErrorApi ? err.message : 'Ocurrió un error inesperado.')
+export const mensajeDe = (err) => (err instanceof ErrorApi ? err.message : 'Ocurrió un error inesperado.')
 
-export const textoEstado: Record<EstadoVerificacion, string> = {
+export const textoEstado = {
   Pendiente: 'Pendiente',
   EnRevision: 'En revisión',
   Verificado: 'Verificado',
   Rechazado: 'Rechazado',
 }
 
-export const formatoBs = (n: number) => `Bs ${n.toLocaleString('es-BO', { maximumFractionDigits: 2 })}`
-export const formatoFecha = (iso: string) => new Date(iso).toLocaleString('es-BO', { dateStyle: 'short', timeStyle: 'short' })
-export const formatoHora = (iso: string) => new Date(iso).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', hour12: false })
+export const formatoBs = (n) => `Bs ${n.toLocaleString('es-BO', { maximumFractionDigits: 2 })}`
+export const formatoFecha = (iso) => new Date(iso).toLocaleString('es-BO', { dateStyle: 'short', timeStyle: 'short' })
+export const formatoHora = (iso) => new Date(iso).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', hour12: false })

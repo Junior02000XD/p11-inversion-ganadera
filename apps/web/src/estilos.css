@@ -167,3 +167,35 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
   .contenido { padding: 16px 12px 40px; }
   .fila { grid-template-columns: 1fr; }
 }
+
+/* Menú por rol */
+.barra { flex-direction: column; align-items: stretch; padding-bottom: 0; }
+.barra-fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.navegacion { display: flex; gap: 4px; overflow-x: auto; margin: 8px -16px 0; padding: 0 12px; }
+.navegacion a {
+  padding: 10px 12px; color: var(--tenue); text-decoration: none; font-weight: 600; font-size: 0.92rem;
+  white-space: nowrap; border-bottom: 3px solid transparent;
+}
+.navegacion a:hover { color: var(--texto); }
+.navegacion a.active { color: var(--acento); border-bottom-color: var(--acento); }
+
+/* Piezas de los sprints 2 y 3 */
+textarea {
+  font: inherit; color: var(--texto); background: var(--superficie); width: 100%; min-height: 84px; resize: vertical;
+  border: 1px solid var(--borde); border-radius: 8px; padding: 10px 12px;
+}
+textarea[readonly] { background: var(--fondo); color: var(--tenue); }
+.datos { margin: 12px 0; display: flex; flex-direction: column; }
+.datos div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--borde); }
+.datos dt { color: var(--tenue); }
+.datos dd { margin: 0; font-weight: 600; text-align: right; }
+.datos .datos-total { border-bottom: 0; border-top: 2px solid var(--texto); }
+.datos-total dt { color: var(--texto); font-weight: 600; }
+.progreso { height: 10px; border-radius: 999px; background: var(--fondo); border: 1px solid var(--borde); overflow: hidden; }
+.progreso div { height: 100%; background: var(--acento); }
+.qr {
+  align-self: center; width: 200px; height: 200px; border-radius: 8px;
+  background: repeating-conic-gradient(var(--texto) 0 25%, var(--superficie) 0 50%) 0 0 / 20px 20px;
+  border: 12px solid var(--superficie); outline: 1px solid var(--borde);
+}
+.segmentado-3 { grid-template-columns: repeat(3, 1fr); margin-bottom: 8px; }

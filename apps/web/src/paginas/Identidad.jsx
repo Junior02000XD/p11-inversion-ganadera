@@ -1,42 +1,33 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { api, ErrorApi, formatoFecha, mensajeDe, textoEstado, type EstadoVerificacion } from '../api'
+import { useEffect, useState } from 'react'
+import { api, ErrorApi, formatoFecha, mensajeDe, textoEstado } from '../api'
 import { Aviso, Campo, Tarjeta } from '../componentes'
 import { useSesion } from '../sesion'
 
-interface Historial {
-  estadoAnterior: EstadoVerificacion
-  estadoNuevo: EstadoVerificacion
-  fecha: string
-  responsable: string
-  motivo: string
-}
-interface Estado {
-  estado: EstadoVerificacion
-  historial: Historial[]
-}
+// GET /verificacion/estado devuelve { estado, historial }, y cada cambio del historial
+// es { estadoAnterior, estadoNuevo, fecha, responsable, motivo }.
 
 // `tipo` es el nombre del documento en la API; `campo`, el nombre del campo del formulario multipart.
 const fotos = [
   { tipo: 'CiFrente', campo: 'ciFrente', etiqueta: 'CI (anverso)' },
   { tipo: 'CiDorso', campo: 'ciDorso', etiqueta: 'CI (reverso)' },
   { tipo: 'Selfie', campo: 'selfie', etiqueta: 'Selfie' },
-] as const
-const etiquetaDe = (tipo: string) => fotos.find((f) => f.tipo === tipo)?.etiqueta ?? tipo
+]
+const etiquetaDe = (tipo) => fotos.find((f) => f.tipo === tipo)?.etiqueta ?? tipo
 
 /** RF-03/04 verificación de identidad con consentimiento previo (RNF-07), mockup 01c. */
 export default function Identidad() {
   const { refrescar } = useSesion()
-  const [estado, setEstado] = useState<Estado | null>(null)
-  const [archivos, setArchivos] = useState<Record<string, File | undefined>>({})
+  const [estado, setEstado] = useState(null)
+  const [archivos, setArchivos] = useState({})
   const [consiento, setConsiento] = useState(false)
   const [error, setError] = useState('')
   const [enviando, setEnviando] = useState(false)
 
   useEffect(() => {
-    api<Estado>('/verificacion/estado').then(setEstado).catch(() => setError('No se pudo cargar tu estado.'))
+    api('/verificacion/estado').then(setEstado).catch(() => setError('No se pudo cargar tu estado.'))
   }, [])
 
-  async function enviar(e: FormEvent) {
+  async function enviar(e) {
     e.preventDefault()
     setError('')
     if (!consiento) return setError('Necesitamos tu consentimiento para tratar tu CI y tu selfie.')
@@ -48,11 +39,11 @@ export default function Identidad() {
     }
     setEnviando(true)
     try {
-      setEstado(await api<Estado>('/verificacion', { form }))
+      setEstado(await api('/verificacion', { form }))
       await refrescar()
     } catch (err) {
       if (err instanceof ErrorApi && Array.isArray(err.datos.ilegibles)) {
-        const lista = (err.datos.ilegibles as string[]).map(etiquetaDe).join(', ')
+        const lista = err.datos.ilegibles.map(etiquetaDe).join(', ')
         setError(`Imagen ilegible: vuelve a tomar la foto (${lista}).`)
       } else setError(mensajeDe(err))
     } finally {

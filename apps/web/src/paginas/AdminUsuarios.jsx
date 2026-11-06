@@ -1,33 +1,24 @@
 import { useEffect, useMemo, useState } from 'react'
-import { api, mensajeDe, textoEstado, type EstadoVerificacion, type Respuesta, type Rol } from '../api'
+import { api, mensajeDe, textoEstado } from '../api'
 import { Aviso, Campo, Tarjeta } from '../componentes'
 import { useSesion } from '../sesion'
 
-interface UsuarioAdmin {
-  id: string
-  nombre: string
-  correo: string
-  ci: string
-  rol: Rol
-  estadoVerificacion: EstadoVerificacion
-  correoConfirmado: boolean
-  bloqueadoHasta: string | null
-}
+// Cada usuario llega como { id, nombre, correo, ci, rol, estadoVerificacion, correoConfirmado, bloqueadoHasta }.
 
-const roles: Rol[] = ['Inversionista', 'Productor', 'Analista', 'Administrador']
+const roles = ['Inversionista', 'Productor', 'Analista', 'Administrador']
 
 /** RF-06: usuarios y roles (mockup 02c). */
 export default function AdminUsuarios() {
   const { usuario: yo } = useSesion()
-  const [usuarios, setUsuarios] = useState<UsuarioAdmin[]>([])
+  const [usuarios, setUsuarios] = useState([])
   const [buscar, setBuscar] = useState('')
-  const [elegido, setElegido] = useState<UsuarioAdmin | null>(null)
-  const [rol, setRol] = useState<Rol>('Inversionista')
-  const [aviso, setAviso] = useState<{ tipo: 'ok' | 'error'; texto: string } | null>(null)
+  const [elegido, setElegido] = useState(null)
+  const [rol, setRol] = useState('Inversionista')
+  const [aviso, setAviso] = useState(null)
 
-  const cargar = () => api<UsuarioAdmin[]>('/admin/usuarios').then(setUsuarios)
+  const cargar = () => api('/admin/usuarios').then(setUsuarios)
   useEffect(() => {
-    void cargar()
+    cargar()
   }, [])
 
   const filtrados = useMemo(() => {
@@ -35,7 +26,7 @@ export default function AdminUsuarios() {
     return q ? usuarios.filter((u) => `${u.nombre} ${u.correo} ${u.ci}`.toLowerCase().includes(q)) : usuarios
   }, [usuarios, buscar])
 
-  async function ejecutar(accion: () => Promise<Respuesta>) {
+  async function ejecutar(accion) {
     setAviso(null)
     try {
       setAviso({ tipo: 'ok', texto: (await accion()).mensaje })
@@ -97,7 +88,7 @@ export default function AdminUsuarios() {
         <div className="panel">
           <h2>{elegido.nombre}</h2>
           <Campo etiqueta="Rol asignado">
-            <select value={rol} onChange={(e) => setRol(e.target.value as Rol)} disabled={elegido.id === yo?.id}>
+            <select value={rol} onChange={(e) => setRol(e.target.value)} disabled={elegido.id === yo?.id}>
               {roles.map((r) => (
                 <option key={r}>{r}</option>
               ))}

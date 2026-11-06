@@ -1,53 +1,34 @@
 import { useEffect, useState } from 'react'
-import { abrirArchivo, api, formatoFecha, mensajeDe, type Respuesta } from '../api'
+import { abrirArchivo, api, formatoFecha, mensajeDe } from '../api'
 import { Aviso, Tarjeta } from '../componentes'
 
-interface DocumentoId {
-  id: string
-  tipo: string
-  nombreOriginal: string
-}
-interface VerificacionPendiente {
-  usuarioId: string
-  nombre: string
-  correo: string
-  ci: string
-  rol: string
-  consentimientoEn: string | null
-  documentos: DocumentoId[]
-}
-interface DocumentoRevision {
-  id: string
-  correo: string
-  tipo: string
-  nombreOriginal: string
-  subidoEn: string
-}
+// Verificación pendiente: { usuarioId, nombre, correo, ci, rol, consentimientoEn, documentos: [{ id, tipo, nombreOriginal }] }
+// Documento del predio en revisión: { id, correo, tipo, nombreOriginal, subidoEn }
 
-const nombres: Record<string, string> = {
+const nombres = {
   CiFrente: 'CI anverso', CiDorso: 'CI reverso', Selfie: 'selfie',
   Runsa: 'RUNSA', TituloPropiedad: 'Título del predio', ContratoAlquiler: 'Contrato de alquiler',
 }
 
 /** Revisión manual de identidad (RF-03/04) y de documentos del predio (RF-05). */
 export default function PanelAnalista() {
-  const [verifs, setVerifs] = useState<VerificacionPendiente[]>([])
-  const [docs, setDocs] = useState<DocumentoRevision[]>([])
-  const [motivos, setMotivos] = useState<Record<string, string>>({})
-  const [aviso, setAviso] = useState<{ tipo: 'ok' | 'error'; texto: string } | null>(null)
+  const [verifs, setVerifs] = useState([])
+  const [docs, setDocs] = useState([])
+  const [motivos, setMotivos] = useState({})
+  const [aviso, setAviso] = useState(null)
 
   const cargar = async () => {
-    setVerifs(await api<VerificacionPendiente[]>('/analista/verificaciones'))
-    setDocs(await api<DocumentoRevision[]>('/analista/documentos'))
+    setVerifs(await api('/analista/verificaciones'))
+    setDocs(await api('/analista/documentos'))
   }
   useEffect(() => {
-    void cargar()
+    cargar()
   }, [])
 
-  async function decidir(ruta: string, id: string, aprobar: boolean) {
+  async function decidir(ruta, id, aprobar) {
     setAviso(null)
     try {
-      const r = await api<Respuesta>(ruta, { cuerpo: { aprobar, motivo: motivos[id] ?? '' } })
+      const r = await api(ruta, { cuerpo: { aprobar, motivo: motivos[id] ?? '' } })
       setAviso({ tipo: 'ok', texto: r.mensaje })
       await cargar()
     } catch (err) {
@@ -56,12 +37,12 @@ export default function PanelAnalista() {
   }
 
   // RNF-02: el archivo llega descifrado desde la API; en disco está cifrado.
-  const ver = (id: string) => abrirArchivo(`/analista/archivos/${id}`).catch((err) => setAviso({ tipo: 'error', texto: mensajeDe(err) }))
+  const ver = (id) => abrirArchivo(`/analista/archivos/${id}`).catch((err) => setAviso({ tipo: 'error', texto: mensajeDe(err) }))
 
-  const motivo = (id: string) => (
+  const motivo = (id) => (
     <input className="motivo" placeholder="Motivo (obligatorio para rechazar)" value={motivos[id] ?? ''} onChange={(e) => setMotivos({ ...motivos, [id]: e.target.value })} />
   )
-  const botones = (ruta: string, id: string) => (
+  const botones = (ruta, id) => (
     <div className="acciones">
       <button className="boton" onClick={() => decidir(ruta, id, true)}>
         Aprobar

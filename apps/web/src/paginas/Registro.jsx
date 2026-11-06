@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { api, ErrorApi, mensajeDe } from '../api'
 import { Aviso, Campo, Tarjeta } from '../componentes'
@@ -9,11 +9,11 @@ export default function Registro() {
   const [datos, setDatos] = useState({ nombre: '', correo: '', celular: '', ci: '', contrasena: '', rol: 'Inversionista' })
   const [acepta, setAcepta] = useState(false)
   const [error, setError] = useState('')
-  const [campos, setCampos] = useState<Record<string, string[]>>({})
+  const [campos, setCampos] = useState({})
   const [enviando, setEnviando] = useState(false)
-  const cambiar = (campo: keyof typeof datos) => (e: { target: { value: string } }) => setDatos({ ...datos, [campo]: e.target.value })
+  const cambiar = (campo) => (e) => setDatos({ ...datos, [campo]: e.target.value })
 
-  async function enviar(e: FormEvent) {
+  async function enviar(e) {
     e.preventDefault()
     setEnviando(true)
     setError('')
