@@ -13,3 +13,10 @@ indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
+
+[*.cs]
+# Usings sin uso: aviso al compilar.
+dotnet_diagnostic.IDE0005.severity = warning
+
+[**/Migraciones/*.cs]
+generated_code = true

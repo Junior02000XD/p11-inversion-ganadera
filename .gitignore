@@ -2,7 +2,6 @@
 .env
 .env.*
 !.env.example
-appsettings.Development.json
 appsettings.Local.json
 local.properties
 *.keystore
@@ -17,6 +16,7 @@ obj/
 # Node / web
 node_modules/
 dist/
+*.tsbuildinfo
 .vite/
 .next/
 coverage/
@@ -42,3 +42,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 *.log
+
+# Archivos subidos (cifrados) de la API en desarrollo
+App_Data/

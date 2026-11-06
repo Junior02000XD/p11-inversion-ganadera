@@ -1,0 +1,32 @@
+# Entorno local del Proyecto 11: base de datos y bandeja de correo de prueba.
+#   docker compose up -d        → levanta todo
+#   http://localhost:8025        → correos que envía la API (OTP y avisos)
+# Si algún puerto ya está ocupado en tu máquina, cámbialo con una variable de entorno o un archivo .env
+# junto a este (por ejemplo P11_PUERTO_POSTGRES=5434) y apunta la API al puerto nuevo con
+# ConnectionStrings__Principal (ver apps/api/README.md).
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: p11-postgres
+    environment:
+      POSTGRES_DB: p11
+      POSTGRES_USER: p11
+      POSTGRES_PASSWORD: p11_local_dev
+    ports:
+      - "${P11_PUERTO_POSTGRES:-5433}:5432"
+    volumes:
+      - p11-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U p11 -d p11"]
+      interval: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    container_name: p11-mailpit
+    ports:
+      - "${P11_PUERTO_SMTP:-1025}:1025"
+      - "${P11_PUERTO_CORREO_WEB:-8025}:8025"
+
+volumes:
+  p11-pg:
