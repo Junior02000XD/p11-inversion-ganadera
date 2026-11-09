@@ -72,3 +72,10 @@ public class VerificacionOptions
     /// <summary>Puntaje que devuelve el simulador cuando no se fuerza la revisión.</summary>
     [Range(0.0, 1.0)] public double PuntajeSimulado { get; set; } = 0.92;
 }
+
+/// <summary>Bot de Telegram para el canal de avisos (todavía no hay usuarios con chat vinculado).</summary>
+public class TelegramOptions
+{
+    public const string Seccion = "Telegram";
+    [Required] public string Token { get; set; } = "";
+}

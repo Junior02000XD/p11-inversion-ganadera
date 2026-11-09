@@ -7,6 +7,7 @@ using P11.Api.Contratos;
 using P11.Api.Datos;
 using P11.Api.Dominio;
 using P11.Api.Servicios;
+using P11.Api.Servicios.Documentos;
 
 namespace P11.Api.Controllers;
 
@@ -14,7 +15,7 @@ namespace P11.Api.Controllers;
 [ApiController]
 [Route("api/productor/documentos")]
 [Authorize(Roles = Roles.Productor)]
-public class DocumentosProductorController(AppDbContext db, IAlmacenArchivos almacen, IOptions<ArchivosOptions> opciones) : ControllerBase
+public class DocumentosProductorController(AppDbContext db, IAlmacenArchivos almacen, IVisorDocumentos visor, IOptions<ArchivosOptions> opciones) : ControllerBase
 {
     private static readonly TipoDocumento[] TiposPredio = [TipoDocumento.Runsa, TipoDocumento.TituloPropiedad, TipoDocumento.ContratoAlquiler];
 
@@ -27,6 +28,13 @@ public class DocumentosProductorController(AppDbContext db, IAlmacenArchivos alm
             .OrderByDescending(d => d.SubidoEn)
             .ToListAsync(ct);
         return documentos.Select(DocumentoDto.Desde).ToList();
+    }
+
+    [HttpGet("{id:guid}/archivo")]
+    public async Task<IActionResult> Archivo(Guid id, CancellationToken ct)
+    {
+        var archivo = await visor.AbrirAsync(id, User, ct);
+        return archivo is null ? NotFound() : File(archivo.Datos, archivo.ContentType, archivo.Nombre);
     }
 
     [HttpPost]

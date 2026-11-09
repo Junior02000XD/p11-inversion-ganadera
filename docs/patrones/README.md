@@ -32,5 +32,43 @@ Implementación de los patrones creacionales elegidos en el análisis grupal (§
 
 **Configuración inyectada.** No hay `Instance` estática. Cada sección del `appsettings.json` (`ReglasSeguridad`, `Otp`, `Archivos`, `Jwt`, `Correo`, `Verificacion`) se valida al arrancar: una clave de cifrado inválida impide iniciar la API. Los servicios la reciben como `IOptions<T>` explícito, y las pruebas la sustituyen sin estado global (§8.5).
 
+# Patrones estructurales
+
+Dinámica grupal del 09/11. De los siete patrones del catálogo GoF, seis quedaron en el código con sus pruebas. Flyweight no se implementa: el análisis concluyó que no hace falta (ver abajo).
+
+| Patrón | Dónde | RF | Prueba | Estado |
+|---|---|---|---|---|
+| Adapter | `src/P11.Api/Servicios/CorreoSmtpService.cs` | RF-01, RF-02, RF-04 | `tests/P11.Tests/Patrones/AdapterTests.cs` | En uso (OTP y avisos) |
+| Decorator | `Servicios/AlmacenDisco.cs` + `AlmacenCifrado.cs`; `CorreoConReintentos.cs`; composición en `Program.cs` | RNF-02, RF-01 | `Patrones/DecoratorTests.cs`, `Integracion/VerificacionTests.cs` | En uso |
+| Proxy (de protección) | `Servicios/Documentos/VisorDocumentos.cs` + `VisorDocumentosProxy.cs` | RNF-02, RF-05 | `Patrones/ProxyTests.cs` | En uso (`GET /api/analista/archivos/{id}`, `GET /api/productor/documentos/{id}/archivo`) |
+| Facade | `Servicios/VerificacionService.cs` | RF-03, RF-04 | `Integracion/VerificacionTests.cs` | En uso (`VerificacionController`, `AnalistaController`) |
+| Bridge | `Servicios/Avisos/` (`Aviso`, `AvisoVerificacion`, `AvisoBloqueo` × `ICanalAviso`, `CanalCorreo`, `CanalTelegram`) | RF-02, RF-04, RF-20 | `Patrones/BridgeTests.cs` | En uso por correo; Telegram listo y probado, sin usuarios vinculados |
+| Composite | `src/P11.Api/Dominio/Liquidaciones/` | RF-23 | `Patrones/CompositeTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
+| Flyweight | — | RF-18 | — | No aplica |
+
+## Cómo se aplica cada uno
+
+**Adapter.** El sistema solo conoce `ICorreoService.EnviarAsync(para, asunto, cuerpo)`. `CorreoSmtpService` traduce esa llamada a `SmtpClient`, `MailMessage` y las credenciales de .NET. Ni `OtpService` ni los avisos saben que existe SMTP. Para pasar a MailKit, que es lo que Microsoft recomienda en lugar de `SmtpClient`, basta otro adaptador. La pasarela QR (RF-15) y el proveedor de identidad (RF-03) seguirán la misma forma.
+
+**Decorator.**
+- `AlmacenCifrado` envuelve a cualquier `IAlmacenArchivos`: cifra con AES-256-GCM antes de pasarle los bytes y descifra al leer. `AlmacenDisco` solo escribe en la carpeta.
+- El formato en disco no cambió (nonce · tag · cifrado), así que los archivos que ya estaban se siguen leyendo; hay una prueba que lo comprueba.
+- `CorreoConReintentos` envuelve al SMTP. Ante un corte breve, el OTP del registro ya no se pierde.
+
+**Proxy.** `VisorDocumentosProxy` tiene la misma interfaz que el visor real y se pone delante de él:
+- deja abrir un documento solo a su dueño o a un analista;
+- registra cada acceso;
+- a cualquier otro le responde 404, como si el documento no existiera.
+
+La regla depende del documento y no solo del rol, por eso `[Authorize(Roles = …)]` no alcanza. Con RF-22 se sumará el inversionista de los proyectos donde invirtió.
+
+**Facade.** `VerificacionService` ofrece dos operaciones, `EnviarAsync` y `DecidirAsync`. Esconde el almacén cifrado, el proveedor de identidad, el umbral, el historial, el guardado y el aviso. Antes, los dos controladores repetían la secuencia «cambiar estado → guardar → notificar».
+
+**Bridge.** `Aviso` define qué se dice (asunto, cuerpo y si es urgente) e `ICanalAviso` define por dónde llega. Un aviso nuevo (`AvisoIncidencia`, RF-20) sirve para todos los canales, y un canal nuevo (push en Android, Sprint 3) sirve para todos los avisos. `CanalTelegram` no está registrado en `Program.cs` porque los usuarios todavía no tienen un chat vinculado. El OTP sigue yendo solo por correo, porque su función es comprobar que el correo es del usuario.
+
+**Composite.** `ConceptoLiquidacion` puede ser un `ConceptoSimple` o un `GrupoConceptos`; por ejemplo, Costos contiene Sanidad, que contiene Vacunas y Veterinario. `Liquidacion` calcula venta − costos − pérdidas − comisión y arma el detalle sin distinguir entre uno y otro. El reparto proporcional al aporte es provisional hasta acordarlo con el cliente.
+
+**Flyweight (no aplica).** Compartir los datos de la raza entre los animales de un lote ahorraría unos 100 bytes por animal: de 30 KB a 1 MB en los casos realistas. La base de datos ya guarda la raza una sola vez y el seguimiento (RF-18) se registra por lote.
+
 ## Pendiente
-Hacer el mismo análisis para los patrones **estructurales** y **de comportamiento** (consigna del 02/11), después del Sprint 1.
+Análisis de los patrones **de comportamiento** (consigna del 02/11).

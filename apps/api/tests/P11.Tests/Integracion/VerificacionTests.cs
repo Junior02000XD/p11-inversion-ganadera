@@ -98,11 +98,12 @@ public class VerificacionTests(ApiFactory f) : IClassFixture<ApiFactory>
         // Con la clave del sistema se recupera exacto; con otra clave, falla.
         var almacen = scope.ServiceProvider.GetRequiredService<IAlmacenArchivos>();
         Assert.Equal(original, await almacen.LeerAsync(doc.ArchivoCifrado));
-        var otraClave = new AlmacenCifrado(Options.Create(new ArchivosOptions
+        var opciones = Options.Create(new ArchivosOptions
         {
             Carpeta = f.CarpetaArchivos,
             ClaveBase64 = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)),
-        }), scope.ServiceProvider.GetRequiredService<IHostEnvironment>());
+        });
+        var otraClave = new AlmacenCifrado(new AlmacenDisco(opciones, scope.ServiceProvider.GetRequiredService<IHostEnvironment>()), opciones);
         await Assert.ThrowsAnyAsync<CryptographicException>(() => otraClave.LeerAsync(doc.ArchivoCifrado));
     }
 }

@@ -9,6 +9,8 @@ using P11.Api.Datos;
 using P11.Api.Dominio;
 using P11.Api.Dominio.Proyectos;
 using P11.Api.Servicios;
+using P11.Api.Servicios.Avisos;
+using P11.Api.Servicios.Documentos;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,8 +70,22 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 builder.Services.AddSingleton(TimeProvider.System);
-builder.Services.AddSingleton<IAlmacenArchivos, AlmacenCifrado>();
-builder.Services.AddScoped<ICorreoService, CorreoSmtpService>();
+
+// Decorator: el cifrado (RNF-02) envuelve al almacén en disco, y los reintentos envuelven al SMTP.
+builder.Services.AddSingleton<AlmacenDisco>();
+builder.Services.AddSingleton<IAlmacenArchivos>(sp =>
+    new AlmacenCifrado(sp.GetRequiredService<AlmacenDisco>(), sp.GetRequiredService<IOptions<ArchivosOptions>>()));
+builder.Services.AddScoped<CorreoSmtpService>();
+builder.Services.AddScoped<ICorreoService>(sp =>
+    new CorreoConReintentos(sp.GetRequiredService<CorreoSmtpService>(), sp.GetRequiredService<ILogger<CorreoConReintentos>>()));
+
+// Bridge: hoy los avisos al usuario salen por correo; Telegram o push serían otro ICanalAviso.
+builder.Services.AddScoped<ICanalAviso, CanalCorreo>();
+
+// Proxy: quien pide IVisorDocumentos recibe el proxy, que revisa el acceso antes de abrir.
+builder.Services.AddScoped<VisorDocumentos>();
+builder.Services.AddScoped<IVisorDocumentos, VisorDocumentosProxy>();
+
 builder.Services.AddScoped<OtpService>();
 builder.Services.AddScoped<VerificacionService>();
 builder.Services.AddScoped<TokenJwtService>();

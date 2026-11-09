@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using P11.Api.Contratos;
 using P11.Api.Dominio;
 using P11.Api.Servicios;
+using P11.Api.Servicios.Avisos;
 
 namespace P11.Api.Controllers;
 
@@ -16,7 +17,7 @@ public class AuthController(
     SignInManager<Usuario> inicioSesion,
     OtpService otp,
     TokenJwtService tokens,
-    ICorreoService correo,
+    ICanalAviso canal,
     TimeProvider reloj,
     ILogger<AuthController> log) : ControllerBase
 {
@@ -144,11 +145,7 @@ public class AuthController(
         var intentos = usuarios.Options.Lockout.MaxFailedAccessAttempts;
         try
         {
-            await correo.EnviarAsync(usuario.Email!, "Bloqueamos tu cuenta por seguridad",
-                $"Hubo {intentos} intentos fallidos seguidos de iniciar sesión en tu cuenta " +
-                $"({HoraLocal.Formatear(reloj.GetUtcNow(), "dd/MM/yyyy HH:mm")}, hora de Bolivia).\n" +
-                $"La cuenta queda bloqueada hasta las {HoraLocal.Formatear(hasta)}. " +
-                "Si no fuiste tú, te recomendamos cambiar tu contraseña.", ct);
+            await new AvisoBloqueo(canal, intentos, reloj.GetUtcNow(), hasta).EnviarAsync(usuario.Email!, ct);
         }
         catch (Exception ex)
         {

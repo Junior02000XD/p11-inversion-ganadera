@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { api, formatoFecha, mensajeDe } from '../api'
+import { abrirArchivo, api, formatoFecha, mensajeDe } from '../api'
 import { Aviso, Campo, Tarjeta } from '../componentes'
 
 // Cada documento llega como { id, tipo, nombreOriginal, estado, motivo, subidoEn }.
@@ -40,6 +40,9 @@ export default function Documentos() {
   }
 
   const ultimo = (t) => docs.find((d) => d.tipo === t)
+
+  // El archivo está cifrado en el servidor; la API lo descifra solo para su dueño o un analista.
+  const ver = (id) => abrirArchivo(`/productor/documentos/${id}/archivo`).catch((err) => setError(mensajeDe(err)))
 
   return (
     <Tarjeta titulo="Documentos del predio" subtitulo="Sin RUNSA y título o contrato aprobados, el proyecto no pasa a evaluación técnica.">
@@ -89,7 +92,10 @@ export default function Documentos() {
           <ul className="lista lista-compacta">
             {docs.map((d) => (
               <li key={d.id}>
-                {tipos[d.tipo]} · {d.nombreOriginal} <span className="tenue">· {formatoFecha(d.subidoEn)} · {d.estado}</span>
+                {tipos[d.tipo]} · {d.nombreOriginal} <span className="tenue">· {formatoFecha(d.subidoEn)} · {d.estado}</span>{' '}
+                <button type="button" className="boton-texto" onClick={() => ver(d.id)}>
+                  Ver
+                </button>
               </li>
             ))}
           </ul>

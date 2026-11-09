@@ -10,7 +10,11 @@ public interface ICorreoService
     Task EnviarAsync(string para, string asunto, string cuerpoTexto, CancellationToken ct = default);
 }
 
-/// <summary>Envío por SMTP. En desarrollo apunta a Mailpit (http://localhost:8025).</summary>
+/// <summary>
+/// Adapter: el resto del sistema solo conoce ICorreoService.EnviarAsync(para, asunto, cuerpo);
+/// esta clase lo traduce a la API de .NET (SmtpClient, MailMessage, MailAddress, credenciales).
+/// En desarrollo apunta a Mailpit (http://localhost:8025).
+/// </summary>
 public class CorreoSmtpService(IOptions<CorreoOptions> opciones, ILogger<CorreoSmtpService> log) : ICorreoService
 {
     private readonly CorreoOptions _o = opciones.Value;
@@ -21,13 +25,16 @@ public class CorreoSmtpService(IOptions<CorreoOptions> opciones, ILogger<CorreoS
         if (!string.IsNullOrEmpty(_o.Usuario))
             cliente.Credentials = new NetworkCredential(_o.Usuario, _o.Contrasena);
 
-        using var msj = new MailMessage(new MailAddress(_o.Remitente, _o.NombreRemitente), new MailAddress(para))
+        using var msj = ArmarMensaje(para, asunto, cuerpoTexto);
+        await cliente.SendMailAsync(msj, ct);
+        log.LogInformation("Correo «{Asunto}» enviado a {Para}", asunto, para);
+    }
+
+    public MailMessage ArmarMensaje(string para, string asunto, string cuerpoTexto) =>
+        new(new MailAddress(_o.Remitente, _o.NombreRemitente), new MailAddress(para))
         {
             Subject = asunto,
             Body = cuerpoTexto,
             IsBodyHtml = false,
         };
-        await cliente.SendMailAsync(msj, ct);
-        log.LogInformation("Correo «{Asunto}» enviado a {Para}", asunto, para);
-    }
 }

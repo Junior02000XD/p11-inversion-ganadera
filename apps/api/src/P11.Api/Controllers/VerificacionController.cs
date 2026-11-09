@@ -18,12 +18,8 @@ namespace P11.Api.Controllers;
 public class VerificacionController(
     AppDbContext db,
     UserManager<Usuario> usuarios,
-    IAlmacenArchivos almacen,
-    IVerificadorIdentidad verificador,
     VerificacionService verificacion,
-    IOptions<ArchivosOptions> archivosOpt,
-    IOptions<VerificacionOptions> verificacionOpt,
-    TimeProvider reloj) : ControllerBase
+    IOptions<ArchivosOptions> archivosOpt) : ControllerBase
 {
     public class SolicitudVerificacion
     {
@@ -79,31 +75,9 @@ public class VerificacionController(
         if (ilegibles.Count > 0)
             return UnprocessableEntity(new ImagenesIlegibles("Algunas imágenes no se pueden leer. Sube fotos nuevas (JPG o PNG).", ilegibles));
 
-        usuario.ConsentimientoDatosEn = reloj.GetUtcNow();
-        foreach (var (tipo, (archivo, datos)) in imagenes)
-        {
-            db.Documentos.Add(new DocumentoArchivo
-            {
-                UsuarioId = usuario.Id,
-                Tipo = tipo,
-                NombreOriginal = Path.GetFileName(archivo.FileName),
-                ContentType = archivo.ContentType,
-                ArchivoCifrado = await almacen.GuardarAsync(datos, ct),
-            });
-        }
-
-        var selfie = imagenes[TipoDocumento.Selfie];
-        var comparacion = await verificador.CompararRostroAsync(imagenes[TipoDocumento.CiFrente].Datos, selfie.Datos, selfie.Archivo.FileName, ct);
-        var umbral = verificacionOpt.Value.UmbralCoincidencia;
-        var aprobado = comparacion.Coincidencia >= umbral;
-        var motivo = aprobado
-            ? $"Coincidencia {comparacion.Coincidencia:P0} (umbral {umbral:P0}, proveedor {comparacion.Proveedor})."
-            : $"Coincidencia {comparacion.Coincidencia:P0}, menor al umbral {umbral:P0}: pasa a revisión manual.";
-
-        verificacion.CambiarEstado(usuario, aprobado ? EstadoVerificacion.Verificado : EstadoVerificacion.EnRevision,
-            VerificacionService.ResponsableSistema, motivo);
-        await db.SaveChangesAsync(ct);
-        await verificacion.NotificarAsync(usuario, motivo, ct);
+        await verificacion.EnviarAsync(usuario,
+            imagenes.Select(i => new ImagenVerificacion(i.Key, i.Value.Archivo.FileName, i.Value.Archivo.ContentType, i.Value.Datos)).ToList(),
+            ct);
         return await Estado(ct);
     }
 

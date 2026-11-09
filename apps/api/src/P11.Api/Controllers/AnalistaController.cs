@@ -5,6 +5,7 @@ using P11.Api.Contratos;
 using P11.Api.Datos;
 using P11.Api.Dominio;
 using P11.Api.Servicios;
+using P11.Api.Servicios.Documentos;
 
 namespace P11.Api.Controllers;
 
@@ -12,7 +13,7 @@ namespace P11.Api.Controllers;
 [ApiController]
 [Route("api/analista")]
 [Authorize(Roles = Roles.Analista)]
-public class AnalistaController(AppDbContext db, IAlmacenArchivos almacen, VerificacionService verificacion, TimeProvider reloj) : ControllerBase
+public class AnalistaController(AppDbContext db, IVisorDocumentos visor, VerificacionService verificacion, TimeProvider reloj) : ControllerBase
 {
     private static readonly TipoDocumento[] TiposPredio = [TipoDocumento.Runsa, TipoDocumento.TituloPropiedad, TipoDocumento.ContratoAlquiler];
 
@@ -51,9 +52,7 @@ public class AnalistaController(AppDbContext db, IAlmacenArchivos almacen, Verif
             return BadRequest(new Respuesta("Para rechazar hay que indicar el motivo."));
 
         var motivo = string.IsNullOrWhiteSpace(req.Motivo) ? "Aprobado en revisión manual." : req.Motivo.Trim();
-        verificacion.CambiarEstado(usuario, req.Aprobar ? EstadoVerificacion.Verificado : EstadoVerificacion.Rechazado, User.Correo(), motivo);
-        await db.SaveChangesAsync(ct);
-        await verificacion.NotificarAsync(usuario, motivo, ct);
+        await verificacion.DecidirAsync(usuario, req.Aprobar, User.Correo(), motivo, ct);
         return Ok(new Respuesta($"Verificación de {usuario.NombreCompleto}: {VerificacionService.Texto(usuario.EstadoVerificacion)}."));
     }
 
@@ -90,11 +89,7 @@ public class AnalistaController(AppDbContext db, IAlmacenArchivos almacen, Verif
     [HttpGet("archivos/{id:guid}")]
     public async Task<IActionResult> Archivo(Guid id, CancellationToken ct)
     {
-        var documento = await db.Documentos.FindAsync([id], ct);
-        if (documento is null) return NotFound();
-
-        var datos = await almacen.LeerAsync(documento.ArchivoCifrado, ct);
-        var tipo = string.IsNullOrEmpty(documento.ContentType) ? "application/octet-stream" : documento.ContentType;
-        return File(datos, tipo, documento.NombreOriginal);
+        var archivo = await visor.AbrirAsync(id, User, ct);
+        return archivo is null ? NotFound() : File(archivo.Datos, archivo.ContentType, archivo.Nombre);
     }
 }
