@@ -101,6 +101,14 @@ export const textoEstado = {
   Rechazado: 'Rechazado',
 }
 
+// Estados del proyecto (EST-3): 'Borrador' | 'EnRevision' | 'Rechazado' | 'EnFinanciamiento'
+export const textoEstadoProyecto = {
+  Borrador: 'Borrador',
+  EnRevision: 'En revisión técnica',
+  Rechazado: 'Rechazado',
+  EnFinanciamiento: 'En financiamiento',
+}
+
 export const formatoBs = (n) => `Bs ${n.toLocaleString('es-BO', { maximumFractionDigits: 2 })}`
 export const formatoFecha = (iso) => new Date(iso).toLocaleString('es-BO', { dateStyle: 'short', timeStyle: 'short' })
 export const formatoHora = (iso) => new Date(iso).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', hour12: false })

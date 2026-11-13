@@ -1,3 +1,5 @@
+using P11.Api.Dominio.Proyectos.Estados;
+
 namespace P11.Api.Dominio.Proyectos;
 
 /// <summary>Error de validación ligado a un campo de la ficha (RF-08: se marcan los campos con error).</summary>
@@ -16,10 +18,32 @@ public abstract class ProyectoGanadero
     public decimal MontoRequeridoBs { get; set; }
     public decimal MontoMinimoBs { get; set; }
     public int PlazoMeses { get; set; }
-    public EstadoProyecto Estado { get; set; } = EstadoProyecto.Borrador;
+    /// <summary>Lo que se guarda en la base. Solo cambia a través de las operaciones de abajo (State).</summary>
+    public EstadoProyecto Estado { get; private set; } = EstadoProyecto.Borrador;
+    /// <summary>Última observación o motivo de rechazo del analista (RF-09).</summary>
+    public string? Observaciones { get; private set; }
     public DateTimeOffset CreadoEn { get; set; } = DateTimeOffset.UtcNow;
 
     public abstract LineaProductiva Linea { get; }
+
+    /// <summary>Objeto estado del patrón State; decide qué operación se permite.</summary>
+    public EstadoFicha EstadoActual => EstadoFicha.De(Estado);
+
+    public void EnviarARevision() => Estado = EstadoActual.EnviarARevision().Valor;
+
+    public void Observar(string observaciones)
+    {
+        Estado = EstadoActual.Observar().Valor;
+        Observaciones = observaciones;
+    }
+
+    public void Rechazar(string motivo)
+    {
+        Estado = EstadoActual.Rechazar().Valor;
+        Observaciones = motivo;
+    }
+
+    public void AprobarYPublicar() => Estado = EstadoActual.AprobarYPublicar().Valor;
 
     /// <summary>Valida la ficha: reglas comunes más las propias de la línea.</summary>
     public IReadOnlyList<ErrorCampo> Validar()

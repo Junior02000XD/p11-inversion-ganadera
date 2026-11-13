@@ -13,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<HistorialVerificacion> HistorialVerificaciones => Set<HistorialVerificacion>();
     public DbSet<DocumentoArchivo> Documentos => Set<DocumentoArchivo>();
     public DbSet<ProyectoGanadero> Proyectos => Set<ProyectoGanadero>();
+    public DbSet<HistorialProyecto> HistorialProyectos => Set<HistorialProyecto>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -54,6 +55,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         {
             e.ToTable("Proyectos");
             e.Ignore(p => p.Linea);
+            e.Ignore(p => p.EstadoActual);
+            e.Property(p => p.Observaciones).HasMaxLength(1000);
             e.HasDiscriminator<string>("LineaProductiva")
                 .HasValue<ProyectoEngorde>(nameof(LineaProductiva.Engorde))
                 .HasValue<ProyectoLecheria>(nameof(LineaProductiva.Lecheria));
@@ -62,6 +65,18 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(p => p.Ubicacion).HasMaxLength(200);
             e.HasIndex(p => p.ProductorId);
             e.HasOne<Usuario>().WithMany().HasForeignKey(p => p.ProductorId);
+        });
+
+        b.Entity<HistorialProyecto>(e =>
+        {
+            e.Property(h => h.EstadoAnterior).HasConversion<string>().HasMaxLength(20);
+            e.Property(h => h.EstadoNuevo).HasConversion<string>().HasMaxLength(20);
+            e.Property(h => h.Accion).HasMaxLength(40);
+            e.Property(h => h.Responsable).HasMaxLength(256);
+            e.Property(h => h.Motivo).HasMaxLength(1000);
+            e.HasIndex(h => h.ProyectoId);
+            // La bitácora no se borra en cascada con el proyecto (RNF-03).
+            e.HasOne<ProyectoGanadero>().WithMany().HasForeignKey(h => h.ProyectoId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

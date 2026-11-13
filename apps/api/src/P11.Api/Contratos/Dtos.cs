@@ -60,7 +60,7 @@ public record ProyectoDto(
     Guid Id, LineaProductiva Linea, string Nombre, string Ubicacion, decimal MontoRequeridoBs, decimal MontoMinimoBs,
     int PlazoMeses, EstadoProyecto Estado, DateTimeOffset CreadoEn,
     int? CantidadAnimales, decimal? PesoInicialKg, decimal? PesoMetaKg, decimal? CostosEstimadosBs,
-    int? VacasEnOrdeno, decimal? LitrosPorDia, decimal? PrecioLitroBs)
+    int? VacasEnOrdeno, decimal? LitrosPorDia, decimal? PrecioLitroBs, string? Observaciones)
 {
     public static ProyectoDto Desde(ProyectoGanadero p)
     {
@@ -68,6 +68,17 @@ public record ProyectoDto(
         var lecheria = p as ProyectoLecheria;
         return new(p.Id, p.Linea, p.Nombre, p.Ubicacion, p.MontoRequeridoBs, p.MontoMinimoBs, p.PlazoMeses, p.Estado, p.CreadoEn,
             engorde?.CantidadAnimales, engorde?.PesoInicialKg, engorde?.PesoMetaKg, engorde?.CostosEstimadosBs,
-            lecheria?.VacasEnOrdeno, lecheria?.LitrosPorDia, lecheria?.PrecioLitroBs);
+            lecheria?.VacasEnOrdeno, lecheria?.LitrosPorDia, lecheria?.PrecioLitroBs, p.Observaciones);
     }
 }
+
+// ---- Evaluación técnica (RF-09, RF-10) ----
+
+public enum DecisionProyecto { Aprobar, Observar, Rechazar }
+
+/// <summary>Decisión del analista. Observar y rechazar exigen texto; aprobar exige riesgos y tres escenarios (RF-10).</summary>
+public record EvaluacionRequest(DecisionProyecto Decision, string? Observaciones, bool RiesgosCargados = false, bool TresEscenarios = false);
+
+public record HistorialProyectoDto(EstadoProyecto EstadoAnterior, EstadoProyecto EstadoNuevo, string Accion, string Responsable, string Motivo, DateTimeOffset Fecha);
+
+public record ProyectoEvaluacionDto(ProyectoDto Proyecto, string Productor, string CorreoProductor, IReadOnlyList<HistorialProyectoDto> Historial);

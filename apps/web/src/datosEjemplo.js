@@ -53,13 +53,6 @@ export const proyectos = [
 
 export const buscarProyecto = (id) => proyectos.find((p) => p.id === id) ?? proyectos[0]
 
-// Cola del analista (RF-09).
-export const porEvaluar = [
-  { id: 'chiquitania', nombre: 'Engorde Chiquitania 2026', productor: 'Juan Pérez', estado: 'En revisión' },
-  { id: 'cotoca', nombre: 'Lechería Cotoca', productor: 'Ana Suárez', estado: 'En revisión' },
-  { id: 'montero', nombre: 'Engorde Montero', productor: 'Luis Rojas', estado: 'Observado' },
-]
-
 // Portafolio del inversionista de ejemplo (RF-26).
 export const portafolio = [
   { proyectoId: 'chiquitania', montoBs: 1000, estado: 'Activa' },

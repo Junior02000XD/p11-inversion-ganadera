@@ -5,7 +5,9 @@ using P11.Api.Contratos;
 using P11.Api.Datos;
 using P11.Api.Dominio;
 using P11.Api.Dominio.Proyectos;
+using P11.Api.Dominio.Proyectos.Estados;
 using P11.Api.Servicios;
+using P11.Api.Servicios.Proyectos;
 
 namespace P11.Api.Controllers;
 
@@ -13,7 +15,8 @@ namespace P11.Api.Controllers;
 [ApiController]
 [Route("api/proyectos")]
 [Authorize(Roles = Roles.Productor)]
-public class ProyectosController(AppDbContext db, SelectorCreadorProyecto selector) : ControllerBase
+public class ProyectosController(
+    AppDbContext db, SelectorCreadorProyecto selector, RequisitosEnvio requisitos, GestorCicloProyecto ciclo) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<ProyectoDto>> CrearBorrador(DatosFicha datos, CancellationToken ct)
@@ -52,32 +55,27 @@ public class ProyectosController(AppDbContext db, SelectorCreadorProyecto select
     }
 
     /// <summary>
-    /// Pasa el borrador a evaluación técnica. Exige que el productor esté verificado (RF-04)
-    /// y que tenga aprobados el RUNSA y el título o el contrato del predio (RF-05).
+    /// Pasa el borrador a evaluación técnica. Primero la cadena de requisitos (ficha completa, productor
+    /// verificado, documentos del predio aprobados: RF-08, RF-04, RF-05); después el comando, y el estado
+    /// del proyecto decide si la transición vale («solo un borrador se envía»).
     /// </summary>
     [HttpPost("{id:guid}/enviar-revision")]
     public async Task<ActionResult<ProyectoDto>> EnviarARevision(Guid id, CancellationToken ct)
     {
         var proyecto = await BuscarPropioAsync(id, ct);
         if (proyecto is null) return NotFound();
-        if (proyecto.Estado != EstadoProyecto.Borrador)
-            return Conflict(new Respuesta("Solo un borrador se puede enviar a evaluación."));
 
-        var productor = await db.Users.FindAsync([proyecto.ProductorId], ct);
-        if (productor?.EstadoVerificacion != EstadoVerificacion.Verificado)
-            return Conflict(new Respuesta("Tu identidad todavía no está verificada."));
+        var incumplido = await requisitos.RevisarAsync(proyecto, ct);
+        if (incumplido is not null) return Conflict(new Respuesta(incumplido));
 
-        var aprobados = await db.Documentos
-            .Where(d => d.UsuarioId == proyecto.ProductorId && d.Estado == EstadoDocumento.Aprobado)
-            .Select(d => d.Tipo)
-            .ToListAsync(ct);
-        var tieneRunsa = aprobados.Contains(TipoDocumento.Runsa);
-        var tienePredio = aprobados.Contains(TipoDocumento.TituloPropiedad) || aprobados.Contains(TipoDocumento.ContratoAlquiler);
-        if (!tieneRunsa || !tienePredio)
-            return Conflict(new Respuesta("Faltan documentos aprobados: el RUNSA y el título de propiedad o el contrato de alquiler."));
-
-        proyecto.Estado = EstadoProyecto.EnRevision;
-        await db.SaveChangesAsync(ct);
+        try
+        {
+            await ciclo.EjecutarAsync(new Servicios.Proyectos.EnviarARevision(proyecto.Id, User.Correo()), ct);
+        }
+        catch (TransicionInvalidaException ex)
+        {
+            return Conflict(new Respuesta(ex.Message));
+        }
         return ProyectoDto.Desde(proyecto);
     }
 

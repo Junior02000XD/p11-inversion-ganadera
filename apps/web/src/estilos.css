@@ -141,7 +141,7 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
   display: inline-block; font-size: 0.78rem; font-weight: 600; padding: 3px 9px; border-radius: 999px;
   background: var(--fondo); color: var(--tenue); border: 1px solid var(--borde); white-space: nowrap;
 }
-.chip-Aprobado, .chip-EnRevision { background: var(--ok-suave); color: var(--ok); border-color: transparent; }
+.chip-Aprobado, .chip-EnRevision, .chip-EnFinanciamiento { background: var(--ok-suave); color: var(--ok); border-color: transparent; }
 .chip-Pendiente, .chip-Borrador { background: var(--ocre-suave); color: var(--ocre); border-color: transparent; }
 .chip-Rechazado, .chip-Falta { background: var(--peligro-suave); color: var(--peligro); border-color: transparent; }
 

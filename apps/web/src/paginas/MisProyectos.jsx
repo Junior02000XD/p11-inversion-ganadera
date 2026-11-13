@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router'
-import { api, formatoBs, formatoFecha, mensajeDe } from '../api'
+import { api, formatoBs, formatoFecha, mensajeDe, textoEstadoProyecto } from '../api'
 import { Aviso, Tarjeta } from '../componentes'
 
 // Cada proyecto llega como { id, linea, nombre, ubicacion, montoRequeridoBs, plazoMeses,
-// estado, creadoEn, cantidadAnimales, vacasEnOrdeno }. linea: 'Engorde' | 'Lecheria'.
+// estado, creadoEn, cantidadAnimales, vacasEnOrdeno, observaciones }. linea: 'Engorde' | 'Lecheria'.
+// observaciones: lo último que escribió el analista al observar o rechazar (RF-09).
 
 export default function MisProyectos() {
   const location = useLocation()
@@ -41,7 +42,7 @@ export default function MisProyectos() {
           <li key={p.id} className="item">
             <div className="item-cabecera">
               <strong>{p.nombre}</strong>
-              <span className={`chip chip-${p.estado}`}>{p.estado === 'Borrador' ? 'Borrador' : 'En revisión'}</span>
+              <span className={`chip chip-${p.estado}`}>{textoEstadoProyecto[p.estado] ?? p.estado}</span>
             </div>
             <div className="tenue">
               {p.linea === 'Lecheria' ? `Lechería · ${p.vacasEnOrdeno} vacas en ordeño` : `Engorde · ${p.cantidadAnimales} cabezas`} · {p.ubicacion}
@@ -49,6 +50,11 @@ export default function MisProyectos() {
             <div className="tenue">
               {formatoBs(p.montoRequeridoBs)} · {p.plazoMeses} meses · creado {formatoFecha(p.creadoEn)}
             </div>
+            {p.observaciones && ['Borrador', 'Rechazado'].includes(p.estado) && (
+              <Aviso tipo={p.estado === 'Rechazado' ? 'error' : 'info'}>
+                {p.estado === 'Rechazado' ? 'Motivo del rechazo' : 'Observaciones del analista'}: {p.observaciones}
+              </Aviso>
+            )}
             {p.estado === 'Borrador' && (
               <button className="boton boton-secundario" onClick={() => enviarARevision(p.id)}>
                 Enviar a evaluación técnica

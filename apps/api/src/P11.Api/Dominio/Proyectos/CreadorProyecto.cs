@@ -30,7 +30,6 @@ public abstract class CreadorProyecto
         proyecto.MontoRequeridoBs = datos.MontoRequeridoBs;
         proyecto.MontoMinimoBs = datos.MontoMinimoBs;
         proyecto.PlazoMeses = datos.PlazoMeses;
-        proyecto.Estado = EstadoProyecto.Borrador;
 
         var errores = proyecto.Validar();
         return errores.Count == 0 ? new(proyecto, errores) : new(null, errores);

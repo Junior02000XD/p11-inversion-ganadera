@@ -17,4 +17,5 @@ public enum EstadoDocumento { Pendiente, Aprobado, Rechazado }
 
 public enum LineaProductiva { Engorde, Lecheria }
 
-public enum EstadoProyecto { Borrador, EnRevision }
+/// <summary>Estados del proyecto (EST-3). El comportamiento de cada uno está en Dominio/Proyectos/Estados.</summary>
+public enum EstadoProyecto { Borrador, EnRevision, Rechazado, EnFinanciamiento }

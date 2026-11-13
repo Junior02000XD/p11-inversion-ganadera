@@ -70,5 +70,42 @@ La regla depende del documento y no solo del rol, por eso `[Authorize(Roles = �
 
 **Flyweight (no aplica).** Compartir los datos de la raza entre los animales de un lote ahorraría unos 100 bytes por animal: de 30 KB a 1 MB en los casos realistas. La base de datos ya guarda la raza una sola vez y el seguimiento (RF-18) se registra por lote.
 
-## Pendiente
-Análisis de los patrones **de comportamiento** (consigna del 02/11).
+# Patrones de comportamiento
+
+Dinámica grupal del 13/11. Son los nueve patrones de la consigna. Cinco tienen código nuevo, dos ya estaban en el código (Template Method e Iterator) y dos no se aplican (Mediator y Memento). Los cuatro primeros trabajan juntos en el ciclo de vida del proyecto (RF-09, RF-10), que es lo que se muestra en la demo.
+
+| Patrón | Dónde | RF | Prueba | Estado |
+|---|---|---|---|---|
+| State | `src/P11.Api/Dominio/Proyectos/Estados/EstadoFicha.cs`; operaciones en `ProyectoGanadero` | RF-08, RF-09, RF-10 (EST-3) | `Patrones/StateTests.cs` | En uso |
+| Chain of Responsibility | `Servicios/Proyectos/RequisitosEnvio.cs` | RF-04, RF-05, RF-08 | `Patrones/ChainOfResponsibilityTests.cs`, `Integracion/ProyectosTests.cs` | En uso (`POST /api/proyectos/{id}/enviar-revision`) |
+| Command | `Servicios/Proyectos/ComandosProyecto.cs` + `GestorCicloProyecto.cs` (invocador); bitácora `HistorialProyecto` | RF-09, RNF-03 | `Patrones/CommandTests.cs` | En uso (`POST /api/analista/proyectos/{id}/decision`) |
+| Observer | `Servicios/Proyectos/ObservadoresProyecto.cs` (`AvisarAlProductor`, `AvisarALosAnalistas`); registro en `Program.cs` | RF-09 | `Patrones/ObserverTests.cs`, `Integracion/EvaluacionProyectosTests.cs` | En uso (avisos en Mailpit) |
+| Strategy | `Dominio/Liquidaciones/ReglaReparto.cs` (`IReglaReparto`, `RepartoProporcional`) | RF-23 | `Patrones/StrategyTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
+| Template Method | `ProyectoGanadero.Validar()` → `ValidarLinea()`; `CreadorProyecto.CrearBorrador()`; `Aviso.EnviarAsync()` | RF-07, RF-08, RF-02, RF-04 | `Patrones/TemplateMethodTests.cs` | Ya estaba en el código |
+| Iterator | `GrupoConceptos.Detalle()` (`yield`), `ValidarLinea()`; `IEnumerable`/LINQ | RF-23 | `Patrones/IteratorTests.cs` | Lo da C#; no se escribe un iterador a mano |
+| Mediator | — | RF-13 a RF-16 | — | No aplica |
+| Memento | — | RF-07, RF-12 | — | No aplica |
+
+## Cómo se aplica cada uno
+
+**State (EST-3).**
+- Antes, el estado era solo un enum y la regla «solo un borrador se envía» estaba en el controlador.
+- Ahora cada estado es una clase (`EnBorrador`, `EnRevisionTecnica`, `Rechazado`, `EnFinanciamiento`) que dice qué operaciones admite y a cuál pasa. Lo que no admite lanza `TransicionInvalidaException` y la API responde 409 con el motivo, por ejemplo «Un proyecto en financiamiento no se puede rechazar.».
+- La base sigue guardando el enum; `EstadoFicha.De(valor)` devuelve el objeto. `Estado` tiene `private set`: solo cambia con `EnviarARevision`, `Observar`, `Rechazar` y `AprobarYPublicar`.
+- El resto del ciclo (cierre de ronda, compra, ejecución, venta, liquidación) se suma como clases nuevas en los Sprints 2 y 3. La verificación de identidad (EST-1) no se pasó a State: tiene cuatro estados y dos decisiones, y el chequeo cabe en una línea.
+
+**Chain of Responsibility.** Para enviar la ficha a evaluación hay tres requisitos: ficha completa (RF-08), productor verificado (RF-04) y documentos del predio aprobados (RF-05). Cada uno es un eslabón; el primero que no se cumple responde y corta la cadena. Los mensajes son los mismos de antes. La cadena se arma en un solo lugar (`RequisitosEnvio`), de lo más barato a lo más caro. Encaja también en RF-13 (cupo, mínimo, verificación antes de reservar) y RF-19 (dato fuera de rango que pasa al analista).
+
+**Command.** Cada acción sobre el proyecto es un objeto (`EnviarARevision`, `ObservarProyecto`, `RechazarProyecto`, `AprobarYPublicarProyecto`) con quién la pide y por qué. `GestorCicloProyecto` las ejecuta todas igual: aplica la transición, guarda una fila en `HistorialProyecto` (RNF-03) y avisa a los observadores. No hay «deshacer»: lo decidido es evidencia. El uso más fuerte llega con Android (Sprint 3): las acciones hechas sin conexión se guardan como comandos y se envían al reconectar (RNF-04).
+
+**Observer.** `GestorCicloProyecto` no sabe quién se entera de los cambios: recibe la lista de `IObservadorProyecto` del contenedor. `AvisarAlProductor` le manda la decisión (con las observaciones) y `AvisarALosAnalistas` avisa cuando entra un proyecto a revisión. Si un aviso falla, se registra y la decisión no se revierte. RF-20 (incidencia → todos los inversionistas del proyecto) será otro observador.
+
+**Strategy.** El ERS dice que el reparto de utilidades no está definido y debe salir de un modelo financiero validado. `Liquidacion` recibe una `IReglaReparto`; hoy la única es `RepartoProporcional` (lo que ya calculaba). La regla que defina el cliente será otra clase. `IVerificadorIdentidad` ya funcionaba igual: `VerificacionService` usa el simulado y el proveedor real lo reemplazará.
+
+**Template Method (ya estaba).** `ProyectoGanadero.Validar()` aplica las reglas comunes y llama a `ValidarLinea()`, que redefine cada línea. `CreadorProyecto.CrearBorrador()` es el método plantilla que llama al Factory Method. `Aviso.EnviarAsync()` arma el mensaje y cada aviso pone su `Asunto` y su `Cuerpo`.
+
+**Iterator (ya estaba).** C# lo trae con `IEnumerable` y `yield`. `GrupoConceptos.Detalle()` recorre el árbol del Composite en preorden sin mostrar cómo guarda sus hijos, y cada recorrido es independiente. El catálogo paginado (RF-11) lo resolverá EF con `Skip`/`Take`.
+
+**Mediator (no aplica).** El candidato era el flujo de inversión (reserva, contrato, pago, participación: RF-13 a RF-16). Son pasos en secuencia y no objetos que conversan entre sí; alcanza con una Facade (como `VerificacionService`) y con Observer para los avisos. Una biblioteca como MediatR agregaría una indirección más sin resolver nada.
+
+**Memento (no aplica).** No hay requisito de deshacer. El simulador (RF-12) ya conserva la configuración base gracias a Prototype, y la historia del proyecto se guarda en la base (`HistorialProyecto`, RNF-03), no en instantáneas en memoria. Sería útil si el cliente pide comparar la ficha observada con la corregida.

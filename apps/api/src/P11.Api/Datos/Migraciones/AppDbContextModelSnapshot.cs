@@ -276,6 +276,50 @@ namespace P11.Api.Datos.Migraciones
                     b.ToTable("HistorialVerificaciones");
                 });
 
+            modelBuilder.Entity("P11.Api.Dominio.Proyectos.HistorialProyecto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Accion")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("EstadoAnterior")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("EstadoNuevo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTimeOffset>("Fecha")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Motivo")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid>("ProyectoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Responsable")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProyectoId");
+
+                    b.ToTable("HistorialProyectos");
+                });
+
             modelBuilder.Entity("P11.Api.Dominio.Proyectos.ProyectoGanadero", b =>
                 {
                     b.Property<Guid>("Id")
@@ -305,6 +349,10 @@ namespace P11.Api.Datos.Migraciones
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<int>("PlazoMeses")
                         .HasColumnType("integer");
@@ -527,6 +575,15 @@ namespace P11.Api.Datos.Migraciones
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("P11.Api.Dominio.Proyectos.HistorialProyecto", b =>
+                {
+                    b.HasOne("P11.Api.Dominio.Proyectos.ProyectoGanadero", null)
+                        .WithMany()
+                        .HasForeignKey("ProyectoId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

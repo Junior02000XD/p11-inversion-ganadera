@@ -1,0 +1,57 @@
+using P11.Api.Dominio.Proyectos;
+using P11.Api.Dominio.Proyectos.Estados;
+
+namespace P11.Api.Servicios.Proyectos;
+
+/// <summary>
+/// Command (GoF): cada acción sobre el ciclo de vida del proyecto es un objeto con quién la pide y por qué.
+/// El invocador (<see cref="GestorCicloProyecto"/>) las ejecuta todas igual: aplica la transición,
+/// guarda la bitácora (RNF-03) y avisa a los observadores. No hay «deshacer»: lo decidido queda como evidencia.
+/// </summary>
+public abstract record ComandoProyecto(Guid ProyectoId, string Responsable, string Motivo)
+{
+    /// <summary>Nombre de la acción en la bitácora.</summary>
+    public abstract string Accion { get; }
+
+    public abstract void Ejecutar(ProyectoGanadero proyecto);
+}
+
+/// <summary>Productor: envía el borrador a evaluación técnica (los requisitos los revisa la cadena antes).</summary>
+public record EnviarARevision(Guid ProyectoId, string Responsable)
+    : ComandoProyecto(ProyectoId, Responsable, "Enviado a evaluación técnica por el productor.")
+{
+    public override string Accion => "Enviar a revisión";
+    public override void Ejecutar(ProyectoGanadero proyecto) => proyecto.EnviarARevision();
+}
+
+/// <summary>Analista (RF-09): vuelve al productor con observaciones.</summary>
+public record ObservarProyecto(Guid ProyectoId, string Responsable, string Motivo) : ComandoProyecto(ProyectoId, Responsable, Motivo)
+{
+    public override string Accion => "Observar";
+    public override void Ejecutar(ProyectoGanadero proyecto) => proyecto.Observar(Motivo);
+}
+
+/// <summary>Analista (RF-09): rechaza y guarda el motivo.</summary>
+public record RechazarProyecto(Guid ProyectoId, string Responsable, string Motivo) : ComandoProyecto(ProyectoId, Responsable, Motivo)
+{
+    public override string Accion => "Rechazar";
+    public override void Ejecutar(ProyectoGanadero proyecto) => proyecto.Rechazar(Motivo);
+}
+
+/// <summary>
+/// Analista (RF-10): no se publica un proyecto sin riesgos y tres escenarios cargados. Los riesgos y los
+/// escenarios todavía no están en el modelo (llegan con el simulador, Sprint 2), así que por ahora vale la
+/// casilla que marca el analista en su checklist.
+/// </summary>
+public record AprobarYPublicarProyecto(Guid ProyectoId, string Responsable, string Motivo, bool RiesgosCargados, bool TresEscenarios)
+    : ComandoProyecto(ProyectoId, Responsable, Motivo)
+{
+    public override string Accion => "Aprobar y publicar";
+
+    public override void Ejecutar(ProyectoGanadero proyecto)
+    {
+        if (!RiesgosCargados || !TresEscenarios)
+            throw new TransicionInvalidaException("No se publica un proyecto sin riesgos y tres escenarios cargados.");
+        proyecto.AprobarYPublicar();
+    }
+}

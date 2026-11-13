@@ -11,6 +11,7 @@ using P11.Api.Dominio.Proyectos;
 using P11.Api.Servicios;
 using P11.Api.Servicios.Avisos;
 using P11.Api.Servicios.Documentos;
+using P11.Api.Servicios.Proyectos;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,6 +96,13 @@ builder.Services.AddScoped<IVerificadorIdentidad, VerificadorIdentidadSimulado>(
 builder.Services.AddSingleton<CreadorProyecto, CreadorProyectoEngorde>();
 builder.Services.AddSingleton<CreadorProyecto, CreadorProyectoLecheria>();
 builder.Services.AddSingleton<SelectorCreadorProyecto>();
+
+// Ciclo de vida del proyecto: Chain of Responsibility (requisitos de envío), Command (acciones con bitácora),
+// State (transiciones, en el dominio) y Observer (quién se entera de cada cambio).
+builder.Services.AddScoped<RequisitosEnvio>();
+builder.Services.AddScoped<GestorCicloProyecto>();
+builder.Services.AddScoped<IObservadorProyecto, AvisarAlProductor>();
+builder.Services.AddScoped<IObservadorProyecto, AvisarALosAnalistas>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
