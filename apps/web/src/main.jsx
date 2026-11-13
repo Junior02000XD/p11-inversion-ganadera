@@ -34,6 +34,10 @@ import Compra from './paginas/Compra'
 import Traslado from './paginas/Traslado'
 import Liquidacion from './paginas/Liquidacion'
 import './estilos.css'
+import { aplicarEstilo, estiloGuardado } from './estilo'
+
+// El estilo elegido se aplica antes de pintar, para que no parpadee.
+aplicarEstilo(estiloGuardado())
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

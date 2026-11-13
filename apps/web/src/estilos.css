@@ -1,49 +1,131 @@
+/*
+ * Dos estilos rústicos elegidos por votación del equipo (13/11/2026):
+ *   Pampa verde (por defecto)  → :root
+ *   Cuero y madera             → :root[data-estilo="cuero"]
+ * Cada uno con su versión oscura. El selector de la barra superior pone data-estilo (ver src/estilo.js).
+ * Los componentes solo usan estas variables; lo que no es color (texturas, costuras) va al final del archivo.
+ */
 :root {
-  --fondo: #f3f6f2;
-  --superficie: #ffffff;
-  --texto: #17211c;
-  --tenue: #5a675f;
-  --borde: #d4ddd6;
-  --acento: #1f5c43;
-  --acento-hover: #174a35;
-  --acento-suave: #e2efe8;
-  --ocre: #8a5d0c;
-  --ocre-suave: #f6ecd6;
+  --fondo: #f4f1e6;
+  --superficie: #fffdf6;
+  --texto: #2c3326;
+  --tenue: #6d7462;
+  --borde: #ddd5bd;
+  --acento: #5c6e4a;
+  --acento-hover: #4b5b3c;
+  --acento-suave: #e6ead8;
+  --destacado: #b8953c;
+  --ocre: #7c5d14;
+  --ocre-suave: #f3e5bd;
   --peligro: #a12f2f;
   --peligro-suave: #f8e4e2;
-  --ok: #1d6b3f;
-  --ok-suave: #e1f2e7;
-  --radio: 10px;
-  --sombra: 0 1px 2px rgb(16 32 24 / 0.06), 0 4px 16px rgb(16 32 24 / 0.06);
+  --ok: #46602f;
+  --ok-suave: #e2ead2;
+  --barra-fondo: #5c6e4a;
+  --barra-texto: #f4f1e6;
+  --nav-fondo: #ebe5d2;
+  --nav-texto: #59624d;
+  --nav-activo: #3d4a30;
+  --logo-fondo: #d9c48a;
+  --logo-texto: #3d4a30;
+  --radio: 12px;
+  --radio-tarjeta: 18px;
+  --radio-boton: 999px;
+  --sombra: 0 1px 2px rgb(60 70 40 / 0.08), 0 6px 18px rgb(60 70 40 / 0.08);
+  --fuente-texto: 'Source Sans 3', 'Segoe UI', Roboto, Arial, sans-serif;
+  --fuente-titulos: 'Bitter', Georgia, 'Times New Roman', serif;
   color-scheme: light;
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--fuente-texto);
+}
+:root[data-estilo='cuero'] {
+  --fondo: #efe3cd;
+  --superficie: #fffaf0;
+  --texto: #3b2a1a;
+  --tenue: #7a5a3c;
+  --borde: #c9a77e;
+  --acento: #8a4f22;
+  --acento-hover: #6f3f1a;
+  --acento-suave: #f3e1c4;
+  --destacado: #e0a64b;
+  --ocre: #8a5a12;
+  --ocre-suave: #f6e4c3;
+  --peligro: #a12f2f;
+  --peligro-suave: #f8e2dc;
+  --ok: #3f5520;
+  --ok-suave: #dfe8c9;
+  --barra-fondo: #6e4423;
+  --barra-texto: #f8e9cf;
+  --nav-fondo: #5a3519;
+  --nav-texto: #e9cfa1;
+  --nav-activo: #ffffff;
+  --logo-fondo: #f2d9a8;
+  --logo-texto: #5a3519;
+  --radio: 6px;
+  --radio-tarjeta: 8px;
+  --radio-boton: 4px;
+  --sombra: 0 2px 0 rgb(90 53 25 / 0.15), 0 8px 20px rgb(90 53 25 / 0.12);
+  --fuente-texto: 'Zilla Slab', Georgia, serif;
+  --fuente-titulos: 'Zilla Slab', Georgia, serif;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --fondo: #0f1512;
-    --superficie: #17201b;
-    --texto: #e4ebe6;
-    --tenue: #9aa89f;
-    --borde: #2c3831;
-    --acento: #6fc79d;
-    --acento-hover: #8fd6b3;
-    --acento-suave: #1d3329;
-    --ocre: #e0b35a;
-    --ocre-suave: #342a17;
+    --fondo: #151a12;
+    --superficie: #1e251a;
+    --texto: #e9ebdf;
+    --tenue: #a3ab96;
+    --borde: #343d2c;
+    --acento: #a9c08a;
+    --acento-hover: #c0d4a3;
+    --acento-suave: #2a3522;
+    --destacado: #d6b55c;
+    --ocre: #e0c06a;
+    --ocre-suave: #352e18;
     --peligro: #ee8b84;
     --peligro-suave: #3a201e;
-    --ok: #7fd3a1;
-    --ok-suave: #1b3326;
+    --ok: #9fd08a;
+    --ok-suave: #22331b;
+    --barra-fondo: #2c3624;
+    --barra-texto: #eef0e4;
+    --nav-fondo: #222a1c;
+    --nav-texto: #a3ab96;
+    --nav-activo: #e9ebdf;
+    --logo-fondo: #d6b55c;
+    --logo-texto: #1e251a;
     --sombra: none;
     color-scheme: dark;
+  }
+  :root[data-estilo='cuero'] {
+    --fondo: #1b140e;
+    --superficie: #261c14;
+    --texto: #f0e2cc;
+    --tenue: #b89c7c;
+    --borde: #4a3624;
+    --acento: #e0a64b;
+    --acento-hover: #f0bd6a;
+    --acento-suave: #3a2a18;
+    --destacado: #e0a64b;
+    --ocre: #e8b866;
+    --ocre-suave: #3a2c17;
+    --peligro: #ef8f80;
+    --peligro-suave: #3d211b;
+    --ok: #a9c97f;
+    --ok-suave: #27301a;
+    --barra-fondo: #3b2615;
+    --barra-texto: #f2d9a8;
+    --nav-fondo: #2c1c0f;
+    --nav-texto: #d9bb8c;
+    --nav-activo: #fff3df;
+    --logo-fondo: #f2d9a8;
+    --logo-texto: #3b2615;
+    --sombra: none;
   }
 }
 
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--fondo); color: var(--texto); font-size: 16px; line-height: 1.5; }
 a { color: var(--acento); }
-h1 { font-size: 1.6rem; margin: 0 0 4px; line-height: 1.2; }
-h2 { font-size: 1.05rem; margin: 20px 0 8px; }
+h1 { font-family: var(--fuente-titulos); font-size: 1.6rem; margin: 0 0 4px; line-height: 1.2; text-wrap: balance; }
+h2 { font-family: var(--fuente-titulos); font-size: 1.1rem; margin: 20px 0 8px; }
 .tenue { color: var(--tenue); font-size: 0.92rem; }
 .nota { color: var(--tenue); font-size: 0.9rem; margin: 8px 0 0; }
 .cargando { text-align: center; color: var(--tenue); padding: 40px; }
@@ -51,21 +133,29 @@ h2 { font-size: 1.05rem; margin: 20px 0 8px; }
 /* Marco */
 .barra {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 10px 16px; background: var(--superficie); border-bottom: 1px solid var(--borde);
+  padding: 10px 16px; background: var(--barra-fondo); color: var(--barra-texto);
 }
-.marca { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--texto); text-decoration: none; }
+.marca { display: flex; align-items: center; gap: 10px; font-family: var(--fuente-titulos); font-weight: 700; font-size: 1.08rem; color: var(--barra-texto); text-decoration: none; }
 .marca-logo {
-  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 8px;
-  background: var(--acento); color: var(--superficie); font-size: 0.75rem; font-weight: 800;
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px;
+  background: var(--logo-fondo); color: var(--logo-texto); font-family: var(--fuente-texto); font-size: 0.75rem; font-weight: 800;
 }
-.barra-usuario { display: flex; align-items: center; gap: 10px; }
-.barra-rol { font-size: 0.8rem; padding: 3px 9px; border-radius: 999px; background: var(--acento-suave); color: var(--acento); font-weight: 600; }
+.barra-usuario { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.barra-rol { font-size: 0.8rem; padding: 3px 10px; border-radius: var(--radio-boton); background: rgb(255 255 255 / 0.16); color: var(--barra-texto); font-weight: 600; }
+.barra .boton-texto { color: var(--barra-texto); }
+.selector-estilo { display: inline-flex; border: 1px solid rgb(255 255 255 / 0.35); border-radius: var(--radio-boton); overflow: hidden; }
+.selector-estilo button {
+  font: inherit; font-size: 0.78rem; font-weight: 600; padding: 4px 10px; min-height: 30px; border: 0; cursor: pointer;
+  background: transparent; color: var(--barra-texto);
+}
+.selector-estilo button[aria-pressed='true'] { background: var(--logo-fondo); color: var(--logo-texto); }
+.selector-estilo button:focus-visible { outline: 2px solid var(--barra-texto); outline-offset: -2px; }
 .contenido { padding: 24px 16px 48px; display: flex; justify-content: center; }
 
 /* Tarjeta (una pantalla del mockup) */
 .tarjeta {
   width: 100%; max-width: 460px; background: var(--superficie); border: 1px solid var(--borde);
-  border-radius: 16px; padding: 28px 24px; box-shadow: var(--sombra);
+  border-radius: var(--radio-tarjeta); padding: 28px 24px; box-shadow: var(--sombra);
 }
 .tarjeta-ancha { max-width: 760px; }
 .subtitulo { color: var(--tenue); margin: 0 0 20px; }
@@ -107,7 +197,7 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 /* Botones */
 .boton {
   display: flex; align-items: center; justify-content: center; text-align: center; text-decoration: none;
-  font: inherit; font-weight: 600; min-height: 46px; padding: 10px 16px; border-radius: 8px; cursor: pointer;
+  font: inherit; font-weight: 600; min-height: 46px; padding: 10px 18px; border-radius: var(--radio-boton); cursor: pointer;
   background: var(--acento); color: var(--superficie); border: 1px solid var(--acento);
 }
 .boton:hover:not(:disabled) { background: var(--acento-hover); }
@@ -138,7 +228,7 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 .estado-EnRevision { background: var(--ocre-suave); color: var(--ocre); border-color: transparent; }
 .estado-Rechazado { background: var(--peligro-suave); color: var(--peligro); border-color: transparent; }
 .chip {
-  display: inline-block; font-size: 0.78rem; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+  display: inline-block; font-size: 0.78rem; font-weight: 600; padding: 3px 9px; border-radius: var(--radio-boton);
   background: var(--fondo); color: var(--tenue); border: 1px solid var(--borde); white-space: nowrap;
 }
 .chip-Aprobado, .chip-EnRevision, .chip-EnFinanciamiento { background: var(--ok-suave); color: var(--ok); border-color: transparent; }
@@ -171,13 +261,13 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 /* Menú por rol */
 .barra { flex-direction: column; align-items: stretch; padding-bottom: 0; }
 .barra-fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.navegacion { display: flex; gap: 4px; overflow-x: auto; margin: 8px -16px 0; padding: 0 12px; }
+.navegacion { display: flex; gap: 4px; overflow-x: auto; margin: 10px -16px 0; padding: 0 12px; background: var(--nav-fondo); }
 .navegacion a {
-  padding: 10px 12px; color: var(--tenue); text-decoration: none; font-weight: 600; font-size: 0.92rem;
+  padding: 10px 12px; color: var(--nav-texto); text-decoration: none; font-weight: 600; font-size: 0.92rem;
   white-space: nowrap; border-bottom: 3px solid transparent;
 }
-.navegacion a:hover { color: var(--texto); }
-.navegacion a.active { color: var(--acento); border-bottom-color: var(--acento); }
+.navegacion a:hover { color: var(--nav-activo); }
+.navegacion a.active { color: var(--nav-activo); border-bottom-color: var(--destacado); }
 
 /* Piezas de los sprints 2 y 3 */
 textarea {
@@ -192,10 +282,22 @@ textarea[readonly] { background: var(--fondo); color: var(--tenue); }
 .datos .datos-total { border-bottom: 0; border-top: 2px solid var(--texto); }
 .datos-total dt { color: var(--texto); font-weight: 600; }
 .progreso { height: 10px; border-radius: 999px; background: var(--fondo); border: 1px solid var(--borde); overflow: hidden; }
-.progreso div { height: 100%; background: var(--acento); }
+.progreso div { height: 100%; background: var(--destacado); }
 .qr {
   align-self: center; width: 200px; height: 200px; border-radius: 8px;
   background: repeating-conic-gradient(var(--texto) 0 25%, var(--superficie) 0 50%) 0 0 / 20px 20px;
   border: 12px solid var(--superficie); outline: 1px solid var(--borde);
 }
 .segmentado-3 { grid-template-columns: repeat(3, 1fr); margin-bottom: 8px; }
+
+/* ---- Cuero y madera: lo que no es color ---- */
+/* Veta de madera en la barra y costuras punteadas en tarjetas, ítems y botones. */
+[data-estilo='cuero'] .barra {
+  background: repeating-linear-gradient(90deg, rgb(0 0 0 / 0) 0 3px, rgb(255 255 255 / 0.05) 3px 7px, rgb(0 0 0 / 0.06) 7px 12px), var(--barra-fondo);
+}
+[data-estilo='cuero'] .marca-logo { border-radius: 50%; border: 2px dashed var(--logo-texto); }
+[data-estilo='cuero'] .tarjeta { outline: 1.5px dashed var(--borde); outline-offset: -9px; }
+[data-estilo='cuero'] .item { border-style: dashed; border-width: 1.5px; }
+[data-estilo='cuero'] .boton:not(.boton-secundario):not(.boton-peligro) { outline: 1.5px dashed var(--logo-fondo); outline-offset: -5px; }
+[data-estilo='cuero'] .aviso-info, [data-estilo='cuero'] .aviso-error, [data-estilo='cuero'] .aviso-ok { border-left: 4px solid currentColor; border-radius: 4px; }
+[data-estilo='cuero'] .chip { font-weight: 700; }

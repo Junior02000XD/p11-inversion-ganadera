@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ESTILOS, aplicarEstilo, estiloGuardado } from './estilo'
 import { Link, Navigate, NavLink, Outlet, useNavigate } from 'react-router'
 import { useSesion } from './sesion'
 
@@ -127,6 +128,24 @@ const menus = {
   ],
 }
 
+/** Cambia entre los dos estilos rústicos (Pampa verde y Cuero y madera). */
+function SelectorEstilo() {
+  const [estilo, setEstilo] = useState(estiloGuardado)
+  const elegir = (id) => {
+    aplicarEstilo(id)
+    setEstilo(id)
+  }
+  return (
+    <div className="selector-estilo" role="group" aria-label="Estilo de la página">
+      {ESTILOS.map((e) => (
+        <button key={e.id} type="button" aria-pressed={estilo === e.id} onClick={() => elegir(e.id)}>
+          {e.nombre}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function Marco() {
   const { usuario, salir } = useSesion()
   const navegar = useNavigate()
@@ -140,9 +159,10 @@ export function Marco() {
             </span>
             Inversión Ganadera
           </Link>
-          {usuario && (
-            <div className="barra-usuario">
-              <span className="barra-rol">{usuario.rol}</span>
+          <div className="barra-usuario">
+            <SelectorEstilo />
+            {usuario && <span className="barra-rol">{usuario.rol}</span>}
+            {usuario && (
               <button
                 className="boton-texto"
                 onClick={() => {
@@ -152,8 +172,8 @@ export function Marco() {
               >
                 Salir
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         {usuario && (
           <nav className="navegacion">
