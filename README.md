@@ -11,7 +11,9 @@ Sergio Ricardo Aguilera Pantoja (Scrum Master), Matías Raldes León (Product Ow
 |---|---|
 | Proyecto de Sistemas 1 | El producto por sprints (S1 06/11, S2 20/11, S3 04/12, defensa 11/12) — `docs/sprints/` |
 | Programación Web 3 | La API del proyecto — `apps/api/` |
-| Ingeniería de Software | Patrones de diseño implementados en el código — `docs/patrones/` |
+| Ingeniería de Software | Requisitos, diagramas UML y patrones de diseño implementados en el código — `docs/requisitos/`, `docs/diagramas/`, `docs/patrones/` |
+
+Toda la documentación (ERS, diagramas, mockups, informes, guías, entregas de cada sprint) está en [`docs/`](docs/README.md), cada archivo en su versión vigente.
 
 ## Estructura
 
@@ -19,8 +21,13 @@ Sergio Ricardo Aguilera Pantoja (Scrum Master), Matías Raldes León (Product Ow
 apps/api/           API (backend) y sus pruebas
 apps/web/           Cliente web
 apps/android/       Cliente Android
-docs/patrones/      Mapa patrón de diseño → clase/archivo → requerimiento
-docs/sprints/       Alcance y evidencia de cada sprint
+docs/requisitos/    ERS 2.0 y especificación de requerimientos
+docs/analisis/      PESTEL, Business Model Canvas y Modelo de Negocio
+docs/procesos/      BPMN de los cuatro procesos (AS-IS → TO-BE)
+docs/diagramas/     Diagramas UML (.mdj de StarUML), sus figuras PNG y los mockups
+docs/diseno/        Documento de Diseño entregado
+docs/patrones/      Mapa patrón de diseño → clase/archivo → requerimiento, informes y guías
+docs/sprints/       Planificación, alcance y evidencia de cada sprint
 docker-compose.yml  Base de datos y correo de prueba para desarrollo
 ```
 
@@ -46,7 +53,7 @@ cd apps/web && npm install && npm run dev                      # web en http://l
 
 No hay que crear archivos de configuración: en desarrollo la API genera sus claves y crea los usuarios internos. La primera vez en cada máquina, corre `dotnet dev-certs https --trust`. Detalles, puertos ocupados y correo real: [`apps/api/README.md`](apps/api/README.md). Las pruebas se corren con `cd apps/api && dotnet test`.
 
-Estado y guion de la demo del Sprint 1: [`docs/sprints/sprint-1.md`](docs/sprints/sprint-1.md). Patrones de diseño: [`docs/patrones/README.md`](docs/patrones/README.md).
+Estado y guion de la demo del Sprint 1: [`docs/sprints/sprint-1/`](docs/sprints/sprint-1/README.md). Patrones de diseño: [`docs/patrones/README.md`](docs/patrones/README.md). Diagramas: [`docs/diagramas/README.md`](docs/diagramas/README.md).
 
 ## Convenciones
 
@@ -54,3 +61,4 @@ Estado y guion de la demo del Sprint 1: [`docs/sprints/sprint-1.md`](docs/sprint
 - Una rama por historia o requerimiento (`feature/rf-02-login`), Pull Request a `main` revisado por otro integrante.
 - Mensajes de commit en español, en imperativo y citando el requerimiento: `RF-02: bloquear la cuenta al 5.º intento fallido`.
 - Nunca subir secretos: las claves y contraseñas reales van en `dotnet user-secrets` o en variables de entorno, nunca en archivos versionados. `appsettings.Development.json` solo tiene valores del entorno local de Docker.
+- Documentación en `docs/`: nombres en minúscula con guiones, sin fecha, materia ni autor, y una sola versión por archivo (la historia la lleva git). Reglas en [`docs/README.md`](docs/README.md).

@@ -1,5 +1,24 @@
 # Patrones de diseño (Ingeniería de Software)
 
+## Documentos
+
+| Familia | Fecha | Informe grupal | Guía de estudio (exposición) | Guía de la demo en vivo |
+|---|---|---|---|---|
+| Creacionales | 03/11 | [PDF](informes/creacionales-informe.pdf) · [ODT](informes/creacionales-informe.odt) · con citas: [PDF](informes/creacionales-informe-con-citas.pdf) · [ODT](informes/creacionales-informe-con-citas.odt) | [PDF](guias/creacionales-guia-estudio.pdf) · [HTML](guias/creacionales-guia-estudio.html) | [creacionales-guia-demo.md](guias/creacionales-guia-demo.md) |
+| Estructurales | 09/11 | [PDF](informes/estructurales-informe.pdf) · [ODT](informes/estructurales-informe.odt) | [PDF](guias/estructurales-guia-estudio.pdf) · [HTML](guias/estructurales-guia-estudio.html) | [estructurales-guia-demo.md](guias/estructurales-guia-demo.md) |
+| Comportamiento | 13/11 | [PDF](informes/comportamiento-informe.pdf) · [ODT](informes/comportamiento-informe.odt) | [PDF](guias/comportamiento-guia-estudio.pdf) · [HTML](guias/comportamiento-guia-estudio.html) | [comportamiento-guia-demo.md](guias/comportamiento-guia-demo.md) |
+
+Más documentos:
+- la consigna de las dinámicas: [`consigna-dinamica-patrones.pdf`](consigna-dinamica-patrones.pdf);
+- el análisis de partida de los creacionales: [`informes/creacionales-analisis-inicial.pdf`](informes/creacionales-analisis-inicial.pdf);
+- las clases de cada familia dibujadas en UML: hojas 2 a 4 de [`../diagramas/uml/05-clases.mdj`](../diagramas/uml/05-clases.mdj), o sus PNG en [`../diagramas/figuras/05-clases/`](../diagramas/figuras/05-clases/).
+
+Las guías de demo entran con cuentas de la base local:
+- `analista@p11.local` y `admin@p11.local` las crea la semilla en cualquier máquina (las contraseñas están en `appsettings.Development.json`);
+- las de Luis Pérez y María Rojas existen solo en la base donde se registraron. En otra máquina, registrá un productor y un inversionista nuevos siguiendo el guion del [Sprint 1](../sprints/sprint-1/README.md).
+
+# Patrones creacionales
+
 Implementación de los patrones creacionales elegidos en el análisis grupal (§9, «Selección de patrones creacionales»). Cada fila enlaza el patrón con su código, el requerimiento que lo motiva y la prueba que lo demuestra. Rutas relativas a `apps/api/`.
 
 | Patrón | Prioridad (§9) | Dónde | RF | Prueba | Estado |

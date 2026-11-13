@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de patrones creacionales</title>
+<style>
+/* Layout: índice fijo a la izquierda, lectura en una columna de ~68ch; en teléfono el índice pasa arriba y se pliega. */
+:root {
+  --bg: #f6f6f8;
+  --surface: #ffffff;
+  --fg: #1d1c22;
+  --muted: #5b5a66;
+  --line: #dcdce3;
+  --accent: #8a1c3d;
+  --accent-soft: #f3e3e8;
+  --code-bg: #eeeef3;
+  --ok: #1f6b3d;
+  --ok-soft: #dff0e5;
+  --font-body: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16151b; --surface: #1e1d25; --fg: #ecebf2; --muted: #a3a2b0; --line: #34333f;
+    --accent: #e58aa5; --accent-soft: #3a1f2a; --code-bg: #272631; --ok: #7fd1a0; --ok-soft: #1c3426;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16151b; --surface: #1e1d25; --fg: #ecebf2; --muted: #a3a2b0; --line: #34333f;
+  --accent: #e58aa5; --accent-soft: #3a1f2a; --code-bg: #272631; --ok: #7fd1a0; --ok-soft: #1c3426;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 4rem;
+}
+.wrap { max-width: 78rem; margin: 0 auto; display: grid; grid-template-columns: 17rem minmax(0, 1fr); gap: 3rem; }
+header.top { max-width: 78rem; margin: 0 auto; padding: 2.5rem 0 1.5rem; border-bottom: 1px solid var(--line); margin-bottom: 2rem; }
+.kicker { font-family: var(--font-ui); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 .6rem; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.15; margin: 0 0 .8rem; text-wrap: balance; font-weight: 700; }
+.lede { max-width: 46rem; color: var(--muted); margin: 0; }
+.meta { font-family: var(--font-ui); font-size: .85rem; color: var(--muted); margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; }
+.themebtn { font-family: var(--font-ui); font-size: .8rem; margin-top: 1rem; }
+
+nav.toc { position: sticky; top: 1.25rem; align-self: start; max-height: calc(100vh - 2.5rem); overflow-y: auto; font-family: var(--font-ui); font-size: .88rem; }
+nav.toc summary { font-weight: 600; cursor: pointer; padding: .3rem 0 .6rem; list-style: none; }
+nav.toc summary::-webkit-details-marker { display: none; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; }
+nav.toc a { display: block; padding: .28rem .6rem; border-left: 2px solid var(--line); color: var(--muted); text-decoration: none; line-height: 1.35; }
+nav.toc a.l2 { padding-left: 1.4rem; font-size: .84rem; }
+nav.toc a:hover { color: var(--fg); }
+nav.toc a.on { color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+nav.toc li.done a::after { content: " ✓"; color: var(--ok); }
+.progress { font-size: .8rem; color: var(--muted); margin: .8rem 0 0; padding-left: .6rem; }
+
+main { min-width: 0; max-width: 46rem; }
+h2.sec { font-family: var(--font-ui); font-size: 1.45rem; line-height: 1.25; margin: 3rem 0 1rem; padding-top: 1.2rem; border-top: 2px solid var(--fg); scroll-margin-top: 1rem; text-wrap: balance; }
+main > h2.sec:first-child { margin-top: 0; }
+.sub { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin: 2.2rem 0 .6rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+h3 { font-family: var(--font-ui); font-size: 1.12rem; line-height: 1.3; margin: 0; scroll-margin-top: 1rem; text-wrap: balance; }
+button.done { font-family: var(--font-ui); font-size: .78rem; border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: .25rem .8rem; cursor: pointer; }
+button.done[aria-pressed="true"] { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+p { margin: 0 0 1rem; }
+strong { font-weight: 700; }
+ul { margin: 0 0 1.1rem; padding-left: 1.3rem; }
+li { margin-bottom: .45rem; }
+li::marker { color: var(--accent); }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: .08em .35em; border-radius: 3px; }
+pre { background: var(--code-bg); border-left: 3px solid var(--accent); margin: 0 0 1.2rem; padding: .9rem 1rem; overflow-x: auto; font-size: .84rem; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.tw { overflow-x: auto; margin: 0 0 1.3rem; border: 1px solid var(--line); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-family: var(--font-ui); font-size: .88rem; line-height: 1.45; }
+th, td { text-align: left; vertical-align: top; padding: .6rem .75rem; border-bottom: 1px solid var(--line); min-width: 7rem; }
+th { background: var(--accent-soft); color: var(--fg); font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+footer { max-width: 78rem; margin: 3rem auto 0; padding-top: 1.2rem; border-top: 1px solid var(--line); font-family: var(--font-ui); font-size: .82rem; color: var(--muted); }
+
+@media (max-width: 62rem) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  nav.toc { position: static; max-height: none; border: 1px solid var(--line); background: var(--surface); padding: .4rem .9rem .6rem; }
+}
+@media print {
+  nav.toc, .themebtn, button.done { display: none; }
+  body { background: #fff; color: #000; }
+  .wrap { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <p class="kicker">Ingeniería de Software · Equipo Los Cesaritos</p>
+  <h1>Guía de estudio para la exposición de patrones creacionales</h1>
+  <p class="lede">Para entender cada patrón, saber cómo se intentó aplicar al Proyecto 11 y poder explicarlo con palabras propias. No es un guion.</p>
+  <p class="meta"><span>Exposición: 4 de noviembre de 2026</span><span>Docente: Rolando Lara Sánchez</span><span>Documento base: Patrones creacionales aplicados al Proyecto 11</span></p>
+  <button type="button" class="themebtn done" id="theme" aria-pressed="false">Cambiar tema</button>
+</header>
+<div class="wrap">
+<nav class="toc" aria-label="Índice"><details id="tocd" open><summary>Índice</summary>
+<ol>
+<li><a class="l1" href="#reparto-de-la-exposicion">1. Reparto de la exposición</a></li>
+<li><a class="l1" href="#lo-que-los-cuatro-deben-saber">2. Lo que los cuatro deben saber</a></li>
+<li><a class="l2" href="#el-documento-en-cinco-ideas">2.1 El documento en cinco ideas</a></li>
+<li><a class="l2" href="#el-proyecto-en-un-minuto">2.2 El proyecto en un minuto</a></li>
+<li><a class="l2" href="#como-se-decidio-si-un-patron-aplica">2.3 Cómo se decidió si un patrón aplica</a></li>
+<li><a class="l2" href="#vocabulario-que-se-repite">2.4 Vocabulario que se repite</a></li>
+<li><a class="l1" href="#guia-por-integrante">3. Guía por integrante</a></li>
+<li><a class="l2" href="#integrante-1-factory-method-y-apertura">3.1 Integrante 1: Factory Method (y apertura)</a></li>
+<li><a class="l2" href="#integrante-2-abstract-factory-y-comparacion">3.2 Integrante 2: Abstract Factory (y comparación)</a></li>
+<li><a class="l2" href="#integrante-3-prototype-y-singleton">3.3 Integrante 3: Prototype y Singleton</a></li>
+<li><a class="l2" href="#integrante-4-builder-y-cierre">3.4 Integrante 4: Builder (y cierre)</a></li>
+<li><a class="l1" href="#preguntas-que-pueden-caer-a-cualquiera">4. Preguntas que pueden caer a cualquiera</a></li>
+<li><a class="l1" href="#puntos-debiles-del-documento-y-como-responderlos">5. Puntos débiles del documento y cómo responderlos</a></li>
+<li><a class="l1" href="#como-prepararse-en-una-hora">6. Cómo prepararse en una hora</a></li>
+</ol>
+<p class="progress" id="prog" aria-live="polite"></p></details></nav>
+<main id="main">
+<h2 class="sec" id="reparto-de-la-exposicion">1. Reparto de la exposición</h2>
+<p>Son cinco patrones y cuatro personas, así que una persona lleva dos. Para que el reparto sea parejo se pesó cada patrón por lo que cuesta entenderlo y por lo que hay que defender de él en el proyecto. Builder es el más cargado porque es el único que sí se aplica y su caso tiene más piezas. Prototype y Singleton son los más livianos: los dos terminan en "no aplica", con un caso corto cada uno, y comparten el argumento de fondo (la alternativa simple basta). Por eso van juntos y los lleva el integrante 3.</p>
+<div class="tw"><table><thead><tr><th scope="col">Integrante</th><th scope="col">Patrón</th><th scope="col">Además</th><th scope="col">Minutos</th><th scope="col">Carga de estudio</th></tr></thead><tbody><tr><td>1</td><td>Factory Method</td><td>Abre la exposición: qué es un patrón creacional y la tabla de clasificación</td><td>5</td><td>Media</td></tr><tr><td>2</td><td>Abstract Factory</td><td>La comparación entre patrones (sección 3 del documento)</td><td>5</td><td>Media</td></tr><tr><td>3</td><td>Prototype y Singleton</td><td>Nada más</td><td>5</td><td>Media: dos patrones cortos</td></tr><tr><td>4</td><td>Builder</td><td>Cierra con el resumen de decisiones (5.6) y el orden recomendado</td><td>5</td><td>Alta: es el caso con más piezas</td></tr></tbody></table></div>
+<p>Los minutos son una referencia para ensayar, de modo que si el ingeniero da otro tiempo se recortan por igual. Cada quien dice, dentro de su patrón, la buena práctica que le corresponde (sección 4 del documento), así que esa sección no necesita un expositor aparte. Los números de integrante se asignan entre ustedes; si alguien prefiere otro patrón, se intercambian sin problema siempre que Builder quede con quien más se prepare.</p>
+<p>Se expone en el orden de los integrantes: Factory Method, Abstract Factory, Prototype y Singleton, y al final Builder. Así se llega al único caso que sí aplica y la exposición termina con la recomendación. En el documento Builder va tercero; no importa, porque cada patrón tiene su propia sección y se nombra como "sección 5.x" al hablar.</p>
+<h2 class="sec" id="lo-que-los-cuatro-deben-saber">2. Lo que los cuatro deben saber</h2>
+<p>Cualquiera puede recibir una pregunta sobre cualquier parte, así que esta base es común.</p>
+<div class="sub"><h3 id="el-documento-en-cinco-ideas">2.1 El documento en cinco ideas</h3><button type="button" class="done" data-id="el-documento-en-cinco-ideas" aria-pressed="false">Estudiado</button></div>
+<ul><li>El ejercicio no consiste en usar los cinco patrones. Consiste en probar cada uno contra el proyecto y decidir si resuelve un problema que de verdad existe.</li><li>Resultado: Builder aplica, Factory Method aplica de forma condicional, y Abstract Factory, Prototype y Singleton no aplican (Abstract Factory "por ahora").</li><li>Cuando un patrón no aplica hay dos razones posibles: el problema que resuelve no aparece en el proyecto, o aparece, pero una solución simple lo cubre y el patrón solo agregaría clases. La segunda es lo que se llama sobreingeniería.</li><li>Todo se evaluó sobre papel. El proyecto está en modelado: existen el ERS v2.0 (30 páginas) y el Documento de Diseño (49 páginas), con 12 casos de uso y 18 clases. No hay código y el lenguaje y el framework todavía no se eligen.</li><li>Las clases con nombre nuevo (CreadorPostulacion, ConstructorExpediente y similares) son propuestas nuestras para el modelo. No están en el diagrama de clases actual y hay que decirlo así.</li></ul>
+<div class="sub"><h3 id="el-proyecto-en-un-minuto">2.2 El proyecto en un minuto</h3><button type="button" class="done" data-id="el-proyecto-en-un-minuto" aria-pressed="false">Estudiado</button></div>
+<p>Es una plataforma de inversión ganadera. Un inversionista pone dinero en un proyecto de engorde o de lechería que postula un productor, y recibe una participación. Hay una app Android, una aplicación web y un servidor de aplicación con base de datos relacional. Un analista evalúa los proyectos antes de publicarlos y el sistema lleva el seguimiento hasta la liquidación. Los requerimientos que más se usan en este trabajo son RF-07 y RF-08 (ficha del proyecto), RF-12 (tres escenarios), RF-22 (expediente), RF-23 (liquidación) y RNF-03 (bitácora que no se puede modificar).</p>
+<div class="sub"><h3 id="como-se-decidio-si-un-patron-aplica">2.3 Cómo se decidió si un patrón aplica</h3><button type="button" class="done" data-id="como-se-decidio-si-un-patron-aplica" aria-pressed="false">Estudiado</button></div>
+<p>Se usaron tres preguntas, en este orden. Conviene que las digan con sus palabras al explicar su patrón.</p>
+<ul><li>¿Qué cosa varía en la creación de objetos? Un tipo de producto, una familia, las partes de un objeto, una copia o la cantidad de instancias.</li><li>¿Ese problema aparece en el proyecto, con un requerimiento o una clase que lo muestre?</li><li>¿La alternativa más simple (un constructor, una tabla de campos, un archivo de configuración) no alcanza?</li></ul>
+<p>Si la respuesta a las dos últimas es "sí" y "no", el patrón se justifica. En cualquier otro caso, se queda fuera y se explica por qué.</p>
+<div class="sub"><h3 id="vocabulario-que-se-repite">2.4 Vocabulario que se repite</h3><button type="button" class="done" data-id="vocabulario-que-se-repite" aria-pressed="false">Estudiado</button></div>
+<ul><li><strong>Producto:</strong> el objeto que se quiere crear (un proyecto, un validador, un expediente).</li><li><strong>Creador o fábrica:</strong> la clase que se encarga de crearlo.</li><li><strong>Familia de productos:</strong> varios productos que solo tienen sentido juntos.</li><li><strong>Copia profunda y superficial:</strong> la superficial comparte las colecciones internas con el original; la profunda las duplica.</li><li><strong>Inyección de dependencias:</strong> en lugar de que una clase busque lo que necesita con un acceso global, se le entrega desde afuera.</li><li><strong>Sobreingeniería:</strong> agregar estructura que el problema actual no pide.</li></ul>
+<h2 class="sec" id="guia-por-integrante">3. Guía por integrante</h2>
+<p>Cada bloque trae lo que hay que entender, la estructura del patrón, cómo se intentó aplicar al proyecto, preguntas probables y un par de preguntas para comprobar que ya se sabe. El pseudocódigo no es del proyecto (no hay código): sirve para ver la forma del patrón.</p>
+<div class="sub"><h3 id="integrante-1-factory-method-y-apertura">3.1 Integrante 1: Factory Method (y apertura)</h3><button type="button" class="done" data-id="integrante-1-factory-method-y-apertura" aria-pressed="false">Estudiado</button></div>
+<p><strong>Apertura.</strong> Los patrones creacionales resuelven cómo se crean los objetos: quién decide qué clase se instancia, cómo se arma un objeto complejo y cuántas instancias pueden existir. Son cinco. Hay que poder nombrar los cinco y decir en una frase qué problema ataca cada uno (la tabla de la sección 1 del documento lo resume). Después se avisa de cómo se va a leer el trabajo: para cada patrón, ¿hay un problema real en el proyecto?</p>
+<p><strong>Qué hay que entender.</strong> Hay un flujo común, por ejemplo postular un proyecto, y un paso dentro de ese flujo que cambia según el caso: qué objeto concreto se crea. Factory Method deja ese paso como un método abstracto (el método fábrica) y cada subclase lo implementa. El flujo no se entera de la clase concreta. Se usa herencia, por eso el documento lo clasifica con alcance de clase.</p>
+<p><strong>Ojo con la fábrica simple.</strong> Un método con un condicional (un if o un switch) que devuelve un objeto u otro es una fábrica simple, no Factory Method. La diferencia es que en Factory Method la decisión la toma una subclase. Es la confusión más común y el documento la menciona a propósito.</p>
+<pre><code>abstract class CreadorPostulacion {
+  abstract Proyecto crearProyecto();      // el método fábrica
+
+  void postular(datos) {
+    verificarSesionYRol();
+    Proyecto p = crearProyecto();         // cada subclase decide cuál
+    p.cargar(datos);
+    p.validar();
+    guardar(p);
+  }
+}
+class CreadorEngorde  extends CreadorPostulacion   // crea ProyectoEngorde
+class CreadorLecheria extends CreadorPostulacion   // crea ProyectoLecheria</code></pre>
+<p><strong>Cómo se intentó aplicar al proyecto (sección 5.1).</strong> El productor elige engorde o lechería al registrar su ficha. Engorde pide animales, peso inicial y meta; lechería, vacas en ordeño y litros por día (RF-07), y RF-08 valida la ficha antes de enviarla a evaluación. Hoy el diagrama de clases tiene un solo ProyectoGanadero con un atributo línea (Documento de Diseño, p. 21). La idea fue crear un creador por línea, con el flujo de postulación en la clase base.</p>
+<p><strong>Por qué es "condicional" y no un sí.</strong> Porque solo vale la pena si las dos líneas terminan con validaciones y cálculos distintos. Si lo único que cambia son los campos que se muestran, basta un ProyectoGanadero con una tabla de campos por línea, que es más barata. Con los requerimientos de hoy no se puede afirmar que el comportamiento sea distinto, y varios indicadores de lechería son hipótesis del equipo (ERS, p. 18).</p>
+<p><strong>Lo que se descartó.</strong> Crear cuentas según el rol (RF-01, RF-06): Inversionista y Productor heredan de Usuario, pero Analista y Administrador no, y los roles se distinguen por permisos, que son datos, no comportamiento. Y el cobro por QR o por transferencia (RF-15): hay una sola pasarela, así que no hay variación que justifique una fábrica.</p>
+<p><strong>Beneficio y costo para decir.</strong> Si aparece una tercera línea con reglas propias, se agrega un creador y no se toca el resto. A cambio crecen las clases y hay una jerarquía paralela que mantener.</p>
+<p><strong>Buena práctica que le toca decir.</strong> Probar que cada creador devuelve un producto válido y que se puede sustituir, y entregar la fábrica desde afuera en lugar de buscarla con un acceso global.</p>
+<p><strong>Preguntas probables.</strong></p>
+<ul><li>¿Qué diferencia hay entre Factory Method y una fábrica simple? Respuesta corta: en la simple, un método decide con un condicional; en Factory Method, la decisión queda en subclases y el flujo común no cambia.</li><li>¿Por qué no lo aplicaron directamente si ya hay dos líneas? Porque dos líneas no bastan: hay que comprobar que el comportamiento difiere. Con diferencias solo de datos se cae en sobreingeniería.</li><li>¿Qué cambiaría su decisión? Que el ERS defina reglas de validación o de cálculo distintas por línea.</li></ul>
+<p><strong>Para comprobar que ya lo sabes.</strong> Explica sin leer qué es el método fábrica y quién lo implementa. Di dos cosas que cambian entre engorde y lechería según RF-07. Di por qué los roles no usan Factory Method.</p>
+<div class="sub"><h3 id="integrante-2-abstract-factory-y-comparacion">3.2 Integrante 2: Abstract Factory (y comparación)</h3><button type="button" class="done" data-id="integrante-2-abstract-factory-y-comparacion" aria-pressed="false">Estudiado</button></div>
+<p><strong>Qué hay que entender.</strong> Cuando hay varios objetos que solo funcionan bien juntos, se necesita una forma de crearlos de manera coherente. Abstract Factory ofrece una interfaz con un método de creación por cada producto de la familia, y cada fábrica concreta entrega una variante completa. Quien la usa nunca mezcla piezas de familias distintas. El ejemplo de manual es una biblioteca gráfica: botones, menús y ventanas del mismo sistema operativo.</p>
+<pre><code>interface FabricaLinea {
+  ValidadorFicha  crearValidadorFicha();
+  ValidadorAvance crearValidadorAvance();
+}
+class FabricaEngorde  implements FabricaLinea   // reglas de peso
+class FabricaLecheria implements FabricaLinea   // reglas de litros
+
+fabrica = obtenerFabrica(proyecto.linea);
+fabrica.crearValidadorFicha().validar(ficha);
+fabrica.crearValidadorAvance().validar(avance);</code></pre>
+<p><strong>Cómo se intentó aplicar al proyecto (sección 5.2).</strong> La evaluación revisa la ficha (RF-07, RF-08) y el seguimiento revisa los avances (RF-18, RF-19), y las métricas cambian con la línea: pesajes en engorde, litros en lechería. La propuesta fue una fábrica por línea que entregue el validador de ficha y el de avance, para que un proyecto lechero no reciba por error reglas de peso del engorde. RF-19 marca los valores fuera de rango y los pasa al analista.</p>
+<p><strong>Por qué no aplica por ahora (y qué significa ese "por ahora").</strong> Hay solo dos productos en la familia. Agregar un tercero obliga a cambiar la interfaz y todas las fábricas, que es la gran desventaja del patrón. Además los indicadores de lechería siguen sin validarse con usuarios. Mientras las líneas difieran solo en umbrales, una configuración de reglas por línea hace lo mismo con menos clases. Se justificaría si ficha, avance y otros componentes cambiaran siempre juntos por línea.</p>
+<p><strong>La comparación que le toca (sección 3).</strong> Se compara eficiencia, mantenibilidad y aplicabilidad, y la comparación es cualitativa porque no hay código que medir. Lo que hay que llevar claro:</p>
+<ul><li>Eficiencia: ningún patrón creacional hace al programa más rápido por sí solo. Factory Method agrega una llamada; Abstract Factory crea varios objetos por fábrica; Builder cuesta en proporción a las partes; Prototype ahorra si construir es caro pero una copia profunda de un grafo grande consume memoria; Singleton reutiliza la instancia y a veces exige sincronización.</li><li>Mantenibilidad: Factory Method y Abstract Factory facilitan agregar variantes, a costa de más clases; Builder deja las reglas de armado en un solo lugar; Prototype centraliza la copia; Singleton, mal usado, esconde dependencias y complica las pruebas.</li><li>Para elegir entre ellos: Factory Method vs Abstract Factory, cuántos objetos cambian a la vez (uno o varios coordinados). Builder vs Prototype, de dónde sale el objeto (se ensambla por partes o se copia uno armado).</li></ul>
+<p><strong>Buena práctica que le toca decir.</strong> Entregar las dependencias de forma explícita (la fábrica se inyecta) y probar que una fábrica no mezcla familias.</p>
+<p><strong>Preguntas probables.</strong></p>
+<ul><li>¿En qué se diferencia de Factory Method? En que crea una familia de productos relacionados, no uno solo, y usa composición (se entrega un objeto fábrica) en lugar de herencia.</li><li>¿Cuál es su mayor desventaja? Agregar un tipo nuevo de producto obliga a tocar la interfaz y todas las fábricas.</li><li>¿Por qué no usarlo si ya identificaron dos familias? Porque la diferencia real entre líneas todavía son umbrales por validar, y una configuración lo resuelve más simple.</li></ul>
+<p><strong>Para comprobar que ya lo sabes.</strong> Explica con el ejemplo de la biblioteca gráfica por qué los productos deben ser de la misma familia. Di en qué se parece y en qué se distingue de Factory Method. Menciona qué tendría que pasar en el proyecto para que sí valga.</p>
+<div class="sub"><h3 id="integrante-3-prototype-y-singleton">3.3 Integrante 3: Prototype y Singleton</h3><button type="button" class="done" data-id="integrante-3-prototype-y-singleton" aria-pressed="false">Estudiado</button></div>
+<p>Los dos terminan en "no aplica", y lo importante es poder explicar por qué sin sonar a que simplemente se descartaron. En cada uno, primero se explica el patrón y luego la razón.</p>
+<p><strong>Prototype: qué hay que entender.</strong> Se crea un objeto nuevo copiando uno existente que ya está configurado, en lugar de construirlo desde cero. Sirve cuando construir es repetitivo o caro. El punto delicado es la copia: la superficial comparte las colecciones internas con el original, así que modificar la copia altera la base; la profunda las duplica, a costa de memoria. Hay que decidir qué se copia en profundidad y qué puede compartirse.</p>
+<pre><code>base = cargarConfiguracionBase(proyecto);
+pesimista = base.copiar();   // ajusta supuestos de la copia
+esperado  = base.copiar();
+optimista = base.copiar();</code></pre>
+<p><strong>Prototype en el proyecto (sección 5.4).</strong> El inversionista ve tres escenarios, pesimista, esperado y optimista, con el aviso de que no hay garantía de rendimiento (RF-12, RNF-06). La idea fue una configuración base copiada tres veces. No aplica porque son tres objetos pequeños con pocos valores: crearlos directamente con tres juegos de parámetros es más simple que clonar, y una copia superficial haría que un escenario modificara a los otros. RF-12 exige tres resultados, no clonación. También se pensó en clonar plantillas de contrato o constancia (RF-14, RF-16), pero esos documentos guardan usuario, fecha y versión y no pueden alterarse después (RNF-03); una plantilla versionada resuelve lo mismo sin copiar objetos. Se reevaluaría si la configuración creciera hasta un conjunto grande de objetos costoso de armar. Práctica: no clonar identificadores, aceptaciones ni registros ya firmados.</p>
+<p><strong>Singleton: qué hay que entender.</strong> Garantiza que de una clase exista una sola instancia y da un punto de acceso a ella. El constructor es privado y un método devuelve siempre la misma instancia, con inicialización segura si hay concurrencia. En Java, por ejemplo, Runtime.getRuntime() es un caso conocido. Sus problemas: estado global que esconde dependencias, pruebas difíciles y la unicidad solo vale dentro de un proceso.</p>
+<pre><code>class Configuracion {
+  private static Configuracion instancia;
+  private Configuracion() { ... }
+  static Configuracion obtener() {
+    if (instancia == null) instancia = new Configuracion();  // ojo: no es seguro
+    return instancia;                                        // ante concurrencia
+  }
+}
+// alternativa del proyecto: new ServicioReserva(config)  -&gt; config se entrega desde afuera</code></pre>
+<p><strong>Singleton en el proyecto (sección 5.5).</strong> El candidato natural es la configuración: la reserva de 30 minutos (RF-13), el bloqueo de 15 minutos tras cinco intentos fallidos (RF-02), el umbral de verificación (RF-03), la comisión. Deben ser iguales en todo el sistema. Pero una instancia única solo garantiza una lectura dentro de un proceso, no que el teléfono, el servidor y las futuras réplicas vean la misma versión. Además, el lenguaje y el framework todavía no se eligen, y la mayoría de los frameworks web ya inyectan servicios de vida compartida. Lo que se necesita es configuración inmutable e inyectada: cargar y validar los parámetros al iniciar el servidor, pasarlos por constructor y, si deben cambiar sin reiniciar, guardarlos en la base de datos. La bitácora de RNF-03 tampoco debe ser un objeto único en memoria sino un registro persistente. Práctica: nunca usar Singleton para sesiones, cupos o pagos.</p>
+<p><strong>Un punto fino que conviene saber.</strong> Que un pago no se registre dos veces o que dos solicitudes no tomen el mismo cupo no lo resuelve ningún patrón creacional. Se resuelve con transacciones e idempotencia. Si el docente pregunta por "unicidad", ahí está la distinción.</p>
+<p><strong>Preguntas probables.</strong></p>
+<ul><li>¿Cuándo sí usarías Prototype? Cuando haya una base compleja y costosa de armar que se reutilice muchas veces con pequeños cambios, por ejemplo figuras o personajes ya configurados.</li><li>¿Copia superficial o profunda y por qué importa? La superficial comparte colecciones; si la copia cambia una, cambia el original. En escenarios eso corrompería la comparación.</li><li>¿Singleton es malo? No siempre, pero se abusa. Con inyección de dependencias suele bastar un servicio de vida compartida, sin acceso global. Es útil solo para un recurso realmente único dentro de un proceso.</li><li>¿Y si el servidor tiene varias réplicas? El Singleton no se coordina entre procesos; la configuración tendría que vivir en una fuente común.</li></ul>
+<p><strong>Para comprobar que ya lo sabes.</strong> Explica la diferencia entre copia superficial y profunda con un ejemplo de escenarios. Di dos razones por las que el Singleton de configuración no sirve en este proyecto. Menciona qué propone el documento en su lugar.</p>
+<div class="sub"><h3 id="integrante-4-builder-y-cierre">3.4 Integrante 4: Builder (y cierre)</h3><button type="button" class="done" data-id="integrante-4-builder-y-cierre" aria-pressed="false">Estudiado</button></div>
+<p><strong>Qué hay que entender.</strong> Algunos objetos se arman por etapas, con partes opcionales o que dependen de la situación. Un constructor con diez parámetros se vuelve ilegible y permite combinaciones inválidas. Builder separa el proceso de armado del objeto resultante: se llama a pasos como agregarFicha o agregarDocumentos y, al final, a un método que entrega el objeto y comprueba que esté completo. Un director opcional repite secuencias conocidas. En la vida real se ve en los constructores de consultas SQL o de peticiones HTTP.</p>
+<pre><code>exp = new ConstructorExpediente()
+        .agregarFicha(proyecto)
+        .agregarDocumentos(proyecto)
+        .agregarEventos(proyecto, rol)
+        .ordenarCronologia()
+        .construir();     // revisa que estén las partes obligatorias según la etapa</code></pre>
+<p><strong>Cómo se intentó aplicar al proyecto (sección 5.3).</strong> RF-22 pide una línea de tiempo con contratos, compra, GMA, avances, incidencias, venta y liquidación, y cada rol ve solo lo que le corresponde. El diseño ya tiene la clase ExpedienteDigital con la operación consultar (Documento de Diseño, p. 21). La propuesta es un constructor de expediente que reúna ficha, documentos y eventos, ordene la cronología y, al construir, compruebe las partes obligatorias según la etapa: un proyecto en financiamiento todavía no tiene venta, y uno cerrado necesita sus constancias.</p>
+<p><strong>Por qué es el mejor caso.</strong> El producto es compuesto, depende de la etapa del proyecto y se arma con datos de varias fuentes. Es justo la situación para la que existe el patrón. La misma idea sirve para la ficha de postulación como borrador por etapas (RF-07) y para la liquidación, que reúne venta, costos, pérdidas y comisión (RF-23).</p>
+<p><strong>Dos aclaraciones que conviene tener lista.</strong> Primero, el constructor solo ensambla una vista: los eventos siguen registrándose en sus servicios y no se toca la bitácora inmodificable de RNF-03. Segundo, se usa un constructor nuevo por consulta; compartir uno entre solicitudes mezclaría datos de usuarios distintos.</p>
+<p><strong>Su límite, dicho con honestidad.</strong> Si el expediente fuera una sola consulta sobre una tabla, el constructor sobraría. El valor aparece por la complejidad del armado y por las vistas distintas según etapa y rol.</p>
+<p><strong>Cierre.</strong> Como Builder habla al final, cierra con el resumen 5.6: Builder aplica, Factory Method es condicional y los otros tres no aplican. La recomendación del documento es empezar por el constructor de expediente cuando el equipo pase del modelado a la programación, reflejarlo antes en el diagrama de clases, y revisar Factory Method cuando se confirmen las reglas de las dos líneas. Siguen abiertos el monto mínimo, la comisión, el reparto de utilidades y los indicadores de lechería.</p>
+<p><strong>Preguntas probables.</strong></p>
+<ul><li>¿Por qué no un constructor con todos los parámetros? Porque hay partes opcionales y dependientes de la etapa; los pasos dejan claro qué falta y evitan objetos a medias.</li><li>¿Qué es el director? Una clase opcional que conoce secuencias de pasos que se repiten, para no repetirlas en cada cliente.</li><li>¿No sería solo una consulta? Podría serlo; por eso se aclara que el patrón se justifica por la complejidad del armado y no por el solo hecho de mostrar un expediente.</li><li>¿Qué pasa con la bitácora? No se modifica; el constructor lee registros ya existentes y produce una vista.</li></ul>
+<p><strong>Para comprobar que ya lo sabes.</strong> Describe los pasos del constructor de expediente de memoria. Explica por qué un proyecto en financiamiento y uno cerrado producen expedientes distintos. Di qué se rompería si dos usuarios compartieran el mismo constructor.</p>
+<h2 class="sec" id="preguntas-que-pueden-caer-a-cualquiera">4. Preguntas que pueden caer a cualquiera</h2>
+<div class="tw"><table><thead><tr><th scope="col">Pregunta</th><th scope="col">Idea de respuesta</th></tr></thead><tbody><tr><td>Si casi ninguno aplica, ¿para qué sirve el trabajo?</td><td>Para decidir con criterio. Un patrón sin problema que resolver es sobreingeniería, y saber descartarlo es parte de usarlos bien. Además salió una recomendación concreta: empezar por Builder.</td></tr><tr><td>¿Dónde está el código?</td><td>Todavía no hay. El proyecto está en modelado, así que se evaluaron decisiones de diseño sobre el ERS y el Documento de Diseño. Los nombres de clases nuevos son propuestas para el modelo.</td></tr><tr><td>¿Cuál es la diferencia entre Factory Method y Abstract Factory?</td><td>Uno crea un producto y lo decide una subclase; el otro crea una familia de productos relacionados y se entrega como objeto fábrica.</td></tr><tr><td>¿Y entre Builder y Prototype?</td><td>Builder ensambla un objeto por partes; Prototype copia un objeto que ya está armado.</td></tr><tr><td>¿Qué patrón recomiendan primero?</td><td>Builder, para el expediente digital, cuando se pase a programar. Factory Method queda a la espera de que se confirmen las reglas de las dos líneas.</td></tr><tr><td>¿Qué sigue abierto en los requerimientos?</td><td>Monto mínimo, comisión, reparto de utilidades e indicadores de lechería (ERS, p. 18). Eso condiciona varias decisiones.</td></tr><tr><td>¿Los patrones mejoran la eficiencia?</td><td>No por sí solos. La comparación es cualitativa y no se midió nada porque no hay código.</td></tr></tbody></table></div>
+<h2 class="sec" id="puntos-debiles-del-documento-y-como-responderlos">5. Puntos débiles del documento y cómo responderlos</h2>
+<ul><li><strong>Todo es hipotético.</strong> Es cierto y el documento lo dice: no hay código y la comparación es cualitativa. Conviene decirlo antes de que lo pregunten.</li><li><strong>Los requerimientos siguen "Pendiente".</strong> El ERS los mantiene pendientes hasta validarlos con usuarios, y algunos indicadores de lechería son hipótesis del equipo (ERS, p. 18). Por eso Factory Method y Abstract Factory quedan condicionados.</li><li><strong>Builder del expediente podría ser una simple consulta.</strong> Se reconoce en el propio documento. La defensa es la complejidad: varias fuentes, partes que dependen de la etapa y vistas distintas por rol.</li><li><strong>Las clases propuestas no están en el diagrama.</strong> Correcto, por eso se marcan como propuestas y la recomendación final es reflejarlas en el diagrama de clases antes de programar.</li></ul>
+<h2 class="sec" id="como-prepararse-en-una-hora">6. Cómo prepararse en una hora</h2>
+<ul><li>Primeros diez minutos: leer la sección 2 de esta guía los cuatro juntos y repasar las tres preguntas de decisión.</li><li>Veinte minutos solos: leer su bloque en la sección 3, el caso correspondiente de la sección 5 del documento, y contestar las preguntas para comprobar.</li><li>Diez minutos entre parejas: cada quien explica su patrón en voz alta al compañero que viene después, sin leer, y recibe una pregunta.</li><li>Últimos veinte minutos: un ensayo completo con el tiempo de referencia y un repaso de la sección 4 de esta guía, que se contesta entre todos.</li></ul>
+<p>Para explicarlo con palabras propias ayuda una prueba simple: si puedes contarle tu patrón a alguien que no ha visto el documento usando un ejemplo del proyecto, ya lo tienes.</p>
+</main>
+</div>
+<footer>Las clases con nombre nuevo (por ejemplo CreadorPostulacion o ConstructorExpediente) son propuestas para el modelo. El proyecto sigue en la etapa de modelado y todavía no hay código.</footer>
+<script>
+(function () {
+  var KEY = 'guia-creacionales-estudiado';
+  var done = {};
+  try { done = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { done = {}; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {} }
+  var btns = document.querySelectorAll('button.done[data-id]');
+  var links = {};
+  document.querySelectorAll('nav.toc a').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+  function render() {
+    var n = 0;
+    btns.forEach(function (b) {
+      var id = b.getAttribute('data-id'), on = !!done[id];
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.textContent = on ? 'Estudiado ✓' : 'Marcar como estudiado';
+      if (links[id]) links[id].parentNode.classList.toggle('done', on);
+      if (on) n++;
+    });
+    document.getElementById('prog').textContent = n + ' de ' + btns.length + ' apartados marcados como estudiados';
+  }
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var id = b.getAttribute('data-id');
+      if (done[id]) delete done[id]; else done[id] = 1;
+      save(); render();
+    });
+  });
+  render();
+
+  var tocd = document.getElementById('tocd');
+  var mq = window.matchMedia('(min-width: 62.01rem)');
+  function sync() { tocd.open = mq.matches; }
+  sync();
+  if (mq.addEventListener) mq.addEventListener('change', sync);
+
+  var heads = Array.prototype.slice.call(document.querySelectorAll('main h2[id], main h3[id]'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) {
+          Object.keys(links).forEach(function (k) { links[k].classList.remove('on'); });
+          var a = links[e.target.id]; if (a) a.classList.add('on');
+        }
+      });
+    }, { rootMargin: '0px 0px -75% 0px' });
+    heads.forEach(function (h) { io.observe(h); });
+  }
+
+  var tb = document.getElementById('theme');
+  tb.addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+})();
+</script>
+</body>
+</html>

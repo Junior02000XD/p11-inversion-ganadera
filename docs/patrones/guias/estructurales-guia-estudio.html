@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de patrones estructurales</title>
+<style>
+/* Layout: índice fijo a la izquierda, lectura en una columna de ~68ch; en teléfono el índice pasa arriba y se pliega. */
+:root {
+  --bg: #f6f6f8;
+  --surface: #ffffff;
+  --fg: #1d1c22;
+  --muted: #5b5a66;
+  --line: #dcdce3;
+  --accent: #8a1c3d;
+  --accent-soft: #f3e3e8;
+  --code-bg: #eeeef3;
+  --ok: #1f6b3d;
+  --ok-soft: #dff0e5;
+  --font-body: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16151b; --surface: #1e1d25; --fg: #ecebf2; --muted: #a3a2b0; --line: #34333f;
+    --accent: #e58aa5; --accent-soft: #3a1f2a; --code-bg: #272631; --ok: #7fd1a0; --ok-soft: #1c3426;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16151b; --surface: #1e1d25; --fg: #ecebf2; --muted: #a3a2b0; --line: #34333f;
+  --accent: #e58aa5; --accent-soft: #3a1f2a; --code-bg: #272631; --ok: #7fd1a0; --ok-soft: #1c3426;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 4rem;
+}
+.wrap { max-width: 78rem; margin: 0 auto; display: grid; grid-template-columns: 17rem minmax(0, 1fr); gap: 3rem; }
+header.top { max-width: 78rem; margin: 0 auto; padding: 2.5rem 0 1.5rem; border-bottom: 1px solid var(--line); margin-bottom: 2rem; }
+.kicker { font-family: var(--font-ui); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 .6rem; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.15; margin: 0 0 .8rem; text-wrap: balance; font-weight: 700; }
+.lede { max-width: 46rem; color: var(--muted); margin: 0; }
+.meta { font-family: var(--font-ui); font-size: .85rem; color: var(--muted); margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; }
+.themebtn { font-family: var(--font-ui); font-size: .8rem; margin-top: 1rem; }
+
+nav.toc { position: sticky; top: 1.25rem; align-self: start; max-height: calc(100vh - 2.5rem); overflow-y: auto; font-family: var(--font-ui); font-size: .88rem; }
+nav.toc summary { font-weight: 600; cursor: pointer; padding: .3rem 0 .6rem; list-style: none; }
+nav.toc summary::-webkit-details-marker { display: none; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; }
+nav.toc a { display: block; padding: .28rem .6rem; border-left: 2px solid var(--line); color: var(--muted); text-decoration: none; line-height: 1.35; }
+nav.toc a.l2 { padding-left: 1.4rem; font-size: .84rem; }
+nav.toc a:hover { color: var(--fg); }
+nav.toc a.on { color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+nav.toc li.done a::after { content: " ✓"; color: var(--ok); }
+.progress { font-size: .8rem; color: var(--muted); margin: .8rem 0 0; padding-left: .6rem; }
+
+main { min-width: 0; max-width: 46rem; }
+h2.sec { font-family: var(--font-ui); font-size: 1.45rem; line-height: 1.25; margin: 3rem 0 1rem; padding-top: 1.2rem; border-top: 2px solid var(--fg); scroll-margin-top: 1rem; text-wrap: balance; }
+main > h2.sec:first-child { margin-top: 0; }
+.sub { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin: 2.2rem 0 .6rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+h3 { font-family: var(--font-ui); font-size: 1.12rem; line-height: 1.3; margin: 0; scroll-margin-top: 1rem; text-wrap: balance; }
+button.done { font-family: var(--font-ui); font-size: .78rem; border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: .25rem .8rem; cursor: pointer; }
+button.done[aria-pressed="true"] { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+p { margin: 0 0 1rem; }
+strong { font-weight: 700; }
+ul { margin: 0 0 1.1rem; padding-left: 1.3rem; }
+li { margin-bottom: .45rem; }
+li::marker { color: var(--accent); }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: .08em .35em; border-radius: 3px; }
+pre { background: var(--code-bg); border-left: 3px solid var(--accent); margin: 0 0 1.2rem; padding: .9rem 1rem; overflow-x: auto; font-size: .84rem; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.tw { overflow-x: auto; margin: 0 0 1.3rem; border: 1px solid var(--line); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-family: var(--font-ui); font-size: .88rem; line-height: 1.45; }
+th, td { text-align: left; vertical-align: top; padding: .6rem .75rem; border-bottom: 1px solid var(--line); min-width: 7rem; }
+th { background: var(--accent-soft); color: var(--fg); font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+footer { max-width: 78rem; margin: 3rem auto 0; padding-top: 1.2rem; border-top: 1px solid var(--line); font-family: var(--font-ui); font-size: .82rem; color: var(--muted); }
+
+@media (max-width: 62rem) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  nav.toc { position: static; max-height: none; border: 1px solid var(--line); background: var(--surface); padding: .4rem .9rem .6rem; }
+}
+@media print {
+  nav.toc, .themebtn, button.done { display: none; }
+  body { background: #fff; color: #000; }
+  .wrap { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+.ruta { font-family: var(--font-ui); font-size: .8rem; color: var(--muted); margin: 0 0 .3rem; }
+</style>
+</head>
+<body>
+<header class="top">
+  <p class="kicker">Ingeniería de Software · Equipo Los Cesaritos</p>
+  <h1>Guía de estudio para la exposición de patrones estructurales</h1>
+  <p class="lede">Para entender cada patrón, saber dónde está en el código del Proyecto 11 y poder explicarlo con palabras propias. No es un guion.</p>
+  <p class="meta"><span>Entrega: 10 de noviembre de 2026</span><span>Docente: Rolando Lara Sánchez</span><span>Documento base: Patrones estructurales aplicados al Proyecto 11</span></p>
+  <button type="button" class="themebtn done" id="theme" aria-pressed="false">Cambiar tema</button>
+</header>
+<div class="wrap">
+<nav class="toc" aria-label="Índice"><details id="tocd" open><summary>Índice</summary>
+<ol>
+<li><a class="l1" href="#reparto-de-la-exposicion">1. Reparto de la exposición</a></li>
+<li><a class="l1" href="#lo-que-los-cuatro-deben-saber">2. Lo que los cuatro deben saber</a></li>
+<li><a class="l2" href="#el-documento-en-cinco-ideas">2.1 El documento en cinco ideas</a></li>
+<li><a class="l2" href="#que-cambio-en-el-codigo">2.2 Qué cambió en el código</a></li>
+<li><a class="l2" href="#como-se-decidio-si-un-patron-aplica">2.3 Cómo se decidió si un patrón aplica</a></li>
+<li><a class="l2" href="#vocabulario-que-se-repite">2.4 Vocabulario que se repite</a></li>
+<li><a class="l1" href="#guia-por-integrante">3. Guía por integrante</a></li>
+<li><a class="l2" href="#integrante-1-adapter-y-facade-y-apertura">3.1 Integrante 1: Adapter y Facade (y apertura)</a></li>
+<li><a class="l2" href="#integrante-2-decorator-y-proxy-y-comparacion">3.2 Integrante 2: Decorator y Proxy (y comparación)</a></li>
+<li><a class="l2" href="#integrante-3-bridge-y-bridge-frente-a-decorator">3.3 Integrante 3: Bridge (y Bridge frente a Decorator)</a></li>
+<li><a class="l2" href="#integrante-4-composite-y-flyweight-y-cierre">3.4 Integrante 4: Composite y Flyweight (y cierre)</a></li>
+<li><a class="l1" href="#preguntas-que-pueden-caer-a-cualquiera">4. Preguntas que pueden caer a cualquiera</a></li>
+<li><a class="l1" href="#puntos-debiles-del-documento-y-como-responderlos">5. Puntos débiles del documento y cómo responderlos</a></li>
+<li><a class="l1" href="#como-prepararse-en-una-hora">6. Cómo prepararse en una hora</a></li>
+</ol>
+<p class="progress" id="prog" aria-live="polite"></p></details></nav>
+<main id="main">
+<h2 class="sec" id="reparto-de-la-exposicion">1. Reparto de la exposición</h2>
+<p>Son siete patrones y cuatro personas. Se repartieron según lo que cuesta entender cada patrón y lo que hay que defender de él en el proyecto. Decorator y Proxy van juntos porque se escriben casi igual y la pregunta obvia del docente es en qué se diferencian, así que conviene que los explique la misma persona. Bridge va solo porque es el más difícil de explicar y el que más preguntas va a recibir («¿por qué no un Decorator?»). Flyweight es corto: termina en «no aplica» y se defiende con números.</p>
+<div class="tw"><table><thead><tr><th scope="col">Integrante</th><th scope="col">Patrones</th><th scope="col">Además</th><th scope="col">Minutos</th><th scope="col">Carga de estudio</th></tr></thead><tbody><tr><td>1</td><td>Adapter y Facade</td><td>Abre la exposición: qué es un patrón estructural y la tabla de clasificación (sección 1 del documento)</td><td>5</td><td>Media</td></tr><tr><td>2</td><td>Decorator y Proxy</td><td>La diferencia entre los dos (sección 3 del documento)</td><td>5</td><td>Media alta: dos patrones con código nuevo</td></tr><tr><td>3</td><td>Bridge</td><td>Por qué Bridge y no Decorator para los avisos</td><td>5</td><td>Alta: es el que más preguntas recibe</td></tr><tr><td>4</td><td>Composite y Flyweight</td><td>Cierra con el resumen de decisiones (5.8) y los próximos pasos</td><td>5</td><td>Media</td></tr></tbody></table></div>
+<p>Los minutos son una referencia para ensayar. Cada quien dice la buena práctica de su patrón (sección 4 del documento). Se expone en el orden de los integrantes; en el documento el orden es otro, así que al hablar se nombra la «sección 5.x».</p>
+<p><strong>Esta vez hay que mostrar código.</strong> Si hay proyector, cada integrante abre los archivos de su patrón en el repositorio (rutas en 2.2, relativas a <code>apps/api/</code>). Si no hay proyector, alcanza con los fragmentos y diagramas del documento.</p>
+<h2 class="sec" id="lo-que-los-cuatro-deben-saber">2. Lo que los cuatro deben saber</h2>
+<p>Cualquiera puede recibir una pregunta sobre cualquier parte, así que esta base es común.</p>
+<div class="sub"><h3 id="el-documento-en-cinco-ideas">2.1 El documento en cinco ideas</h3><button type="button" class="done" data-id="el-documento-en-cinco-ideas" aria-pressed="false">Estudiado</button></div>
+<ul><li>Ahora hay código. La API del Sprint 1 (ASP.NET Core, .NET 10) está en el repositorio del equipo, <code>p11-inversion-ganadera</code>, y cada caso de estudio muestra código real y el comportamiento esperado del sistema.</li><li>Resultado: seis patrones aplican y están en el código (Adapter, Decorator, Proxy, Facade, Bridge y Composite, este último con encaje moderado). Flyweight no aplica.</li><li>No se inventaron problemas para usar patrones. Adapter ya existía (el envío de correo); Decorator y Facade salieron de reordenar código del Sprint 1; Proxy, Bridge y Composite responden a requerimientos concretos (RF-05, RF-02/04/20, RF-23).</li><li>Cuando un patrón encaja poco, se dice: Composite es moderado, Flyweight no aplica y el Proxy sería redundante si solo existiera la pantalla del analista.</li></ul>
+<div class="sub"><h3 id="que-cambio-en-el-codigo">2.2 Qué cambió en el código</h3><button type="button" class="done" data-id="que-cambio-en-el-codigo" aria-pressed="false">Estudiado</button></div>
+<div class="tw"><table><thead><tr><th scope="col">Patrón</th><th scope="col">Archivos (en <code>apps/api/src/P11.Api/</code>)</th><th scope="col">Qué se hizo</th></tr></thead><tbody><tr><td>Adapter</td><td><code>Servicios/CorreoSmtpService.cs</code></td><td>Ya existía. Se separó <code>ArmarMensaje</code> para poder probar la traducción.</td></tr><tr><td>Decorator</td><td><code>Servicios/AlmacenDisco.cs</code>, <code>AlmacenCifrado.cs</code>, <code>CorreoConReintentos.cs</code></td><td>Se separó el cifrado del guardado en disco y se agregaron reintentos al correo.</td></tr><tr><td>Proxy</td><td><code>Servicios/Documentos/</code></td><td>Nuevo. Endpoint <code>GET /api/productor/documentos/{id}/archivo</code> y botón «Ver» en la web.</td></tr><tr><td>Facade</td><td><code>Servicios/VerificacionService.cs</code></td><td>Reordenado en dos operaciones; los controladores ya no repiten la secuencia.</td></tr><tr><td>Bridge</td><td><code>Servicios/Avisos/</code></td><td>Nuevo. Los textos de los avisos salieron de los controladores.</td></tr><tr><td>Composite</td><td><code>Dominio/Liquidaciones/</code></td><td>Nuevo. Solo lógica de dominio; el endpoint llega en el Sprint 3.</td></tr></tbody></table></div>
+<div class="sub"><h3 id="como-se-decidio-si-un-patron-aplica">2.3 Cómo se decidió si un patrón aplica</h3><button type="button" class="done" data-id="como-se-decidio-si-un-patron-aplica" aria-pressed="false">Estudiado</button></div>
+<p>Se usaron tres preguntas, en este orden:</p>
+<ul><li>¿Qué es lo que molesta en la estructura? Una interfaz ajena, varias piezas que hay que coordinar, responsabilidades mezcladas, un acceso que hay que controlar, dos cosas que cambian por separado, una jerarquía de parte y todo, o memoria repetida.</li><li>¿Eso aparece en el código o en un requerimiento concreto?</li><li>¿La alternativa simple (una interfaz con una implementación, un <code>if</code>, una lista) no alcanza?</li></ul>
+<p>Si las respuestas son «sí» a la segunda y «no alcanza» a la tercera, el patrón se justifica. Si no, se queda fuera y se explica por qué, como Flyweight.</p>
+<div class="sub"><h3 id="vocabulario-que-se-repite">2.4 Vocabulario que se repite</h3><button type="button" class="done" data-id="vocabulario-que-se-repite" aria-pressed="false">Estudiado</button></div>
+<ul><li><strong>Delegar:</strong> un objeto le pasa el trabajo a otro que guarda como referencia. Todos los estructurales, salvo Flyweight, se apoyan en eso.</li><li><strong>Cliente:</strong> la clase que usa el patrón sin saber qué hay detrás, por ejemplo un controlador u <code>OtpService</code>.</li><li><strong>Adaptado:</strong> la clase ajena que se adapta (<code>SmtpClient</code>).</li><li><strong>Sujeto real:</strong> el objeto que el proxy protege (<code>VisorDocumentos</code>).</li><li><strong>Componente, hoja y compuesto:</strong> las tres piezas de Composite.</li><li><strong>Abstracción e implementador:</strong> las dos jerarquías de Bridge (<code>Aviso</code> e <code>ICanalAviso</code>).</li><li><strong>Estado intrínseco y extrínseco:</strong> en Flyweight, lo que se comparte y lo propio de cada objeto.</li><li><strong>Inyección de dependencias:</strong> los objetos se crean y conectan en <code>Program.cs</code>, y cada clase recibe por el constructor lo que necesita.</li></ul>
+<h2 class="sec" id="guia-por-integrante">3. Guía por integrante</h2>
+<p>Cada bloque trae lo que hay que entender, el código clave, dónde está en el proyecto, por qué se eligió ese lugar, las preguntas probables con una idea de respuesta y dos preguntas para comprobar que ya se sabe.</p>
+<div class="sub"><h3 id="integrante-1-adapter-y-facade-y-apertura">3.1 Integrante 1: Adapter y Facade (y apertura)</h3><button type="button" class="done" data-id="integrante-1-adapter-y-facade-y-apertura" aria-pressed="false">Estudiado</button></div>
+<p><strong>Apertura.</strong> Los patrones estructurales resuelven cómo se combinan clases y objetos sin que queden atados entre sí. Son siete, y hay que poder nombrarlos y decir en una frase qué problema resuelve cada uno (tabla de la sección 1). Casi todos usan la composición: un objeto guarda una referencia a otro y le delega trabajo. Lo que cambia de uno a otro es el motivo de esa delegación.</p>
+<p><strong>Adapter: qué hay que entender.</strong> El sistema espera una interfaz (<code>ICorreoService</code>, con un solo método) y la clase que hace el trabajo tiene otra (<code>SmtpClient</code>, que pide un <code>MailMessage</code>, direcciones y credenciales). El adaptador implementa la primera y por dentro usa la segunda. Solo traduce: no decide nada del negocio.</p>
+<p class="ruta">src/P11.Api/Servicios/CorreoSmtpService.cs</p>
+<pre><code>public class CorreoSmtpService(IOptions&lt;CorreoOptions&gt; opciones, ILogger&lt;CorreoSmtpService&gt; log) : ICorreoService
+{
+    public async Task EnviarAsync(string para, string asunto, string cuerpoTexto, CancellationToken ct = default)
+    {
+        using var cliente = new SmtpClient(_o.Host, _o.Puerto) { EnableSsl = _o.UsarSsl };
+        // ...
+        using var msj = ArmarMensaje(para, asunto, cuerpoTexto);
+        await cliente.SendMailAsync(msj, ct);</code></pre>
+<p><strong>Por qué ahí.</strong> Es la dependencia externa real que ya tenía el proyecto. Se evaluó crear un adaptador para el proveedor de identidad, pero como todavía no hay proveedor, habría que inventar su API, y eso habría sido artificial. Los próximos adaptadores serán la pasarela QR (RF-15) y el proveedor de identidad cuando se contrate (RF-03).</p>
+<ul><li><strong>«Si ya estaba, ¿qué hicieron?»</strong> Lo identificamos, separamos <code>ArmarMensaje</code> para que la traducción quede en un solo método y lo documentamos. Además es el molde para la pasarela QR.</li><li><strong>«¿No es solo una interfaz con una implementación?»</strong> La diferencia es que la implementación envuelve una API ajena con otra forma. Si la clase fuera nuestra, no habría nada que adaptar.</li><li><strong>«¿Adapter de clase o de objeto?»</strong> De objeto: el adaptador usa un <code>SmtpClient</code>, no hereda de él. C# no permite heredar de dos clases, así que el de clase casi no se usa.</li></ul>
+<p><strong>Facade: qué hay que entender.</strong> Un subsistema tiene varias piezas que hay que usar en cierto orden. La fachada ofrece pocas operaciones que las coordinan. No traduce una interfaz (eso es Adapter): simplifica varias.</p>
+<p class="ruta">src/P11.Api/Servicios/VerificacionService.cs</p>
+<pre><code>public async Task EnviarAsync(Usuario usuario, IReadOnlyList&lt;ImagenVerificacion&gt; imagenes, CancellationToken ct = default)
+// ...
+public Task DecidirAsync(Usuario usuario, bool aprobar, string responsable, string motivo, CancellationToken ct = default) =&gt;</code></pre>
+<p><strong>Antes y después.</strong> <code>VerificacionController</code> coordinaba directamente el almacén cifrado, el proveedor, el umbral, el historial y el aviso, y <code>AnalistaController</code> repetía la secuencia «cambiar estado, guardar y notificar». Ahora los dos llaman a la fachada, y el método <code>Enviar</code> bajó de 54 a 32 líneas.</p>
+<ul><li><strong>«¿Eso no es solo un servicio?»</strong> Sí, y una fachada casi siempre es eso: una clase de servicio que da una entrada simple a un subsistema. Lo que la hace fachada es que esconde cinco piezas detrás de dos operaciones y que los controladores dejaron de conocer esas piezas.</li><li><strong>«¿Cambió algo para el usuario?»</strong> No. Sube su CI y su selfie, queda Verificado o En revisión, el analista decide con un motivo y siempre llega el aviso. Cambió la organización interna: ese flujo ahora está en un solo lugar.</li><li><strong>«¿Dónde más se usaría?»</strong> En la inversión del Sprint 2: cupo, contrato, cobro QR y participación en una sola operación. En la web, <code>api.js</code> ya es una fachada sobre <code>fetch</code>, el token y los errores.</li></ul>
+<p><strong>Buena práctica que le toca decir.</strong> El adaptador solo traduce, y la fachada coordina sin reemplazar al dominio: si crece, se arma una fachada por subsistema.</p>
+<p><strong>Para comprobar que ya se sabe.</strong> ¿En qué se diferencian Adapter y Facade? (Uno traduce una interfaz; la otra simplifica varias). ¿Qué habría que cambiar para pasar a MailKit? (Un adaptador nuevo y una línea en <code>Program.cs</code>).</p>
+<div class="sub"><h3 id="integrante-2-decorator-y-proxy-y-comparacion">3.2 Integrante 2: Decorator y Proxy (y comparación)</h3><button type="button" class="done" data-id="integrante-2-decorator-y-proxy-y-comparacion" aria-pressed="false">Estudiado</button></div>
+<p><strong>Decorator: qué hay que entender.</strong> El decorador implementa la misma interfaz que el objeto que envuelve y guarda una referencia a él. Hace algo antes o después y <strong>siempre</strong> delega. Como la interfaz es la misma, se pueden apilar.</p>
+<p class="ruta">src/P11.Api/Servicios/AlmacenCifrado.cs</p>
+<pre><code>public AlmacenCifrado(IAlmacenArchivos interno, IOptions&lt;ArchivosOptions&gt; opciones)
+// ...
+    aes.Encrypt(nonce, contenido, paquete.AsSpan(TamNonce + TamTag), paquete.AsSpan(TamNonce, TamTag));
+
+return _interno.GuardarAsync(paquete, ct);</code></pre>
+<p><strong>Dónde está.</strong> <code>AlmacenDisco</code> solo guarda bytes y <code>AlmacenCifrado</code> cifra y le delega (RNF-02). <code>CorreoConReintentos</code> envuelve al adaptador de correo y reintenta tres veces (RF-01). Los dos se componen en <code>Program.cs</code>. Un detalle a mencionar: el sistema se comporta igual que antes; los controladores que suben o abren documentos no se enteraron del cambio.</p>
+<ul><li><strong>«¿Por qué no heredar, <code>AlmacenCifrado : AlmacenDisco</code>?»</strong> Con herencia, el cifrado queda pegado al disco. Con el decorador, si los archivos pasan a la nube se cambia el almacén interno y el cifrado sigue igual. Además, las capas se combinan sin crear una subclase por combinación.</li><li><strong>«¿El orden importa?»</strong> Sí. Por eso la composición está en un solo lugar, <code>Program.cs</code>.</li><li><strong>«¿Qué pasa si el correo falla las tres veces?»</strong> Se rinde y el error llega al registro, que ya le dice al usuario que pida que se le reenvíe el código.</li></ul>
+<p><strong>Proxy: qué hay que entender.</strong> El proxy tiene la misma interfaz que el objeto real y se pone delante de él, pero <strong>decide si delega</strong>. El de protección controla permisos.</p>
+<p class="ruta">src/P11.Api/Servicios/Documentos/VisorDocumentosProxy.cs</p>
+<pre><code>if (!solicitante.IsInRole(Roles.Analista) &amp;&amp; solicitante.IdUsuario() != dueno)
+{
+    // Se responde igual que si no existiera, para no confirmar que el documento está ahí.
+    log.LogWarning(&quot;{Correo} intentó abrir el documento {Documento}, que no es suyo&quot;, solicitante.Correo(), documentoId);
+    return null;
+}</code></pre>
+<p><strong>Por qué no alcanza con <code>[Authorize]</code>.</strong> Ese atributo solo mira el rol, y dos productores tienen el mismo rol. La regla es «el dueño del documento o un analista». Hoy usan el proxy dos controladores: el del analista y el endpoint nuevo del productor.</p>
+<ul><li><strong>«¿Por qué 404 y no 403?»</strong> Para no confirmar que el documento existe. Es habitual cuando los identificadores se pueden probar uno por uno.</li><li><strong>«¿No era mejor la autorización basada en recursos de ASP.NET?»</strong> Es la forma propia del framework y también sirve. La diferencia es que cada controlador tiene que acordarse de llamarla; el proxy protege aunque el que lo use no lo sepa. En el documento figura como alternativa.</li><li><strong>«¿Dónde más?»</strong> En RF-22, el inversionista abrirá solo los documentos de los proyectos donde invirtió. En Android, Retrofit genera proxies remotos de la API.</li></ul>
+<p><strong>La comparación que le toca.</strong> Se escriben casi igual: misma interfaz y una referencia al otro objeto. Decorator siempre delega y agrega algo; Proxy decide si delega. Un ejemplo para decirlo: se descartó un decorador de auditoría sobre el almacén porque registrar quién abre un documento depende del usuario, y eso ya lo hace el proxy.</p>
+<p><strong>Buena práctica que le toca decir.</strong> Un decorador, una responsabilidad, y el orden de la composición en un solo lugar. La regla de acceso va en el proxy y no repetida en cada controlador.</p>
+<p><strong>Para comprobar que ya se sabe.</strong> ¿Por qué <code>AlmacenCifrado</code> es un Decorator y no un Proxy? (Porque siempre delega). ¿Qué recibe otro productor que pide un documento ajeno? (Un 404, como si no existiera).</p>
+<div class="sub"><h3 id="integrante-3-bridge-y-bridge-frente-a-decorator">3.3 Integrante 3: Bridge (y Bridge frente a Decorator)</h3><button type="button" class="done" data-id="integrante-3-bridge-y-bridge-frente-a-decorator" aria-pressed="false">Estudiado</button></div>
+<p><strong>Qué hay que entender.</strong> En los avisos hay dos cosas que cambian por separado: qué se avisa (verificación, bloqueo y, más adelante, incidencias) y por dónde llega (correo, Telegram, push en Android). Sin el patrón haría falta una clase por combinación. Con el puente, el aviso guarda una referencia al canal y cada lado crece por su cuenta.</p>
+<p class="ruta">src/P11.Api/Servicios/Avisos/Aviso.cs</p>
+<pre><code>public abstract class Aviso(ICanalAviso canal)
+{
+    protected abstract string Asunto { get; }
+    protected abstract string Cuerpo { get; }
+    protected virtual bool Urgente =&gt; false;
+
+    public Task EnviarAsync(string destino, CancellationToken ct = default) =&gt;
+        canal.EntregarAsync(destino, new MensajeAviso(Asunto, Cuerpo, Urgente), ct);
+}</code></pre>
+<p><strong>Las piezas.</strong> <code>Aviso</code> es la abstracción; <code>AvisoVerificacion</code> y <code>AvisoBloqueo</code> son abstracciones refinadas. <code>ICanalAviso</code> es el implementador; <code>CanalCorreo</code> (en uso) y <code>CanalTelegram</code> (implementado) son implementaciones concretas. La push de Android (Sprint 3) sería un canal más.</p>
+<p><strong>La cuenta para decir.</strong> Con 3 avisos y 3 canales, sin puente serían 9 clases (<code>AvisoBloqueoCorreo</code>, <code>AvisoBloqueoTelegram</code>…). Con puente son 6. Cada aviso o canal nuevo suma una clase, no una por combinación.</p>
+<p><strong>Por qué no Decorator.</strong> Hay tres razones:</p>
+<ul><li>Decorator agrega capas a un mismo objeto, y Telegram no le agrega nada al correo: es una alternativa del mismo nivel.</li><li>Decorator maneja una sola dimensión, y aquí hay dos: el tipo de aviso y el canal.</li><li>El canal se elegirá según la preferencia de cada usuario, no con una cadena fija armada al iniciar.</li></ul>
+<p>Decorator sí sirve sobre un canal, por ejemplo para agregar reintentos, y eso ya se hace con <code>CorreoConReintentos</code>.</p>
+<ul><li><strong>«¿<code>CanalTelegram</code> se usa?»</strong> Está implementado, pero no registrado en <code>Program.cs</code>, porque los usuarios todavía no tienen un chat vinculado. Activarlo es guardar ese dato y elegir el canal; ningún aviso cambia, que es justo lo que demuestra el patrón.</li><li><strong>«¿Y el código OTP por Telegram?»</strong> No. El OTP comprueba que el correo es del usuario, así que tiene que llegar al correo.</li><li><strong>«¿Bridge y Adapter no son lo mismo?»</strong> Se parecen en la forma. Adapter se aplica después, sobre algo ajeno que no se puede cambiar; Bridge se diseña antes para que las dos partes crezcan por separado. De hecho, <code>CanalCorreo</code> usa por dentro el adaptador de correo.</li><li><strong>«¿Para qué está <code>Urgente</code>?»</strong> Lo decide el aviso (un bloqueo es urgente) y cada canal lo interpreta a su manera: en Telegram, un aviso urgente suena y uno normal llega en silencio.</li><li><strong>«¿Dónde más?»</strong> En las constancias y los contratos (RF-14, RF-16): tipo de documento por un lado y formato de salida (PDF, HTML) por otro.</li></ul>
+<p><strong>Buena práctica que le toca decir.</strong> Antes de usar Bridge, buscar las dos dimensiones; si solo varía una, alcanza con una interfaz y varias implementaciones.</p>
+<p><strong>Para comprobar que ya se sabe.</strong> ¿Cuál es la abstracción y cuál el implementador? (<code>Aviso</code> e <code>ICanalAviso</code>). ¿Qué hay que tocar para agregar la push de Android? (Una clase nueva que implemente <code>ICanalAviso</code>; ningún aviso).</p>
+<div class="sub"><h3 id="integrante-4-composite-y-flyweight-y-cierre">3.4 Integrante 4: Composite y Flyweight (y cierre)</h3><button type="button" class="done" data-id="integrante-4-composite-y-flyweight-y-cierre" aria-pressed="false">Estudiado</button></div>
+<p><strong>Composite: qué hay que entender.</strong> Es un árbol donde una hoja y un grupo comparten la misma interfaz, y el grupo delega en sus hijos. El que usa el árbol no pregunta qué tiene enfrente.</p>
+<p class="ruta">src/P11.Api/Dominio/Liquidaciones/ConceptoLiquidacion.cs</p>
+<pre><code>public class GrupoConceptos(string nombre) : ConceptoLiquidacion(nombre)
+{
+    // ...
+    public override decimal TotalBs =&gt; _conceptos.Sum(c =&gt; c.TotalBs);</code></pre>
+<p><strong>Números a saber.</strong> Los costos suman 62 000 Bs, con el subgrupo Sanidad (6 500 Bs) adentro. El resultado es 130 000 − 62 000 − 3 000 − 2 500 = 62 500 Bs. A un aporte de 20 000 Bs sobre 100 000 Bs le tocan 12 500 Bs. Son los mismos montos de la pantalla de liquidación de la web.</p>
+<p><strong>Por qué el encaje es moderado.</strong> Si los costos fueran siempre de un solo nivel, bastaría agrupar una lista por categoría. Se justifica por los subrubros con subtotales del informe de cierre y porque <code>TotalBs</code> funciona igual en cualquier nivel.</p>
+<ul><li><strong>«¿No es sobreingeniería?»</strong> Es el de encaje más flojo de los seis, y lo decimos. Son cuatro clases chicas, y si mañana se divide un rubro, el cálculo no cambia.</li><li><strong>«¿El reparto es así en la realidad?»</strong> Es provisional: la regla de reparto y la comisión están por definir con el cliente.</li><li><strong>«¿Dónde más?»</strong> En el portafolio (RF-24: portafolio, línea y participación). En la web, el árbol de componentes de React ya es un Composite.</li></ul>
+<p><strong>Flyweight: qué hay que entender.</strong> Cuando hay muchísimos objetos que repiten los mismos datos, se comparte la parte repetida. Lo intrínseco (los datos de la raza) es inmutable y se comparte; lo extrínseco (caravana y peso) es propio de cada animal.</p>
+<p><strong>Números a saber.</strong> Unos 100 bytes por animal: 30 KB en un lote de 300, 100 KB con 1 000 cabezas y 1 MB en el caso extremo de Android sin conexión (1 000 cabezas × 10 pesajes). El celular le da a cada app entre 128 y 256 MB, y una sola foto de 12 MP abierta ocupa unos 48 MB.</p>
+<ul><li><strong>«¿Por qué no lo implementaron?»</strong> Porque ahorra kilobytes. Implementarlo solo para cumplir habría sido sobreingeniería. El código está en el documento como ilustración.</li><li><strong>«¿Y en Android sin conexión?»</strong> El caso extremo da 1 MB, menos del 1 % de la memoria de la app. En el celular lo que importa son las fotos.</li><li><strong>«¿La base de datos no hace lo mismo?»</strong> Sí: la raza está una sola vez en su tabla. Es normalización, y en disco da el mismo ahorro.</li></ul>
+<p><strong>Cierre.</strong> Repasar la tabla 5.8 con una frase por patrón. Con los creacionales del trabajo anterior, la API usa nueve patrones GoF (tres creacionales y seis estructurales), cada uno ligado a un requerimiento concreto. Lo que sigue: el adaptador de la pasarela QR y la fachada de inversión en el Sprint 2, y la push de Android y el endpoint de liquidación en el Sprint 3.</p>
+<p><strong>Buena práctica que le toca decir.</strong> Medir antes de aplicar Flyweight y dejar escrita cada decisión en el repositorio (<code>docs/patrones/README.md</code>).</p>
+<p><strong>Para comprobar que ya se sabe.</strong> ¿Qué es intrínseco y qué extrínseco en el ejemplo? (La raza; la caravana y el peso). ¿Cuánto es el resultado de la liquidación del ejemplo? (62 500 Bs).</p>
+<h2 class="sec" id="preguntas-que-pueden-caer-a-cualquiera">4. Preguntas que pueden caer a cualquiera</h2>
+<div class="tw"><table><thead><tr><th scope="col">Pregunta</th><th scope="col">Idea de respuesta</th></tr></thead><tbody><tr><td>¿Seis patrones no es demasiado?</td><td>Cada uno responde a un problema que se puede señalar en el código o en un RF. Dos salieron de código que ya existía. El que no tenía un problema real, Flyweight, quedó fuera.</td></tr><tr><td>¿El código es de ustedes?</td><td>Sí. Está en el repositorio del equipo, en la API del Sprint 1.</td></tr><tr><td>¿Afectan el rendimiento?</td><td>Agregan una llamada por capa, que tarda nanosegundos, frente a los milisegundos del disco, la red o el correo.</td></tr><tr><td>¿Qué diferencia hay entre Adapter, Decorator y Proxy?</td><td>Adapter cambia la interfaz; Decorator la conserva y agrega algo; Proxy la conserva y controla el acceso.</td></tr><tr><td>¿Cómo se conectan los objetos?</td><td>En <code>Program.cs</code>, con la inyección de dependencias de .NET. Ahí se decide qué decorador envuelve a qué y qué recibe cada controlador.</td></tr><tr><td>¿Qué patrón recomiendan para lo que sigue?</td><td>Adapter para la pasarela QR y Facade para la inversión, los dos en el Sprint 2.</td></tr><tr><td>¿Cómo se nota que un patrón funciona?</td><td>Por el comportamiento del sistema: el mismo aviso sale por otro canal sin cambiar su texto, un documento ajeno no se abre, el código OTP llega aunque el correo falle un momento.</td></tr></tbody></table></div>
+<h2 class="sec" id="puntos-debiles-del-documento-y-como-responderlos">5. Puntos débiles del documento y cómo responderlos</h2>
+<ul><li><strong>«Adapter ya existía.»</strong> Es cierto y no se oculta. Se identificó, se probó y es el molde para la pasarela QR. Inventar un adaptador nuevo habría sido peor.</li><li><strong>«Facade es un servicio con otro nombre.»</strong> Una fachada casi siempre es un servicio. Lo que importa es que eliminó código repetido y que los controladores dejaron de conocer cinco piezas.</li><li><strong>«Telegram no se usa.»</strong> Está implementado y no registrado a propósito. Que se pueda activar sin tocar ningún aviso es lo que demuestra el Bridge.</li><li><strong>«Composite es sobreingeniería.»</strong> El documento lo califica de moderado y dice cuándo no haría falta.</li><li><strong>«El Proxy repite lo que hace <code>[Authorize]</code>.»</strong> <code>[Authorize]</code> mira el rol; el proxy mira al dueño del documento. Si solo existiera la pantalla del analista, sí sería redundante, y el documento lo reconoce.</li><li><strong>«Flyweight quedó sin código en el repositorio.»</strong> A propósito: el ahorro es de kilobytes. El fragmento del documento muestra cómo sería.</li></ul>
+<h2 class="sec" id="como-prepararse-en-una-hora">6. Cómo prepararse en una hora</h2>
+<ul><li>10 minutos: leer la sección 2 de esta guía y la tabla 5.8 del documento.</li><li>20 minutos: abrir en el repositorio los archivos del patrón propio y leerlos completos. Son cortos, entre 7 y 90 líneas.</li><li>10 minutos: repasar el comportamiento esperado de cada patrón propio en la sección 5 del documento.</li><li>15 minutos: ensayar los cinco minutos en voz alta, con el diagrama del documento a la vista.</li><li>5 minutos: repasar las preguntas probables del bloque propio y las de la sección 4.</li></ul>
+</main>
+</div>
+<footer>El código citado está en el repositorio del equipo, p11-inversion-ganadera (carpeta apps/api).</footer>
+<script>
+(function () {
+  var KEY = 'guia-estructurales-estudiado';
+  var done = {};
+  try { done = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { done = {}; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {} }
+  var btns = document.querySelectorAll('button.done[data-id]');
+  var links = {};
+  document.querySelectorAll('nav.toc a').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+  function render() {
+    var n = 0;
+    btns.forEach(function (b) {
+      var id = b.getAttribute('data-id'), on = !!done[id];
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.textContent = on ? 'Estudiado ✓' : 'Marcar como estudiado';
+      if (links[id]) links[id].parentNode.classList.toggle('done', on);
+      if (on) n++;
+    });
+    document.getElementById('prog').textContent = n + ' de ' + btns.length + ' apartados marcados como estudiados';
+  }
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var id = b.getAttribute('data-id');
+      if (done[id]) delete done[id]; else done[id] = 1;
+      save(); render();
+    });
+  });
+  render();
+
+  var tocd = document.getElementById('tocd');
+  var mq = window.matchMedia('(min-width: 62.01rem)');
+  function sync() { tocd.open = mq.matches; }
+  sync();
+  if (mq.addEventListener) mq.addEventListener('change', sync);
+
+  var heads = Array.prototype.slice.call(document.querySelectorAll('main h2[id], main h3[id]'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) {
+          Object.keys(links).forEach(function (k) { links[k].classList.remove('on'); });
+          var a = links[e.target.id]; if (a) a.classList.add('on');
+        }
+      });
+    }, { rootMargin: '0px 0px -75% 0px' });
+    heads.forEach(function (h) { io.observe(h); });
+  }
+
+  var tb = document.getElementById('theme');
+  tb.addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+})();
+</script>
+</body>
+</html>

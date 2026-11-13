@@ -1,4 +1,21 @@
 # Finales de línea normalizados a LF en el repositorio (Windows los convierte al hacer checkout).
+# Un patrón por línea: .gitattributes no entiende llaves como *.{a,b}.
 * text=auto eol=lf
-*.{cmd,bat,ps1} text eol=crlf
-*.{png,jpg,jpeg,gif,ico,pdf} binary
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+
+# Documentación (docs/): los .mdj de StarUML son JSON; los archivos de oficina y de Balsamiq son binarios
+*.mdj text eol=lf
+*.odt binary
+*.xlsx binary
+*.pptx binary
+*.bmpr binary

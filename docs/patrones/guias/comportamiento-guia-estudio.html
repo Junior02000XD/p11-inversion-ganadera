@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de patrones de comportamiento</title>
+<style>
+/* Layout: índice fijo a la izquierda, lectura en una columna de ~68ch; en teléfono el índice pasa arriba y se pliega. */
+:root {
+  --bg: #f6f6f8;
+  --surface: #ffffff;
+  --fg: #1d1c22;
+  --muted: #5b5a66;
+  --line: #dcdce3;
+  --accent: #8a1c3d;
+  --accent-soft: #f3e3e8;
+  --code-bg: #eeeef3;
+  --ok: #1f6b3d;
+  --ok-soft: #dff0e5;
+  --font-body: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16151b; --surface: #1e1d25; --fg: #ecebf2; --muted: #a3a2b0; --line: #34333f;
+    --accent: #e58aa5; --accent-soft: #3a1f2a; --code-bg: #272631; --ok: #7fd1a0; --ok-soft: #1c3426;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16151b; --surface: #1e1d25; --fg: #ecebf2; --muted: #a3a2b0; --line: #34333f;
+  --accent: #e58aa5; --accent-soft: #3a1f2a; --code-bg: #272631; --ok: #7fd1a0; --ok-soft: #1c3426;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 4rem;
+}
+.wrap { max-width: 78rem; margin: 0 auto; display: grid; grid-template-columns: 17rem minmax(0, 1fr); gap: 3rem; }
+header.top { max-width: 78rem; margin: 0 auto; padding: 2.5rem 0 1.5rem; border-bottom: 1px solid var(--line); margin-bottom: 2rem; }
+.kicker { font-family: var(--font-ui); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 .6rem; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.15; margin: 0 0 .8rem; text-wrap: balance; font-weight: 700; }
+.lede { max-width: 46rem; color: var(--muted); margin: 0; }
+.meta { font-family: var(--font-ui); font-size: .85rem; color: var(--muted); margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; }
+.themebtn { font-family: var(--font-ui); font-size: .8rem; margin-top: 1rem; }
+
+nav.toc { position: sticky; top: 1.25rem; align-self: start; max-height: calc(100vh - 2.5rem); overflow-y: auto; font-family: var(--font-ui); font-size: .88rem; }
+nav.toc summary { font-weight: 600; cursor: pointer; padding: .3rem 0 .6rem; list-style: none; }
+nav.toc summary::-webkit-details-marker { display: none; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; }
+nav.toc a { display: block; padding: .28rem .6rem; border-left: 2px solid var(--line); color: var(--muted); text-decoration: none; line-height: 1.35; }
+nav.toc a.l2 { padding-left: 1.4rem; font-size: .84rem; }
+nav.toc a:hover { color: var(--fg); }
+nav.toc a.on { color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+nav.toc li.done a::after { content: " ✓"; color: var(--ok); }
+.progress { font-size: .8rem; color: var(--muted); margin: .8rem 0 0; padding-left: .6rem; }
+
+main { min-width: 0; max-width: 46rem; }
+h2.sec { font-family: var(--font-ui); font-size: 1.45rem; line-height: 1.25; margin: 3rem 0 1rem; padding-top: 1.2rem; border-top: 2px solid var(--fg); scroll-margin-top: 1rem; text-wrap: balance; }
+main > h2.sec:first-child { margin-top: 0; }
+.sub { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin: 2.2rem 0 .6rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+h3 { font-family: var(--font-ui); font-size: 1.12rem; line-height: 1.3; margin: 0; scroll-margin-top: 1rem; text-wrap: balance; }
+button.done { font-family: var(--font-ui); font-size: .78rem; border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: .25rem .8rem; cursor: pointer; }
+button.done[aria-pressed="true"] { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+p { margin: 0 0 1rem; }
+strong { font-weight: 700; }
+ul { margin: 0 0 1.1rem; padding-left: 1.3rem; }
+li { margin-bottom: .45rem; }
+li::marker { color: var(--accent); }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: .08em .35em; border-radius: 3px; }
+pre { background: var(--code-bg); border-left: 3px solid var(--accent); margin: 0 0 1.2rem; padding: .9rem 1rem; overflow-x: auto; font-size: .84rem; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.tw { overflow-x: auto; margin: 0 0 1.3rem; border: 1px solid var(--line); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-family: var(--font-ui); font-size: .88rem; line-height: 1.45; }
+th, td { text-align: left; vertical-align: top; padding: .6rem .75rem; border-bottom: 1px solid var(--line); min-width: 7rem; }
+th { background: var(--accent-soft); color: var(--fg); font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+footer { max-width: 78rem; margin: 3rem auto 0; padding-top: 1.2rem; border-top: 1px solid var(--line); font-family: var(--font-ui); font-size: .82rem; color: var(--muted); }
+
+@media (max-width: 62rem) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  nav.toc { position: static; max-height: none; border: 1px solid var(--line); background: var(--surface); padding: .4rem .9rem .6rem; }
+}
+@media print {
+  nav.toc, .themebtn, button.done { display: none; }
+  body { background: #fff; color: #000; }
+  .wrap { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+.ruta { font-family: var(--font-ui); font-size: .8rem; color: var(--muted); margin: 0 0 .3rem; }
+</style>
+</head>
+<body>
+<header class="top">
+  <p class="kicker">Ingeniería de Software · Equipo Los Cesaritos</p>
+  <h1>Guía de estudio para la exposición de patrones de comportamiento</h1>
+  <p class="lede">Para entender cada patrón, saber dónde está en el código del Proyecto 11 y poder explicarlo con palabras propias. No es un guion.</p>
+  <p class="meta"><span>Entrega: 13 de noviembre de 2026</span><span>Docente: Rolando Lara Sánchez</span><span>Documento base: Patrones de comportamiento aplicados al Proyecto 11</span></p>
+  <button type="button" class="themebtn done" id="theme" aria-pressed="false">Cambiar tema</button>
+</header>
+<div class="wrap">
+<nav class="toc" aria-label="Índice"><details id="tocd" open><summary>Índice</summary>
+<ol>
+<li><a class="l1" href="#reparto-de-la-exposicion">1. Reparto de la exposición</a></li>
+<li><a class="l1" href="#lo-que-los-cuatro-deben-saber">2. Lo que los cuatro deben saber</a></li>
+<li><a class="l2" href="#el-documento-en-cinco-ideas">2.1 El documento en cinco ideas</a></li>
+<li><a class="l2" href="#que-cambio-en-el-codigo">2.2 Qué cambió en el código</a></li>
+<li><a class="l2" href="#como-se-decidio-si-un-patron-aplica">2.3 Cómo se decidió si un patrón aplica</a></li>
+<li><a class="l2" href="#vocabulario-que-se-repite">2.4 Vocabulario que se repite</a></li>
+<li><a class="l1" href="#la-demo-en-vivo">3. La demo en vivo</a></li>
+<li><a class="l2" href="#preparacion-antes-de-la-clase">3.1 Preparación (antes de la clase)</a></li>
+<li><a class="l2" href="#guion-de-pasos">3.2 Guion de pasos</a></li>
+<li><a class="l1" href="#guia-por-integrante">4. Guía por integrante</a></li>
+<li><a class="l2" href="#integrante-1-state-y-strategy-y-apertura">4.1 Integrante 1: State y Strategy (y apertura)</a></li>
+<li><a class="l2" href="#integrante-2-chain-of-responsibility-y-command">4.2 Integrante 2: Chain of Responsibility y Command</a></li>
+<li><a class="l2" href="#integrante-3-observer-y-la-demo">4.3 Integrante 3: Observer y la demo</a></li>
+<li><a class="l2" href="#integrante-4-template-method-iterator-mediator-y-memento-y-cierre">4.4 Integrante 4: Template Method, Iterator, Mediator y Memento (y cierre)</a></li>
+<li><a class="l1" href="#preguntas-que-pueden-caer-a-cualquiera">5. Preguntas que pueden caer a cualquiera</a></li>
+<li><a class="l1" href="#puntos-debiles-y-como-responderlos">6. Puntos débiles y cómo responderlos</a></li>
+<li><a class="l1" href="#como-prepararse-en-una-hora">7. Cómo prepararse en una hora</a></li>
+</ol>
+<p class="progress" id="prog" aria-live="polite"></p></details></nav>
+<main id="main">
+<h2 class="sec" id="reparto-de-la-exposicion">1. Reparto de la exposición</h2>
+<p>Son nueve patrones y cuatro personas. El reparto sigue el flujo de la demo y junta los patrones que se suelen confundir, para que la pregunta «¿en qué se diferencian?» la conteste quien los explicó. State y Strategy van juntos porque tienen el mismo diagrama. Chain of Responsibility y Command van juntos porque son los dos primeros pasos del flujo (requisitos y ejecución). Observer va con la demo en vivo, porque lo que se ve en Mailpit es el Observer funcionando. Los cuatro restantes son cortos: dos ya estaban en el código y dos no aplican.</p>
+<div class="tw"><table><thead><tr><th scope="col">Integrante</th><th scope="col">Patrones</th><th scope="col">Además</th><th scope="col">Minutos</th><th scope="col">Carga de estudio</th></tr></thead><tbody><tr><td>1</td><td>State y Strategy</td><td>Abre: qué es un patrón de comportamiento y la clasificación (sección 1). Explica la diferencia entre State y Strategy</td><td>6</td><td>Alta: State es el centro del código nuevo</td></tr><tr><td>2</td><td>Chain of Responsibility y Command</td><td>Por qué una cadena y no una lista de validaciones; por qué no hay «deshacer»</td><td>5</td><td>Media alta: dos patrones con código nuevo</td></tr><tr><td>3</td><td>Observer y demo en vivo</td><td>Conduce la demo de la sección 3 (productor → analista → Mailpit)</td><td>6</td><td>Media alta: la demo tiene que salir</td></tr><tr><td>4</td><td>Template Method, Iterator, Mediator y Memento</td><td>Cierra con el resumen de decisiones (5.10) y los próximos pasos</td><td>5</td><td>Media: dos «ya estaba» y dos «no aplica»</td></tr></tbody></table></div>
+<p>Los minutos son una referencia para ensayar. Cada quien dice la buena práctica de su patrón (sección 4 del documento). Se expone en el orden de los integrantes; en el documento el orden es otro, así que al hablar se nombra la «sección 5.x».</p>
+<p><strong>Esta vez el código se muestra funcionando.</strong> Cada integrante abre en el editor los archivos de su patrón (rutas en 2.2, relativas a <code>apps/api/</code>). La demo en vivo la hace el integrante 3; los demás pueden señalar en la pantalla dónde actúa su patrón mientras pasa.</p>
+<h2 class="sec" id="lo-que-los-cuatro-deben-saber">2. Lo que los cuatro deben saber</h2>
+<p>Cualquiera puede recibir una pregunta sobre cualquier parte, así que esta base es común.</p>
+<div class="sub"><h3 id="el-documento-en-cinco-ideas">2.1 El documento en cinco ideas</h3><button type="button" class="done" data-id="el-documento-en-cinco-ideas" aria-pressed="false">Estudiado</button></div>
+<ul><li>Los patrones de comportamiento tratan de quién decide qué y quién le avisa a quién. No crean objetos (creacionales) ni los combinan (estructurales): reparten responsabilidades.</li><li>Cuatro patrones trabajan juntos en un mismo flujo real, la evaluación técnica del proyecto (RF-08, RF-09, RF-10): la cadena revisa los requisitos, el comando ejecuta la acción y la registra, el estado decide si vale y los observadores avisan.</li><li>Resultado: cinco con código nuevo (State, Chain of Responsibility, Command, Observer, Strategy), dos que ya estaban sin nombrarlos (Template Method, Iterator) y dos que no aplican (Mediator, Memento).</li><li>No se inventó nada para lucir un patrón. El diagrama de estados del equipo (EST-3) fue la especificación de State; la cadena reordenó tres <code>if</code> que ya existían; Strategy usa la única regla de reparto que hay, porque el ERS dice que la definitiva no está decidida.</li><li>Lo provisional se dice: la publicación pide «riesgos y tres escenarios» marcados en el checklist porque esos datos llegan con el simulador en el Sprint 2.</li></ul>
+<div class="sub"><h3 id="que-cambio-en-el-codigo">2.2 Qué cambió en el código</h3><button type="button" class="done" data-id="que-cambio-en-el-codigo" aria-pressed="false">Estudiado</button></div>
+<div class="tw"><table><thead><tr><th scope="col">Patrón</th><th scope="col">Archivos (en <code>apps/api/src/P11.Api/</code>)</th><th scope="col">Qué se hizo</th></tr></thead><tbody><tr><td>State</td><td><code>Dominio/Proyectos/Estados/EstadoFicha.cs</code>, <code>ProyectoGanadero.cs</code></td><td>Nuevo. Una clase por estado de EST-3; el enum sigue en la base y <code>Estado</code> tiene <code>private set</code>.</td></tr><tr><td>Chain of Responsibility</td><td><code>Servicios/Proyectos/RequisitosEnvio.cs</code></td><td>Los tres <code>if</code> de <code>ProyectosController.EnviarARevision</code> pasaron a ser eslabones. Mismos mensajes.</td></tr><tr><td>Command</td><td><code>Servicios/Proyectos/ComandosProyecto.cs</code>, <code>GestorCicloProyecto.cs</code></td><td>Nuevo. Cuatro comandos y un invocador que guarda la bitácora <code>HistorialProyecto</code> (tabla nueva).</td></tr><tr><td>Observer</td><td><code>Servicios/Proyectos/ObservadoresProyecto.cs</code>, <code>Program.cs</code></td><td>Nuevo. Avisos al productor y a los analistas por el Bridge de avisos.</td></tr><tr><td>Strategy</td><td><code>Dominio/Liquidaciones/ReglaReparto.cs</code></td><td>El reparto salió de <code>Liquidacion</code> a <code>IReglaReparto</code>.</td></tr><tr><td>Template Method, Iterator</td><td><code>ProyectoGanadero.Validar()</code>, <code>Aviso.EnviarAsync()</code>, <code>GrupoConceptos.Detalle()</code></td><td>Ya estaban. Se nombraron y se les agregaron pruebas.</td></tr><tr><td>Endpoints y web</td><td><code>Controllers/EvaluacionProyectosController.cs</code>; web <code>Evaluacion.jsx</code>, <code>EvaluarProyecto.jsx</code>, <code>MisProyectos.jsx</code></td><td><code>GET /api/analista/proyectos</code>, <code>GET …/{id}</code>, <code>POST …/{id}/decision</code>. Las pantallas del analista dejaron de usar datos de ejemplo.</td></tr></tbody></table></div>
+<p>Pruebas: 26 nuevas, 87 en total, todas en verde (<code>cd apps/api &amp;&amp; dotnet test</code>). Una por patrón en <code>tests/P11.Tests/Patrones/</code> y una de punta a punta en <code>Integracion/EvaluacionProyectosTests.cs</code>.</p>
+<div class="sub"><h3 id="como-se-decidio-si-un-patron-aplica">2.3 Cómo se decidió si un patrón aplica</h3><button type="button" class="done" data-id="como-se-decidio-si-un-patron-aplica" aria-pressed="false">Estudiado</button></div>
+<p>Las mismas tres preguntas de los análisis anteriores:</p>
+<ul><li>¿Qué es lo que molesta? Un comportamiento que depende del estado, controles en secuencia, acciones que hay que registrar, interesados que cambian, una regla que va a cambiar, pasos comunes con detalles distintos.</li><li>¿Eso aparece en el código o en un requerimiento concreto?</li><li>¿La alternativa simple (un <code>if</code>, un enum, llamar al método directo) no alcanza?</li></ul>
+<p>Por eso la verificación de identidad (EST-1) se quedó como enum aunque también tiene estados: tiene dos decisiones y el chequeo cabe en una línea.</p>
+<div class="sub"><h3 id="vocabulario-que-se-repite">2.4 Vocabulario que se repite</h3><button type="button" class="done" data-id="vocabulario-que-se-repite" aria-pressed="false">Estudiado</button></div>
+<ul><li><strong>Contexto:</strong> el objeto que delega en un estado (State) o en una estrategia (Strategy): <code>ProyectoGanadero</code>, <code>Liquidacion</code>.</li><li><strong>Transición:</strong> el paso de un estado a otro. En el código, cada estado devuelve el siguiente.</li><li><strong>Manejador o eslabón:</strong> cada pieza de la cadena (<code>FichaCompleta</code>, <code>ProductorVerificado</code>, <code>DocumentosDelPredio</code>).</li><li><strong>Invocador, receptor y cliente:</strong> en Command, quien ejecuta (<code>GestorCicloProyecto</code>), sobre qué (<code>ProyectoGanadero</code>) y quién crea el comando (el controlador).</li><li><strong>Sujeto y observador:</strong> quien cambia y avisa (<code>GestorCicloProyecto</code>) y quien se entera (<code>AvisarAlProductor</code>).</li><li><strong>Método plantilla y gancho:</strong> el método que fija los pasos (<code>Validar</code>) y el paso que redefine la subclase (<code>ValidarLinea</code>).</li><li><strong>Bitácora:</strong> el registro que no se borra (<code>HistorialProyecto</code>, RNF-03).</li></ul>
+<h2 class="sec" id="la-demo-en-vivo">3. La demo en vivo</h2>
+<p>La conduce el integrante 3. Dura unos tres minutos y muestra los cuatro patrones del flujo en el orden en que actúan.</p>
+<div class="sub"><h3 id="preparacion-antes-de-la-clase">3.1 Preparación (antes de la clase)</h3><button type="button" class="done" data-id="preparacion-antes-de-la-clase" aria-pressed="false">Estudiado</button></div>
+<ul><li><code>docker compose up -d</code> en la raíz del repositorio (Postgres y Mailpit).</li><li>API: <code>cd apps/api/src/P11.Api &amp;&amp; dotnet run --launch-profile https</code> (https://localhost:7080). Al arrancar aplica sola la migración <code>CicloProyecto</code>.</li><li>Web: <code>cd apps/web &amp;&amp; npm run dev</code> (http://localhost:5173).</li><li>Tres pestañas: la web con el productor, la web en ventana privada con el analista (<code>analista@p11.local</code>) y Mailpit (http://localhost:8025).</li><li>El productor de la demo del Sprint 1 ya está verificado y tiene el RUNSA y el contrato aprobados, y su proyecto «Engorde Chiquitania 2026» está en revisión técnica.</li><li>Ensayarla una vez completa. Si algo falla en clase, las pruebas (<code>dotnet test</code>) muestran el mismo comportamiento.</li></ul>
+<div class="sub"><h3 id="guion-de-pasos">3.2 Guion de pasos</h3><button type="button" class="done" data-id="guion-de-pasos" aria-pressed="false">Estudiado</button></div>
+<div class="tw"><table><thead><tr><th scope="col">#</th><th scope="col">Qué se hace</th><th scope="col">Qué patrón se ve</th></tr></thead><tbody><tr><td>1</td><td>Analista → «Evaluación». Aparece «Engorde Chiquitania 2026» en revisión técnica.</td><td>Endpoint nuevo; datos reales, ya no de ejemplo.</td></tr><tr><td>2</td><td>Abrir el proyecto, marcar solo «Riesgos identificados» y apretar «Aprobar y publicar».</td><td>Command: el comando exige riesgos y tres escenarios; se ve el mensaje y no cambia nada.</td></tr><tr><td>3</td><td>Escribir «Falta detallar la alimentación.» y apretar «Observar».</td><td>Command + State: el comando se ejecuta y el estado pasa de En revisión a Borrador.</td></tr><tr><td>4</td><td>Mailpit: llegó «Tu proyecto «Engorde Chiquitania 2026»: tiene observaciones».</td><td>Observer: <code>AvisarAlProductor</code> se enteró sin que el gestor lo conozca.</td></tr><tr><td>5</td><td>Productor → «Mis proyectos»: el proyecto está en Borrador y muestra la observación. Apretar «Enviar a evaluación técnica».</td><td>Chain of Responsibility: los tres requisitos se cumplen y la cadena deja pasar; State: Borrador → En revisión.</td></tr><tr><td>6</td><td>Mailpit: «Proyecto por evaluar» para el analista y «en evaluación técnica» para el productor.</td><td>Observer: dos observadores, cada uno reacciona a lo suyo.</td></tr><tr><td>7</td><td>Analista → abrir otra vez el proyecto: el historial muestra las acciones con fecha, responsable y motivo.</td><td>Command: la bitácora (RNF-03).</td></tr></tbody></table></div>
+<p><strong>Si preguntan por la cadena cortando:</strong> con un productor recién registrado y sin verificar, «Enviar a evaluación técnica» responde «Tu identidad todavía no está verificada.» y no consulta los documentos. Está probado en <code>ProyectosTests</code> y en <code>ChainOfResponsibilityTests</code>; no hace falta mostrarlo en vivo.</p>
+<h2 class="sec" id="guia-por-integrante">4. Guía por integrante</h2>
+<p>Cada bloque trae lo que hay que entender, el código clave, por qué se eligió ese lugar, las preguntas probables con una idea de respuesta y dos preguntas para comprobar que ya se sabe.</p>
+<div class="sub"><h3 id="integrante-1-state-y-strategy-y-apertura">4.1 Integrante 1: State y Strategy (y apertura)</h3><button type="button" class="done" data-id="integrante-1-state-y-strategy-y-apertura" aria-pressed="false">Estudiado</button></div>
+<p><strong>Apertura.</strong> Los patrones de comportamiento reparten responsabilidades entre objetos: quién decide, quién atiende una petición, quién se entera de un cambio. La consigna pide nueve (GoF tiene once; Interpreter y Visitor quedan fuera). Hay que poder nombrarlos y decir en una frase qué resuelve cada uno (tabla de la sección 1 del documento).</p>
+<p><strong>State: qué hay que entender.</strong> Cuando lo que un objeto puede hacer depende de su estado, en lugar de un <code>switch</code> en cada operación se crea una clase por estado. El objeto (contexto) le pregunta a su estado actual, y el estado responde con el estado siguiente o con un error. El diagrama EST-3 del equipo se tradujo casi literal.</p>
+<p class="ruta">src/P11.Api/Dominio/Proyectos/Estados/EstadoFicha.cs</p>
+<pre><code>public sealed class EnRevisionTecnica : EstadoFicha
+{
+    public override EstadoFicha Observar() =&gt; EnBorrador.Instancia;
+    public override EstadoFicha Rechazar() =&gt; Rechazado.Instancia;
+    public override EstadoFicha AprobarYPublicar() =&gt; EnFinanciamiento.Instancia;
+}</code></pre>
+<p><strong>Por qué ahí.</strong> Es el único objeto con un diagrama de estados que ya tiene varias transiciones programadas. La base sigue guardando el enum: el objeto estado se obtiene con <code>EstadoFicha.De(Estado)</code>.</p>
+<ul><li><strong>«¿Por qué no un switch?»</strong> Con cuatro operaciones y cuatro estados serían cuatro <code>switch</code> repartidos; con las clases, cada estado dice en un lugar qué admite. Y el resto de EST-3 se agrega como clases nuevas.</li><li><strong>«¿Y la verificación de identidad? También tiene estados.»</strong> Tiene dos decisiones y un chequeo de una línea. Pasarla a State agregaría cinco clases sin quitar complejidad; se dejó como enum a propósito.</li><li><strong>«¿Qué impide que alguien cambie el estado a mano?»</strong> <code>Estado</code> tiene <code>private set</code>. Solo cambia por <code>EnviarARevision</code>, <code>Observar</code>, <code>Rechazar</code> y <code>AprobarYPublicar</code>.</li></ul>
+<p><strong>Strategy: qué hay que entender.</strong> Una familia de algoritmos intercambiables detrás de una interfaz; el contexto recibe uno y lo usa. En el proyecto, la regla de reparto de la liquidación: hoy proporcional al aporte, mañana la que defina el modelo financiero del cliente.</p>
+<p class="ruta">src/P11.Api/Dominio/Liquidaciones/Liquidacion.cs</p>
+<pre><code>private readonly IReglaReparto _regla = reglaReparto ?? RepartoProporcional.Instancia;
+public decimal RepartoPara(decimal aporteBs, decimal totalAportadoBs) =&gt; _regla.Calcular(ResultadoBs, aporteBs, totalAportadoBs);</code></pre>
+<ul><li><strong>«Una estrategia con una sola implementación, ¿no es de más?»</strong> Lo sería si la regla fuera estable. El ERS dice que reparto y comisión no están definidos y deben salir de un modelo financiero validado. Por eso no se inventó una segunda regla.</li><li><strong>«State y Strategy son el mismo diagrama, ¿cuál es la diferencia?»</strong> Quién cambia el objeto. En State, el estado decide el siguiente (<code>Observar()</code> devuelve <code>EnBorrador</code>). En Strategy, la elige quien arma la liquidación y no cambia sola.</li></ul>
+<p><strong>Para comprobar que se sabe:</strong> ¿qué pasa si el analista rechaza un proyecto publicado? (409, «Un proyecto en financiamiento no se puede rechazar.», no cambia nada). ¿Dónde más había ya una estrategia? (<code>IVerificadorIdentidad</code>: simulado hoy, proveedor real después).</p>
+<div class="sub"><h3 id="integrante-2-chain-of-responsibility-y-command">4.2 Integrante 2: Chain of Responsibility y Command</h3><button type="button" class="done" data-id="integrante-2-chain-of-responsibility-y-command" aria-pressed="false">Estudiado</button></div>
+<p><strong>Chain of Responsibility: qué hay que entender.</strong> Varios manejadores en fila; cada uno atiende la petición o la pasa al siguiente. Aquí, cada eslabón revisa un requisito para enviar la ficha a evaluación; el primero que no se cumple responde con su motivo y corta.</p>
+<p class="ruta">src/P11.Api/Servicios/Proyectos/RequisitosEnvio.cs</p>
+<pre><code>var incumplido = await IncumplidoAsync(proyecto, ct);
+if (incumplido is not null || _siguiente is null) return incumplido;
+return await _siguiente.RevisarAsync(proyecto, ct);</code></pre>
+<p><strong>Por qué ahí.</strong> Eran tres <code>if</code> en el controlador con un orden que importa: no tiene sentido pedir documentos a quien no verificó su identidad. Los mensajes al usuario no cambiaron y las pruebas del Sprint 1 pasan sin tocarlas.</p>
+<ul><li><strong>«¿Por qué no una lista de validaciones?»</strong> Una lista revisa todas y junta errores. Aquí se quiere un motivo, en orden, y que los requisitos que consultan la base no se ejecuten si uno barato ya falló.</li><li><strong>«¿Dónde más está este patrón?»</strong> En los middlewares de ASP.NET Core (HTTPS, autenticación, autorización), y lo va a usar RF-13 al invertir: mínimo, cupo, verificación.</li></ul>
+<p><strong>Command: qué hay que entender.</strong> Una petición convertida en objeto, con todo lo necesario para ejecutarla: qué proyecto, quién, por qué. Al ser un objeto se puede registrar, encolar o reintentar. El invocador las ejecuta todas igual.</p>
+<p class="ruta">src/P11.Api/Servicios/Proyectos/ComandosProyecto.cs</p>
+<pre><code>public record ObservarProyecto(Guid ProyectoId, string Responsable, string Motivo) : ComandoProyecto(ProyectoId, Responsable, Motivo)
+{
+    public override string Accion =&gt; &quot;Observar&quot;;
+    public override void Ejecutar(ProyectoGanadero proyecto) =&gt; proyecto.Observar(Motivo);
+}</code></pre>
+<ul><li><strong>«¿Por qué no llamar a <code>proyecto.Observar()</code> directo?»</strong> Funcionaría, pero cada acción tendría que escribir la bitácora y los avisos. Con Command eso se escribe una vez, en <code>GestorCicloProyecto</code>.</li><li><strong>«Command sirve para deshacer, ¿dónde está el undo?»</strong> No se implementó a propósito: una decisión del analista es evidencia (RF-14, RNF-03). Corregir es un comando nuevo, no borrar el anterior.</li><li><strong>«¿Dónde tiene más sentido?»</strong> En Android (Sprint 3, RNF-04): lo registrado sin conexión se guarda como comandos y se envía al reconectar.</li></ul>
+<p><strong>Para comprobar que se sabe:</strong> si el estado no admite el comando, ¿queda algo en la bitácora? (No: la excepción sale antes de guardar). ¿Qué eslabón responde primero para un productor sin verificar y sin documentos? (<code>ProductorVerificado</code>).</p>
+<div class="sub"><h3 id="integrante-3-observer-y-la-demo">4.3 Integrante 3: Observer y la demo</h3><button type="button" class="done" data-id="integrante-3-observer-y-la-demo" aria-pressed="false">Estudiado</button></div>
+<p><strong>Observer: qué hay que entender.</strong> Un sujeto avisa a una lista de interesados cuando algo cambia, sin saber quiénes son. Aquí el sujeto es <code>GestorCicloProyecto</code> y recibe los observadores del contenedor de dependencias. Cada uno decide si el cambio le interesa.</p>
+<p class="ruta">src/P11.Api/Program.cs</p>
+<pre><code>builder.Services.AddScoped&lt;IObservadorProyecto, AvisarAlProductor&gt;();
+builder.Services.AddScoped&lt;IObservadorProyecto, AvisarALosAnalistas&gt;();</code></pre>
+<p><strong>Por qué ahí.</strong> Hay dos interesados que reaccionan a cosas distintas (el productor a todo; los analistas solo a «entró a revisión») y el ERS anuncia más: RF-20 (incidencias para todos los inversionistas), RF-15 y RF-17. El aviso usa el Bridge de la exposición anterior, así que hoy llega por correo y mañana podrá llegar por Telegram o push.</p>
+<ul><li><strong>«¿Qué pasa si falla el correo?»</strong> El gestor guarda primero y avisa después. Si un observador falla, se registra el error, los demás igual reciben el cambio y la decisión no se revierte. Lo comprueba <code>ObserverTests</code>.</li><li><strong>«¿Por qué la verificación de identidad no usa Observer?»</strong> Tiene un solo interesado, el usuario; la fachada lo llama directo y alcanza.</li><li><strong>«¿Tiene alguna desventaja como está?»</strong> Sí: los avisos van dentro de la petición, uno tras otro. Con muchos destinatarios (RF-20) convendrá encolarlos en segundo plano.</li></ul>
+<p><strong>La demo.</strong> Seguir el guion de la sección 3 y nombrar el patrón en cada paso. Si algo falla, no improvisar: decir qué debería pasar y mostrar la prueba correspondiente.</p>
+<p><strong>Para comprobar que se sabe:</strong> ¿cuántos correos llegan cuando el productor envía a revisión? (dos: al analista y al productor). ¿Qué hay que tocar para agregar el aviso a los inversionistas? (una clase nueva y una línea en <code>Program.cs</code>).</p>
+<div class="sub"><h3 id="integrante-4-template-method-iterator-mediator-y-memento-y-cierre">4.4 Integrante 4: Template Method, Iterator, Mediator y Memento (y cierre)</h3><button type="button" class="done" data-id="integrante-4-template-method-iterator-mediator-y-memento-y-cierre" aria-pressed="false">Estudiado</button></div>
+<p><strong>Template Method (ya estaba).</strong> La clase base fija el orden de los pasos y deja algunos a las subclases. <code>ProyectoGanadero.Validar()</code> aplica las reglas comunes y llama a <code>ValidarLinea()</code>, que redefine cada línea. También <code>CreadorProyecto.CrearBorrador()</code> (que llama al Factory Method) y <code>Aviso.EnviarAsync()</code>.</p>
+<p class="ruta">src/P11.Api/Dominio/Proyectos/ProyectoGanadero.cs</p>
+<pre><code>errores.AddRange(ValidarLinea());
+return errores;</code></pre>
+<p><strong>Iterator (lo da el lenguaje).</strong> <code>IEnumerable</code> es el agregado, <code>IEnumerator</code> el iterador, <code>foreach</code> el cliente. Con <code>yield return</code> el compilador escribe la clase iteradora: <code>GrupoConceptos.Detalle()</code> recorre el árbol de la liquidación sin mostrar cómo guarda sus hijos.</p>
+<p><strong>Mediator (no aplica).</strong> Sirve cuando muchos objetos se hablan entre todos. El candidato era la inversión (reserva, contrato, pago, participación), pero son pasos en secuencia que no conversan: alcanza con una Facade y con Observer para los avisos.</p>
+<p><strong>Memento (no aplica).</strong> Sirve para volver a un estado anterior. No hay requisito de deshacer (la evidencia no se borra), la historia ya está en la base (<code>HistorialProyecto</code>) y el simulador nunca pierde la base gracias al Prototype del análisis creacional.</p>
+<ul><li><strong>«¿Template Method y Strategy no resuelven lo mismo?»</strong> Sí, con distinta herramienta: herencia fija al compilar contra composición cambiable en ejecución. La validación de cada línea usa los campos de su subclase y nunca cambia, así que la herencia alcanza.</li><li><strong>«Si Iterator ya está en C#, ¿por qué lo cuentan?»</strong> Porque la consigna pide identificar dónde se aplican, y en el proyecto se usa en cada <code>foreach</code> y en el recorrido del Composite. Escribir uno a mano sería duplicar el lenguaje.</li><li><strong>«Mediator y Facade, ¿no son lo mismo?»</strong> La fachada habla hacia abajo con piezas que no la conocen; el mediador recibe mensajes de colegas que sí lo conocen y los reparte.</li><li><strong>«¿Cuándo usarían Memento?»</strong> Si el cliente pide comparar la ficha observada con la corregida: se guardaría una versión por envío, en la base.</li></ul>
+<p><strong>Cierre.</strong> Leer la tabla 5.10: cinco aplican y están en uso o en dominio con pruebas, dos ya estaban, dos no aplican. Próximos pasos: los estados de la participación (EST-4) y de la liquidación (EST-5) con State, la cadena de RF-13 y la cola sin conexión de Android con Command.</p>
+<p><strong>Para comprobar que se sabe:</strong> ¿qué tres métodos plantilla ya había? (<code>Validar</code>, <code>CrearBorrador</code>, <code>EnviarAsync</code> de <code>Aviso</code>). ¿Por qué Memento iría contra el ERS si se usara para deshacer? (RF-14 y RNF-03: la evidencia no se borra).</p>
+<h2 class="sec" id="preguntas-que-pueden-caer-a-cualquiera">5. Preguntas que pueden caer a cualquiera</h2>
+<ul><li><strong>«¿Cuántos patrones usa ya el proyecto?»</strong> De las tres familias: tres creacionales, seis estructurales y siete de comportamiento (cinco nuevos y dos que ya estaban), cada uno ligado a un requerimiento.</li><li><strong>«¿Esto está en producción?»</strong> Está en la API y en la web, con pruebas. State, Chain of Responsibility, Command y Observer se usan en el flujo de evaluación; Strategy está en el dominio y su endpoint llega con la liquidación (Sprint 3).</li><li><strong>«¿No es sobreingeniería para un proyecto universitario?»</strong> Donde lo era, no se aplicó: EST-1 quedó como enum, Mediator y Memento no se usaron y Strategy tiene una sola regla porque no hay otra definida.</li><li><strong>«¿Cómo saben que funciona?»</strong> 87 pruebas automáticas, 26 de ellas nuevas, y la demo.</li><li><strong>«¿Cuál fue el más útil?»</strong> State: el equipo ya tenía el diagrama de estados y las clases salieron casi directo de él.</li></ul>
+<h2 class="sec" id="puntos-debiles-y-como-responderlos">6. Puntos débiles y cómo responderlos</h2>
+<ul><li><strong>«Publicar» se valida con casillas del analista, no con datos.</strong> Es cierto y está dicho en el documento: los riesgos y escenarios llegan con el simulador (Sprint 2). La regla vive en un solo comando y cambiará ahí.</li><li><strong>Strategy con una sola regla.</strong> Se justifica por el ERS (regla no definida), no por gusto. Si preguntan, no inventar una segunda regla de negocio.</li><li><strong>Command sin deshacer.</strong> Es una decisión, no un olvido: deshacer contradice RNF-03.</li><li><strong>Los avisos son síncronos.</strong> Para RF-20 se van a encolar; hoy son dos correos.</li></ul>
+<h2 class="sec" id="como-prepararse-en-una-hora">7. Cómo prepararse en una hora</h2>
+<ul><li>10 minutos: leer las secciones 1 y 2 de esta guía y la tabla 5.10 del documento.</li><li>20 minutos: leer la parte propia (sección 4) y abrir esos archivos en el repositorio.</li><li>15 minutos: ensayar la demo una vez completa (todos la ven, la conduce el integrante 3).</li><li>15 minutos: responder en voz alta las preguntas de la sección 5 y las «para comprobar que se sabe» de cada uno.</li></ul>
+</main>
+</div>
+<footer>El código citado está en el repositorio del equipo, p11-inversion-ganadera (carpeta apps/api).</footer>
+<script>
+(function () {
+  var KEY = 'guia-comportamiento-estudiado';
+  var done = {};
+  try { done = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { done = {}; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {} }
+  var btns = document.querySelectorAll('button.done[data-id]');
+  var links = {};
+  document.querySelectorAll('nav.toc a').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+  function render() {
+    var n = 0;
+    btns.forEach(function (b) {
+      var id = b.getAttribute('data-id'), on = !!done[id];
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.textContent = on ? 'Estudiado ✓' : 'Marcar como estudiado';
+      if (links[id]) links[id].parentNode.classList.toggle('done', on);
+      if (on) n++;
+    });
+    document.getElementById('prog').textContent = n + ' de ' + btns.length + ' apartados marcados como estudiados';
+  }
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var id = b.getAttribute('data-id');
+      if (done[id]) delete done[id]; else done[id] = 1;
+      save(); render();
+    });
+  });
+  render();
+
+  var tocd = document.getElementById('tocd');
+  var mq = window.matchMedia('(min-width: 62.01rem)');
+  function sync() { tocd.open = mq.matches; }
+  sync();
+  if (mq.addEventListener) mq.addEventListener('change', sync);
+
+  var heads = Array.prototype.slice.call(document.querySelectorAll('main h2[id], main h3[id]'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) {
+          Object.keys(links).forEach(function (k) { links[k].classList.remove('on'); });
+          var a = links[e.target.id]; if (a) a.classList.add('on');
+        }
+      });
+    }, { rootMargin: '0px 0px -75% 0px' });
+    heads.forEach(function (h) { io.observe(h); });
+  }
+
+  var tb = document.getElementById('theme');
+  tb.addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+})();
+</script>
+</body>
+</html>
