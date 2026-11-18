@@ -13,7 +13,7 @@ namespace P11.Api.Controllers;
 /// <summary>RF-09 evaluación técnica y RF-10 publicación, a cargo del analista.</summary>
 [ApiController]
 [Route("api/analista/proyectos")]
-[Authorize(Roles = Roles.Analista)]
+[Authorize(Roles = $"{Roles.Analista},{Roles.Administrador}")]
 public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto ciclo) : ControllerBase
 {
     [HttpGet]

@@ -14,7 +14,7 @@ namespace P11.Api.Controllers;
 /// <summary>RF-05: el productor carga el RUNSA y el título de propiedad o el contrato de alquiler del predio.</summary>
 [ApiController]
 [Route("api/productor/documentos")]
-[Authorize(Roles = Roles.Productor)]
+[Authorize(Roles = $"{Roles.Productor},{Roles.Administrador}")]
 public class DocumentosProductorController(AppDbContext db, IAlmacenArchivos almacen, IVisorDocumentos visor, IOptions<ArchivosOptions> opciones) : ControllerBase
 {
     private static readonly TipoDocumento[] TiposPredio = [TipoDocumento.Runsa, TipoDocumento.TituloPropiedad, TipoDocumento.ContratoAlquiler];
@@ -22,9 +22,11 @@ public class DocumentosProductorController(AppDbContext db, IAlmacenArchivos alm
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<DocumentoDto>>> Mios(CancellationToken ct)
     {
+        // El administrador ve los documentos del predio de todos los productores.
         var id = User.IdUsuario();
+        var todos = User.IsInRole(Roles.Administrador);
         var documentos = await db.Documentos
-            .Where(d => d.UsuarioId == id && TiposPredio.Contains(d.Tipo))
+            .Where(d => (todos || d.UsuarioId == id) && TiposPredio.Contains(d.Tipo))
             .OrderByDescending(d => d.SubidoEn)
             .ToListAsync(ct);
         return documentos.Select(DocumentoDto.Desde).ToList();

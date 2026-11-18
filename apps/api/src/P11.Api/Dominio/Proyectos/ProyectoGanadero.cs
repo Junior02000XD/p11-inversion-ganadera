@@ -45,6 +45,29 @@ public abstract class ProyectoGanadero
 
     public void AprobarYPublicar() => Estado = EstadoActual.AprobarYPublicar().Valor;
 
+    /// <summary>
+    /// Corrige la ficha con datos nuevos (PUT). El estado decide si se puede (State) y después se
+    /// valida igual que al crear. La línea productiva no cambia: engorde y lechería son tipos distintos.
+    /// Devuelve los errores; si hay alguno, quien llama no debe guardar.
+    /// </summary>
+    public IReadOnlyList<ErrorCampo> Actualizar(DatosFicha datos)
+    {
+        EstadoActual.ValidarEdicion();
+        if (datos.Linea != Linea)
+            return [new(nameof(DatosFicha.Linea), "La línea productiva no se puede cambiar; crea un proyecto nuevo.")];
+
+        Nombre = datos.Nombre?.Trim() ?? "";
+        Ubicacion = datos.Ubicacion?.Trim() ?? "";
+        MontoRequeridoBs = datos.MontoRequeridoBs;
+        MontoMinimoBs = datos.MontoMinimoBs;
+        PlazoMeses = datos.PlazoMeses;
+        CopiarDatosLinea(datos);
+        return Validar();
+    }
+
+    /// <summary>Copia los campos propios de la línea (los mismos que toma su creador).</summary>
+    protected abstract void CopiarDatosLinea(DatosFicha datos);
+
     /// <summary>Valida la ficha: reglas comunes más las propias de la línea.</summary>
     public IReadOnlyList<ErrorCampo> Validar()
     {
@@ -71,6 +94,14 @@ public class ProyectoEngorde : ProyectoGanadero
     public decimal PesoMetaKg { get; set; }
     public decimal CostosEstimadosBs { get; set; }
 
+    protected override void CopiarDatosLinea(DatosFicha d)
+    {
+        CantidadAnimales = d.CantidadAnimales ?? 0;
+        PesoInicialKg = d.PesoInicialKg ?? 0;
+        PesoMetaKg = d.PesoMetaKg ?? 0;
+        CostosEstimadosBs = d.CostosEstimadosBs ?? 0;
+    }
+
     protected override IEnumerable<ErrorCampo> ValidarLinea()
     {
         if (CantidadAnimales <= 0) yield return new(nameof(CantidadAnimales), "Indica la cantidad de animales.");
@@ -87,6 +118,13 @@ public class ProyectoLecheria : ProyectoGanadero
     public int VacasEnOrdeno { get; set; }
     public decimal LitrosPorDia { get; set; }
     public decimal PrecioLitroBs { get; set; }
+
+    protected override void CopiarDatosLinea(DatosFicha d)
+    {
+        VacasEnOrdeno = d.VacasEnOrdeno ?? 0;
+        LitrosPorDia = d.LitrosPorDia ?? 0;
+        PrecioLitroBs = d.PrecioLitroBs ?? 0;
+    }
 
     protected override IEnumerable<ErrorCampo> ValidarLinea()
     {

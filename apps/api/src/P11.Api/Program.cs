@@ -31,7 +31,7 @@ AgregarOpciones<ArchivosOptions>(ArchivosOptions.Seccion)
 
 // En las pruebas de integración (entorno Testing) la base la registra la fábrica de pruebas.
 if (!builder.Environment.IsEnvironment("Testing"))
-    builder.Services.AddDbContext<AppDbContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("Principal")));
+    builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("Principal")));
 
 builder.Services.AddIdentityCore<Usuario>()
     .AddRoles<IdentityRole<Guid>>()
@@ -106,7 +106,7 @@ builder.Services.AddScoped<IObservadorProyecto, AvisarALosAnalistas>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(o => o.AddDocumentTransformer<DocumentoOpenApi>());
 
 var app = builder.Build();
 
@@ -114,8 +114,14 @@ await PrepararBaseDeDatosAsync(app);
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference(); // documentación interactiva en /scalar
+    app.MapOpenApi(); // documento en /openapi/v1.json
+    app.UseSwaggerUI(o =>
+    {
+        o.SwaggerEndpoint("/openapi/v1.json", "P11 API v1");
+        o.DocumentTitle = "P11 – Swagger UI";
+        o.EnablePersistAuthorization(); // el token pegado en «Authorize» sobrevive a un F5
+    }); // Swagger UI en /swagger
+    app.MapScalarApiReference(); // la misma documentación en /scalar
 }
 
 app.UseHttpsRedirection(); // RNF-02

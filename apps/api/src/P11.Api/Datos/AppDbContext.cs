@@ -15,6 +15,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ProyectoGanadero> Proyectos => Set<ProyectoGanadero>();
     public DbSet<HistorialProyecto> HistorialProyectos => Set<HistorialProyecto>();
 
+    /// <summary>Montos en bolivianos, pesos y litros: dos decimales en todas las columnas decimal.</summary>
+    protected override void ConfigureConventions(ModelConfigurationBuilder c) =>
+        c.Properties<decimal>().HavePrecision(18, 2);
+
     protected override void OnModelCreating(ModelBuilder b)
     {
         base.OnModelCreating(b);

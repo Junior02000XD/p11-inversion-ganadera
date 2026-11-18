@@ -12,7 +12,7 @@ namespace P11.Api.Controllers;
 /// <summary>Revisión manual de identidad (RF-03/04) y de los documentos del productor y del predio (RF-05).</summary>
 [ApiController]
 [Route("api/analista")]
-[Authorize(Roles = Roles.Analista)]
+[Authorize(Roles = $"{Roles.Analista},{Roles.Administrador}")]
 public class AnalistaController(AppDbContext db, IVisorDocumentos visor, VerificacionService verificacion, TimeProvider reloj) : ControllerBase
 {
     private static readonly TipoDocumento[] TiposPredio = [TipoDocumento.Runsa, TipoDocumento.TituloPropiedad, TipoDocumento.ContratoAlquiler];

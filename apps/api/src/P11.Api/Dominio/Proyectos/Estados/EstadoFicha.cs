@@ -20,6 +20,21 @@ public abstract class EstadoFicha
     /// <summary>RF-07/RF-09: el productor solo corrige la ficha mientras está en borrador.</summary>
     public virtual bool PuedeEditarse => false;
 
+    /// <summary>Solo un borrador se puede eliminar: lo que ya pasó por evaluación queda en la bitácora (RNF-03).</summary>
+    public virtual bool PuedeEliminarse => false;
+
+    /// <summary>Productor o administrador: corregir la ficha (PUT). Solo en borrador, también tras una observación.</summary>
+    public void ValidarEdicion()
+    {
+        if (!PuedeEditarse) throw Invalida("editar");
+    }
+
+    /// <summary>Productor o administrador: eliminar la ficha (DELETE). Solo en borrador.</summary>
+    public void ValidarEliminacion()
+    {
+        if (!PuedeEliminarse) throw Invalida("eliminar");
+    }
+
     /// <summary>Productor: Borrador → En revisión técnica.</summary>
     public virtual EstadoFicha EnviarARevision() => throw Invalida("enviar a evaluación");
 
@@ -51,6 +66,7 @@ public sealed class EnBorrador : EstadoFicha
     public override EstadoProyecto Valor => EstadoProyecto.Borrador;
     protected override string Descripcion => "en borrador";
     public override bool PuedeEditarse => true;
+    public override bool PuedeEliminarse => true;
     public override EstadoFicha EnviarARevision() => EnRevisionTecnica.Instancia;
 }
 

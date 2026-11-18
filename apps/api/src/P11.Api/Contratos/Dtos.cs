@@ -54,6 +54,11 @@ public record VerificacionPendienteDto(Guid UsuarioId, string Nombre, string Cor
 public record UsuarioAdminDto(Guid Id, string Nombre, string Correo, string Ci, string Rol, EstadoVerificacion EstadoVerificacion, bool CorreoConfirmado, DateTimeOffset? BloqueadoHasta);
 public record CambiarRolRequest([Required] string Rol);
 
+/// <summary>Una línea de la bitácora de auditoría (RNF-03): quién cambió qué estado, cuándo y por qué.</summary>
+public record EventoBitacoraDto(
+    DateTimeOffset Fecha, string Modulo, Guid ReferenciaId, string Referencia, string Accion,
+    string EstadoAnterior, string EstadoNuevo, string Responsable, string Motivo);
+
 // ---- Proyectos (RF-07) ----
 
 public record ProyectoDto(
@@ -72,6 +77,31 @@ public record ProyectoDto(
     }
 }
 
+/// <summary>
+/// Datos de la ficha que llegan en POST y PUT /api/proyectos. Los atributos validan lo obligatorio y los
+/// rangos (400 automático); las reglas que dependen de la línea las valida el dominio. El administrador
+/// postula en nombre de un productor y debe indicar <see cref="ProductorId"/>; el productor no lo envía.
+/// </summary>
+public record ProyectoEntradaDto(
+    [Required(ErrorMessage = "Indica la línea productiva (Engorde o Lecheria).")] LineaProductiva? Linea,
+    [Required(ErrorMessage = "El nombre es obligatorio."), StringLength(150)] string Nombre,
+    [Required(ErrorMessage = "La ubicación es obligatoria."), StringLength(200)] string Ubicacion,
+    [Range(0.01, 1_000_000_000, ErrorMessage = "El monto requerido debe ser mayor a 0.")] decimal MontoRequeridoBs,
+    [Range(0.01, 1_000_000_000, ErrorMessage = "El monto mínimo debe ser mayor a 0.")] decimal MontoMinimoBs,
+    [Range(1, 120, ErrorMessage = "El plazo debe estar entre 1 y 120 meses.")] int PlazoMeses,
+    [Range(1, 100_000)] int? CantidadAnimales = null,
+    [Range(0.01, 2_000)] decimal? PesoInicialKg = null,
+    [Range(0.01, 2_000)] decimal? PesoMetaKg = null,
+    [Range(0.01, 1_000_000_000)] decimal? CostosEstimadosBs = null,
+    [Range(1, 100_000)] int? VacasEnOrdeno = null,
+    [Range(0.01, 1_000_000)] decimal? LitrosPorDia = null,
+    [Range(0.01, 1_000)] decimal? PrecioLitroBs = null,
+    Guid? ProductorId = null)
+{
+    public DatosFicha ADatosFicha() => new(Linea!.Value, Nombre, Ubicacion, MontoRequeridoBs, MontoMinimoBs, PlazoMeses,
+        CantidadAnimales, PesoInicialKg, PesoMetaKg, CostosEstimadosBs, VacasEnOrdeno, LitrosPorDia, PrecioLitroBs);
+}
+
 // ---- Evaluación técnica (RF-09, RF-10) ----
 
 public enum DecisionProyecto { Aprobar, Observar, Rechazar }
@@ -79,6 +109,9 @@ public enum DecisionProyecto { Aprobar, Observar, Rechazar }
 /// <summary>Decisión del analista. Observar y rechazar exigen texto; aprobar exige riesgos y tres escenarios (RF-10).</summary>
 public record EvaluacionRequest(DecisionProyecto Decision, string? Observaciones, bool RiesgosCargados = false, bool TresEscenarios = false);
 
-public record HistorialProyectoDto(EstadoProyecto EstadoAnterior, EstadoProyecto EstadoNuevo, string Accion, string Responsable, string Motivo, DateTimeOffset Fecha);
+public record HistorialProyectoDto(EstadoProyecto EstadoAnterior, EstadoProyecto EstadoNuevo, string Accion, string Responsable, string Motivo, DateTimeOffset Fecha)
+{
+    public static HistorialProyectoDto Desde(HistorialProyecto h) => new(h.EstadoAnterior, h.EstadoNuevo, h.Accion, h.Responsable, h.Motivo, h.Fecha);
+}
 
 public record ProyectoEvaluacionDto(ProyectoDto Proyecto, string Productor, string CorreoProductor, IReadOnlyList<HistorialProyectoDto> Historial);

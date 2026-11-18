@@ -32,6 +32,9 @@ public class AlmacenCifrado : IAlmacenArchivos
         return _interno.GuardarAsync(paquete, ct);
     }
 
+    /// <summary>Borrar no necesita la clave: se delega tal cual al almacén interno.</summary>
+    public Task EliminarAsync(string nombre, CancellationToken ct = default) => _interno.EliminarAsync(nombre, ct);
+
     public async Task<byte[]> LeerAsync(string nombre, CancellationToken ct = default)
     {
         var paquete = await _interno.LeerAsync(nombre, ct);

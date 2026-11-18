@@ -7,7 +7,7 @@ namespace P11.Api.Servicios.Documentos;
 
 /// <summary>
 /// Proxy de protección (RNF-02): tiene la misma interfaz que el visor real y se pone delante de él.
-/// Solo deja abrir un documento a su dueño o a un analista, y registra cada acceso.
+/// Solo deja abrir un documento a su dueño, a un analista o al administrador, y registra cada acceso.
 /// La regla depende del documento, no solo del rol, por eso no alcanza con [Authorize(Roles = ...)].
 /// </summary>
 public class VisorDocumentosProxy(VisorDocumentos real, AppDbContext db, ILogger<VisorDocumentosProxy> log) : IVisorDocumentos
@@ -20,7 +20,7 @@ public class VisorDocumentosProxy(VisorDocumentos real, AppDbContext db, ILogger
             .FirstOrDefaultAsync(ct);
         if (dueno is null) return null;
 
-        if (!solicitante.IsInRole(Roles.Analista) && solicitante.IdUsuario() != dueno)
+        if (!solicitante.IsInRole(Roles.Analista) && !solicitante.IsInRole(Roles.Administrador) && solicitante.IdUsuario() != dueno)
         {
             // Se responde igual que si no existiera, para no confirmar que el documento está ahí.
             log.LogWarning("{Correo} intentó abrir el documento {Documento}, que no es suyo", solicitante.Correo(), documentoId);

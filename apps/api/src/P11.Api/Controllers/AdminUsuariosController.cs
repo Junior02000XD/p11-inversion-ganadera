@@ -9,11 +9,12 @@ using P11.Api.Servicios;
 
 namespace P11.Api.Controllers;
 
-/// <summary>RF-06: el administrador consulta los usuarios, asigna roles y desbloquea cuentas.</summary>
+/// <summary>RF-06: el administrador consulta los usuarios, asigna roles, desbloquea y elimina cuentas.</summary>
 [ApiController]
 [Route("api/admin/usuarios")]
 [Authorize(Roles = Roles.Administrador)]
-public class AdminUsuariosController(AppDbContext db, UserManager<Usuario> usuarios, TimeProvider reloj) : ControllerBase
+public class AdminUsuariosController(
+    AppDbContext db, UserManager<Usuario> usuarios, TimeProvider reloj, IAlmacenArchivos almacen) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<UsuarioAdminDto>>> Listar(CancellationToken ct)
@@ -60,5 +61,35 @@ public class AdminUsuariosController(AppDbContext db, UserManager<Usuario> usuar
         await usuarios.SetLockoutEndDateAsync(usuario, null);
         await usuarios.ResetAccessFailedCountAsync(usuario);
         return Ok(new Respuesta($"Desbloqueamos la cuenta de {usuario.NombreCompleto}."));
+    }
+
+    /// <summary>
+    /// Elimina una cuenta con sus códigos OTP, su historial de verificación y sus documentos (también los
+    /// archivos). Una cuenta con proyectos no se borra (409): la bitácora del proyecto debe quedar (RNF-03);
+    /// para esos casos está el bloqueo.
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Eliminar(Guid id, CancellationToken ct)
+    {
+        if (id == User.IdUsuario()) return BadRequest(new Respuesta("No puedes eliminar tu propia cuenta."));
+
+        var usuario = await usuarios.FindByIdAsync(id.ToString());
+        if (usuario is null) return NotFound(new Respuesta("No encontramos al usuario."));
+
+        if (await db.Proyectos.AnyAsync(p => p.ProductorId == id, ct))
+            return Conflict(new Respuesta($"{usuario.NombreCompleto} tiene proyectos registrados y no se puede eliminar. Puedes bloquear la cuenta."));
+
+        var archivos = await db.Documentos.Where(d => d.UsuarioId == id).Select(d => d.ArchivoCifrado).ToListAsync(ct);
+        db.CodigosOtp.RemoveRange(db.CodigosOtp.Where(o => o.UsuarioId == id));
+        db.HistorialVerificaciones.RemoveRange(db.HistorialVerificaciones.Where(h => h.UsuarioId == id));
+        db.Documentos.RemoveRange(db.Documentos.Where(d => d.UsuarioId == id));
+        await db.SaveChangesAsync(ct);
+
+        var resultado = await usuarios.DeleteAsync(usuario);
+        if (!resultado.Succeeded)
+            return Problem(string.Join(" ", resultado.Errors.Select(e => e.Description)));
+
+        foreach (var archivo in archivos) await almacen.EliminarAsync(archivo, ct);
+        return NoContent();
     }
 }
