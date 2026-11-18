@@ -126,7 +126,7 @@
             "$ref": "AAAAAaAABTl/MVU="
           },
           "name": "Base de datos",
-          "stereotype": "PostgreSQL + EF Core"
+          "stereotype": "SQL Server + EF Core"
         },
         {
           "_type": "UMLComponent",

@@ -24,7 +24,7 @@ Esta guía dice qué mostrar, en qué orden y qué decir de cada patrón. El rep
 En una terminal, desde la raíz del repositorio `p11-inversion-ganadera`:
 
 ```bash
-docker compose up -d                                   # Postgres (5433) y Mailpit (8025)
+docker start mssql-dev && docker compose up -d       # SQL Server (1433) y Mailpit (8025)
 cd apps/api/src/P11.Api && dotnet run --launch-profile https   # API en https://localhost:7080
 ```
 

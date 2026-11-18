@@ -6061,7 +6061,7 @@
             "$ref": "yogO2tD6mfilCsUC9uD6"
           },
           "name": "Base de datos relacional con bitácora",
-          "stereotype": "PostgreSQL",
+          "stereotype": "SQL Server",
           "ownedElements": []
         },
         {

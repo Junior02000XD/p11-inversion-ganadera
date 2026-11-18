@@ -16,8 +16,8 @@ Antes de crear o cambiar un diagrama, leé [`convenciones.md`](convenciones.md):
 | 05 | Clases | [`uml/05-clases.mdj`](uml/05-clases.mdj) | 4: dominio + 3 de patrones | Sergio | **Rehecho**: las clases programadas son las de `apps/api/src/P11.Api/Dominio`; las de los Sprints 2-3 llevan «planificada» |
 | 06 | Objetos | [`uml/06-objetos.mdj`](uml/06-objetos.mdj) | 1 | Sergio | **Actualizado**: `Usuario` con rol y `ProyectoEngorde`, con los datos de la demo |
 | 07 | Estados | [`uml/07-estados.mdj`](uml/07-estados.mdj) | 5 (EST-1 a EST-5) | Matías | **Actualizado**: EST-1 permite reenviar CI y selfie desde Rechazado; EST-3 marca lo implementado (State: `EstadoFicha`) |
-| 08 | Componentes | [`uml/08-componentes.mdj`](uml/08-componentes.mdj) | 1 | Matías | **Actualizado**: tecnología de cada componente como estereotipo (ASP.NET Core, React + Vite, PostgreSQL…) |
-| 09 | Despliegue | [`uml/09-despliegue.mdj`](uml/09-despliegue.mdj) | 1 | Julio | **Actualizado**: igual que Componentes, en los artefactos |
+| 08 | Componentes | [`uml/08-componentes.mdj`](uml/08-componentes.mdj) | 1 | Matías | **Actualizado**: tecnología de cada componente como estereotipo (ASP.NET Core, React + Vite, SQL Server…). Desde el 18/11 la base es SQL Server |
+| 09 | Despliegue | [`uml/09-despliegue.mdj`](uml/09-despliegue.mdj) | 1 | Julio | **Actualizado**: igual que Componentes, en los artefactos (base «SQL Server» desde el 18/11) |
 
 Mockups: [`mockups/mockups.bmpr`](mockups/mockups.bmpr) (Balsamiq Wireframes 4, 28 pantallas de celular, 12 CU). Para verlos sin Balsamiq están [`mockups/pantallas/`](mockups/pantallas/), una imagen por pantalla, y [`mockups/laminas/`](mockups/laminas/), una lámina por CU.
 

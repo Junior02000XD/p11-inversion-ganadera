@@ -14,6 +14,7 @@ Para ver los diagramas sin instalar nada, usá los PNG de [`diagramas/figuras/`]
 | [`diagramas/`](diagramas/) | Los 9 diagramas UML, sus figuras, versiones con trazabilidad y mockups | [`diagramas/README.md`](diagramas/README.md) |
 | [`diseno/`](diseno/) | Documento de Diseño entregado y defensa del diagrama de casos de uso | `documento-de-diseno.pdf` |
 | [`patrones/`](patrones/) | Mapa patrón → código → prueba, informes grupales y guías de las tres familias | [`patrones/README.md`](patrones/README.md) |
+| [`entregas/`](entregas/) | Entregas que no son de un sprint: API Integrador de Programación Web 3 (plan, aportes del equipo, evidencias) | [`entregas/web3-api-integrador/README.md`](entregas/web3-api-integrador/README.md) |
 | [`sprints/`](sprints/) | Planificación (Sprint 0) y alcance, guion de demo y capturas de cada sprint | [`sprints/README.md`](sprints/README.md) |
 | [`cronograma.md`](cronograma.md) | Fechas de entrega de las dos materias | — |
 
@@ -29,6 +30,9 @@ Para ver los diagramas sin instalar nada, usá los PNG de [`diagramas/figuras/`]
 | 28/10 | Casos de uso del sistema (dos versiones) y su defensa | Proyecto de Sistemas 1 | `diagramas/uml/01-casos-de-uso-sistema-*`, `diseno/defensa-casos-de-uso.*` |
 | 03/11, 09/11, 13/11 | Patrones creacionales, estructurales y de comportamiento | Ing. de Software | `patrones/informes/`, `patrones/guias/` |
 | 06/11 | Sprint 1 (MV1) | Proyecto de Sistemas 1 | `sprints/sprint-1/` |
+| 18/11 | Corrección: pestañas = casos de uso (D1), Administrador con acceso a todo | Proyecto de Sistemas 1 | `sprints/sprint-2/correccion-pestanas-casos-de-uso.md` |
+| 20/11 (pendiente) | API Integrador: ZIP de la API + README + PDF de evidencias | Programación Web 3 | `entregas/web3-api-integrador/` |
+| 20/11 (pendiente) | Sprint 2 (MV2) | Proyecto de Sistemas 1 | `sprints/sprint-2/` |
 
 ## Reglas para mantenerla
 
