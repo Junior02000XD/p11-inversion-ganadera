@@ -2,13 +2,18 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import { api, formatoBs, formatoFecha, mensajeDe, textoEstadoProyecto } from '../api'
 import { Aviso, Tarjeta } from '../componentes'
+import { ADMINISTRADOR } from '../roles'
+import { useSesion } from '../sesion'
 
 // Cada proyecto llega como { id, linea, nombre, ubicacion, montoRequeridoBs, plazoMeses,
 // estado, creadoEn, cantidadAnimales, vacasEnOrdeno, observaciones }. linea: 'Engorde' | 'Lecheria'.
 // observaciones: lo último que escribió el analista al observar o rechazar (RF-09).
 
+/** CU «Postular proyecto» (RF-07, RF-08): fichas en borrador, documentos del predio y envío a evaluación. */
 export default function MisProyectos() {
   const location = useLocation()
+  const { usuario } = useSesion()
+  const esAdmin = usuario?.rol === ADMINISTRADOR
   const [proyectos, setProyectos] = useState(null)
   const [mensajes, setMensajes] = useState({})
 
@@ -20,10 +25,29 @@ export default function MisProyectos() {
   async function enviarARevision(id) {
     try {
       await api(`/proyectos/${id}/enviar-revision`, { metodo: 'POST' })
-      setMensajes({ ...mensajes, [id]: { tipo: 'ok', texto: 'Enviado a evaluación técnica.' } })
+      setMensajes({
+        ...mensajes,
+        [id]: { tipo: 'ok', texto: 'Enviado a evaluación técnica.' },
+      })
       await cargar()
     } catch (err) {
-      setMensajes({ ...mensajes, [id]: { tipo: 'error', texto: mensajeDe(err) } })
+      setMensajes({
+        ...mensajes,
+        [id]: { tipo: 'error', texto: mensajeDe(err) },
+      })
+    }
+  }
+
+  async function eliminar(p) {
+    if (!window.confirm(`¿Eliminar el borrador «${p.nombre}»?`)) return
+    try {
+      await api(`/proyectos/${p.id}`, { metodo: 'DELETE' })
+      await cargar()
+    } catch (err) {
+      setMensajes({
+        ...mensajes,
+        [p.id]: { tipo: 'error', texto: mensajeDe(err) },
+      })
     }
   }
 
@@ -31,12 +55,21 @@ export default function MisProyectos() {
   const creado = location.state?.creado
 
   return (
-    <Tarjeta titulo="Mis proyectos" ancha>
+    <Tarjeta
+      titulo={esAdmin ? 'Proyectos postulados' : 'Mis proyectos'}
+      subtitulo={esAdmin ? 'Todos los productores. Puedes postular en nombre de uno.' : undefined}
+      ancha
+    >
       {creado && <Aviso tipo="ok">Guardamos «{creado}» como borrador.</Aviso>}
-      <Link className="boton" to="/proyectos/nuevo">
-        Nuevo proyecto
-      </Link>
-      {proyectos?.length === 0 && <p className="tenue">Todavía no tienes proyectos.</p>}
+      <div className="acciones">
+        <Link className="boton" to="/proyectos/nuevo">
+          Nuevo proyecto
+        </Link>
+        <Link className="boton boton-secundario" to="/proyectos/documentos">
+          Documentos del predio
+        </Link>
+      </div>
+      {proyectos?.length === 0 && <p className="tenue">{esAdmin ? 'Ningún productor postuló proyectos todavía.' : 'Todavía no tienes proyectos.'}</p>}
       <ul className="lista">
         {proyectos?.map((p) => (
           <li key={p.id} className="item">
@@ -56,9 +89,17 @@ export default function MisProyectos() {
               </Aviso>
             )}
             {p.estado === 'Borrador' && (
-              <button className="boton boton-secundario" onClick={() => enviarARevision(p.id)}>
-                Enviar a evaluación técnica
-              </button>
+              <div className="acciones">
+                <button className="boton boton-secundario" onClick={() => enviarARevision(p.id)}>
+                  Enviar a evaluación técnica
+                </button>
+                <Link className="boton boton-secundario" to={`/proyectos/${p.id}/editar`}>
+                  Editar
+                </Link>
+                <button className="boton boton-peligro" onClick={() => eliminar(p)}>
+                  Eliminar
+                </button>
+              </div>
             )}
             {mensajes[p.id] && <Aviso tipo={mensajes[p.id].tipo}>{mensajes[p.id].texto}</Aviso>}
           </li>

@@ -12,7 +12,7 @@ export default function Compra() {
   function guardar(e) {
     e.preventDefault()
     if (!proveedor.trim()) return setError('Faltan datos del proveedor.')
-    navegar('/operaciones/traslado')
+    navegar('/traslado')
   }
 
   return (

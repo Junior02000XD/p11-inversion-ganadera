@@ -33,7 +33,7 @@ export default function Ronda() {
           Tu participación: {formatoBs(monto)} ({participacion} %)
         </Aviso>
         <span className="tenue">El productor inicia la compra del ganado.</span>
-        <Link className="boton" to={`/portafolio/${proyecto.id}`}>
+        <Link className="boton" to={`/expedientes/${proyecto.id}`}>
           Ver expediente
         </Link>
       </div>

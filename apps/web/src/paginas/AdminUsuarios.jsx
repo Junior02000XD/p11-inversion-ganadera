@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { api, mensajeDe, textoEstado } from '../api'
 import { Aviso, Campo, Tarjeta } from '../componentes'
+import { ROLES } from '../roles'
 import { useSesion } from '../sesion'
 
 // Cada usuario llega como { id, nombre, correo, ci, rol, estadoVerificacion, correoConfirmado, bloqueadoHasta }.
 
-const roles = ['Inversionista', 'Productor', 'Analista', 'Administrador']
+const roles = ROLES
 
-/** RF-06: usuarios y roles (mockup 02c). */
+/** CU «Gestionar usuarios, roles y permisos» (RF-06, mockup 02c): roles, desbloqueo y baja de cuentas. */
 export default function AdminUsuarios() {
   const { usuario: yo } = useSesion()
   const [usuarios, setUsuarios] = useState([])
@@ -38,7 +39,7 @@ export default function AdminUsuarios() {
   }
 
   return (
-    <Tarjeta titulo="Usuarios y roles" ancha>
+    <Tarjeta titulo="Usuarios, roles y permisos" ancha>
       <Campo etiqueta="Buscar usuario">
         <input placeholder="Nombre, correo o CI" value={buscar} onChange={(e) => setBuscar(e.target.value)} />
       </Campo>
@@ -94,17 +95,50 @@ export default function AdminUsuarios() {
               ))}
             </select>
           </Campo>
-          {elegido.id === yo?.id && <p className="nota">No puedes cambiar tu propio rol.</p>}
+          {elegido.id === yo?.id && <p className="nota">No puedes cambiar tu propio rol ni eliminar tu cuenta.</p>}
           <div className="acciones">
             <button
               className="boton"
               disabled={elegido.id === yo?.id || rol === elegido.rol}
-              onClick={() => ejecutar(() => api(`/admin/usuarios/${elegido.id}/rol`, { metodo: 'PUT', cuerpo: { rol } }))}
+              onClick={() =>
+                ejecutar(() =>
+                  api(`/admin/usuarios/${elegido.id}/rol`, {
+                    metodo: 'PUT',
+                    cuerpo: { rol },
+                  }),
+                )
+              }
             >
               Guardar rol
             </button>
+            <button
+              className="boton boton-peligro"
+              disabled={elegido.id === yo?.id}
+              onClick={() => {
+                if (!window.confirm(`¿Eliminar la cuenta de ${elegido.nombre}? Se borran también sus documentos. No se puede deshacer.`)) return
+                ejecutar(async () => {
+                  await api(`/admin/usuarios/${elegido.id}`, {
+                    metodo: 'DELETE',
+                  })
+                  return {
+                    mensaje: `Eliminamos la cuenta de ${elegido.nombre}.`,
+                  }
+                })
+              }}
+            >
+              Eliminar cuenta
+            </button>
             {elegido.bloqueadoHasta && (
-              <button className="boton boton-secundario" onClick={() => ejecutar(() => api(`/admin/usuarios/${elegido.id}/desbloquear`, { metodo: 'POST' }))}>
+              <button
+                className="boton boton-secundario"
+                onClick={() =>
+                  ejecutar(() =>
+                    api(`/admin/usuarios/${elegido.id}/desbloquear`, {
+                      metodo: 'POST',
+                    }),
+                  )
+                }
+              >
                 Desbloquear cuenta
               </button>
             )}

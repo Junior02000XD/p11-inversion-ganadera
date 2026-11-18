@@ -86,3 +86,35 @@ export const liquidacion = {
   comisionBs: 2500,
 }
 export const resultadoLiquidacion = (l) => l.ventaBs - l.costosBs - l.perdidasBs - l.comisionBs
+
+// Incidencias reportadas por los productores (RF-20).
+export const incidencias = [
+  {
+    id: 12,
+    proyectoId: 'chiquitania',
+    tipo: 'Mortalidad',
+    detalle: '2 cabezas',
+    fecha: '12/10/2026',
+    estado: 'En evaluación',
+  },
+  {
+    id: 9,
+    proyectoId: 'cotoca',
+    tipo: 'Enfermedad',
+    detalle: 'Mastitis en 3 vacas',
+    fecha: '28/09/2026',
+    estado: 'Cerrada',
+  },
+]
+
+// Reclamos a la aseguradora que nacen de una incidencia (RF-21, extiende «Gestionar incidencias»).
+export const reclamos = [
+  {
+    id: 'R-004',
+    incidenciaId: 12,
+    proyectoId: 'chiquitania',
+    aseguradora: 'Seguros Agropecuarios S.A.',
+    montoBs: 9000,
+    estado: 'Pendiente de informe veterinario',
+  },
+]

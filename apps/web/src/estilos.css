@@ -258,16 +258,48 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
   .fila { grid-template-columns: 1fr; }
 }
 
-/* Menú por rol */
-.barra { flex-direction: column; align-items: stretch; padding-bottom: 0; }
+/* Menú lateral: una pestaña por caso de uso (D1) */
+.barra { flex-direction: column; align-items: stretch; }
 .barra-fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.navegacion { display: flex; gap: 4px; overflow-x: auto; margin: 10px -16px 0; padding: 0 12px; background: var(--nav-fondo); }
-.navegacion a {
-  padding: 10px 12px; color: var(--nav-texto); text-decoration: none; font-weight: 600; font-size: 0.92rem;
-  white-space: nowrap; border-bottom: 3px solid transparent;
+.marca { margin-right: auto; }
+.boton-menu {
+  display: none; font: inherit; font-size: 0.9rem; font-weight: 600; padding: 6px 12px; min-height: 36px; cursor: pointer;
+  border: 1px solid rgb(255 255 255 / 0.35); border-radius: var(--radio-boton); background: transparent; color: var(--barra-texto);
 }
-.navegacion a:hover { color: var(--nav-activo); }
-.navegacion a.active { color: var(--nav-activo); border-bottom-color: var(--destacado); }
+.cuerpo { display: flex; align-items: flex-start; min-height: calc(100vh - 56px); }
+.cuerpo > .contenido { flex: 1; min-width: 0; }
+.menu-lateral {
+  position: sticky; top: 0; flex: 0 0 248px; max-height: 100vh; overflow-y: auto; align-self: stretch;
+  display: flex; flex-direction: column; gap: 2px; padding: 16px 10px; background: var(--nav-fondo);
+}
+.menu-titulo { margin: 0 8px 8px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--nav-texto); opacity: 0.8; }
+.menu-lateral a {
+  padding: 9px 12px; border-radius: 8px; color: var(--nav-texto); text-decoration: none; font-weight: 600; font-size: 0.92rem;
+  line-height: 1.3; border-left: 3px solid transparent;
+}
+.menu-lateral a:hover { color: var(--nav-activo); background: rgb(0 0 0 / 0.04); }
+.menu-lateral a.active { color: var(--nav-activo); border-left-color: var(--destacado); background: rgb(0 0 0 / 0.06); }
+.menu-lateral a:focus-visible { outline: 2px solid var(--destacado); outline-offset: -2px; }
+@media (max-width: 860px) {
+  .boton-menu { display: inline-flex; align-items: center; gap: 6px; }
+  .cuerpo { display: block; }
+  .menu-lateral { display: none; position: static; max-height: none; padding: 10px 12px 14px; }
+  .menu-lateral.abierto { display: flex; }
+  .barra-rol { display: none; }
+}
+
+/* «Ver como» del Administrador en los CU con varios actores */
+.vista-por-rol { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.ver-como {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 8px; border: 1px dashed var(--borde);
+  border-radius: var(--radio); background: var(--superficie); font-size: 0.88rem;
+}
+.ver-como span { color: var(--tenue); font-weight: 600; margin-right: 4px; }
+.ver-como button {
+  font: inherit; font-weight: 600; padding: 4px 12px; min-height: 32px; cursor: pointer; border: 1px solid var(--borde);
+  border-radius: var(--radio-boton); background: transparent; color: var(--texto);
+}
+.ver-como button.activo { background: var(--acento); border-color: var(--acento); color: var(--superficie); }
 
 /* Piezas de los sprints 2 y 3 */
 textarea {
@@ -301,3 +333,10 @@ textarea[readonly] { background: var(--fondo); color: var(--tenue); }
 [data-estilo='cuero'] .boton:not(.boton-secundario):not(.boton-peligro) { outline: 1.5px dashed var(--logo-fondo); outline-offset: -5px; }
 [data-estilo='cuero'] .aviso-info, [data-estilo='cuero'] .aviso-error, [data-estilo='cuero'] .aviso-ok { border-left: 4px solid currentColor; border-radius: 4px; }
 [data-estilo='cuero'] .chip { font-weight: 700; }
+
+/* Filtro en línea (bitácora) */
+.fila-filtro { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-bottom: 12px; }
+.fila-filtro .campo { flex: 1 1 220px; }
+
+/* Varias tarjetas apiladas en una misma pestaña */
+.pila { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px; }

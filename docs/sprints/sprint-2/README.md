@@ -5,3 +5,5 @@ Alcance previsto: evaluación y publicación de proyectos, catálogo, simulador 
 Ya adelantado en los patrones de comportamiento (13/11): la evaluación del analista (RF-09, RF-10), con observar, rechazar o aprobar y publicar, y su historial. Ver [`../../patrones/README.md`](../../patrones/README.md).
 
 Al cerrar el sprint, este archivo tiene que tener lo mismo que [`../sprint-1/README.md`](../sprint-1/README.md): requerimiento → endpoint → pantalla → prueba, el guion de la demo y las capturas en `capturas/`.
+
+Corrección pedida por el ingeniero (18/11): pestañas = casos de uso del diagrama D1 y Administrador con acceso a todo. Ver [`correccion-pestanas-casos-de-uso.md`](correccion-pestanas-casos-de-uso.md).

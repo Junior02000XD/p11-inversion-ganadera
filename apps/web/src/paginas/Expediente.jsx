@@ -49,7 +49,7 @@ export default function Expediente() {
 
       <div className="acciones">
         <button className="boton boton-secundario">Descargar contrato</button>
-        <Link className="boton" to={`/portafolio/${proyecto.id}/liquidacion`}>
+        <Link className="boton" to="/liquidacion">
           Ver liquidación
         </Link>
       </div>

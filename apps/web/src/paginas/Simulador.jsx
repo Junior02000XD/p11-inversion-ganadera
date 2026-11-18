@@ -32,7 +32,7 @@ export default function Simulador() {
         </>
       )}
       <div className="menu">
-        <Link className="boton" to={`/catalogo/${proyecto.id}/invertir`}>
+        <Link className="boton" to={`/inversiones/${proyecto.id}`}>
           Invertir en este proyecto
         </Link>
       </div>

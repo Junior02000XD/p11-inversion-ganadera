@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { abrirArchivo, api, formatoFecha, mensajeDe } from '../api'
 import { Aviso, Tarjeta } from '../componentes'
 
@@ -6,29 +6,37 @@ import { Aviso, Tarjeta } from '../componentes'
 // Documento del predio en revisión: { id, correo, tipo, nombreOriginal, subidoEn }
 
 const nombres = {
-  CiFrente: 'CI anverso', CiDorso: 'CI reverso', Selfie: 'selfie',
-  Runsa: 'RUNSA', TituloPropiedad: 'Título del predio', ContratoAlquiler: 'Contrato de alquiler',
+  CiFrente: 'CI anverso',
+  CiDorso: 'CI reverso',
+  Selfie: 'selfie',
+  Runsa: 'RUNSA',
+  TituloPropiedad: 'Título del predio',
+  ContratoAlquiler: 'Contrato de alquiler',
 }
 
-/** Revisión manual de identidad (RF-03/04) y de documentos del predio (RF-05). */
-export default function PanelAnalista() {
-  const [verifs, setVerifs] = useState([])
-  const [docs, setDocs] = useState([])
+/** Estado y acciones comunes de las dos bandejas de revisión del analista. */
+function useRevision(ruta) {
+  const [items, setItems] = useState([])
   const [motivos, setMotivos] = useState({})
   const [aviso, setAviso] = useState(null)
 
-  const cargar = async () => {
-    setVerifs(await api('/analista/verificaciones'))
-    setDocs(await api('/analista/documentos'))
-  }
+  const cargar = useCallback(
+    () =>
+      api(ruta)
+        .then(setItems)
+        .catch((err) => setAviso({ tipo: 'error', texto: mensajeDe(err) })),
+    [ruta],
+  )
   useEffect(() => {
     cargar()
-  }, [])
+  }, [cargar])
 
-  async function decidir(ruta, id, aprobar) {
+  async function decidir(rutaDecision, id, aprobar) {
     setAviso(null)
     try {
-      const r = await api(ruta, { cuerpo: { aprobar, motivo: motivos[id] ?? '' } })
+      const r = await api(rutaDecision, {
+        cuerpo: { aprobar, motivo: motivos[id] ?? '' },
+      })
       setAviso({ tipo: 'ok', texto: r.mensaje })
       await cargar()
     } catch (err) {
@@ -40,24 +48,32 @@ export default function PanelAnalista() {
   const ver = (id) => abrirArchivo(`/analista/archivos/${id}`).catch((err) => setAviso({ tipo: 'error', texto: mensajeDe(err) }))
 
   const motivo = (id) => (
-    <input className="motivo" placeholder="Motivo (obligatorio para rechazar)" value={motivos[id] ?? ''} onChange={(e) => setMotivos({ ...motivos, [id]: e.target.value })} />
+    <input
+      className="motivo"
+      placeholder="Motivo (obligatorio para rechazar)"
+      value={motivos[id] ?? ''}
+      onChange={(e) => setMotivos({ ...motivos, [id]: e.target.value })}
+    />
   )
-  const botones = (ruta, id) => (
+  const botones = (rutaDecision, id) => (
     <div className="acciones">
-      <button className="boton" onClick={() => decidir(ruta, id, true)}>
+      <button className="boton" onClick={() => decidir(rutaDecision, id, true)}>
         Aprobar
       </button>
-      <button className="boton boton-peligro" onClick={() => decidir(ruta, id, false)}>
+      <button className="boton boton-peligro" onClick={() => decidir(rutaDecision, id, false)}>
         Rechazar
       </button>
     </div>
   )
+  return { items, aviso, ver, motivo, botones }
+}
 
+/** CU «Registrar cuenta y verificar identidad», parte del analista: revisión manual (RF-03/04). */
+export function RevisionIdentidad() {
+  const { items: verifs, aviso, ver, motivo, botones } = useRevision('/analista/verificaciones')
   return (
-    <Tarjeta titulo="Revisiones pendientes" ancha>
+    <Tarjeta titulo="Identidad en revisión manual" subtitulo="Cuentas cuyo puntaje de verificación quedó bajo el umbral." ancha>
       {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
-
-      <h2>Identidad en revisión manual ({verifs.length})</h2>
       {verifs.length === 0 && <p className="tenue">No hay verificaciones pendientes.</p>}
       <ul className="lista">
         {verifs.map((v) => (
@@ -81,8 +97,16 @@ export default function PanelAnalista() {
           </li>
         ))}
       </ul>
+    </Tarjeta>
+  )
+}
 
-      <h2>Documentos del predio ({docs.length})</h2>
+/** «Verificar productor y predio» (RF-05), incluido en «Evaluar y publicar proyecto». */
+export function RevisionPredio() {
+  const { items: docs, aviso, ver, motivo, botones } = useRevision('/analista/documentos')
+  return (
+    <Tarjeta titulo="Documentos del predio por revisar" subtitulo="Sin RUNSA y título o contrato aprobados, el proyecto no pasa a evaluación técnica." ancha>
+      {aviso && <Aviso tipo={aviso.tipo}>{aviso.texto}</Aviso>}
       {docs.length === 0 && <p className="tenue">No hay documentos pendientes.</p>}
       <ul className="lista">
         {docs.map((d) => (

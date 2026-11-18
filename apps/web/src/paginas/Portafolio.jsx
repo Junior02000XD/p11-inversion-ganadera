@@ -27,7 +27,7 @@ export default function Portafolio() {
               {portafolio.map((p) => (
                 <tr key={p.proyectoId}>
                   <td>
-                    <Link to={`/portafolio/${p.proyectoId}`}>{buscarProyecto(p.proyectoId).nombre}</Link>
+                    <Link to={`/expedientes/${p.proyectoId}`}>{buscarProyecto(p.proyectoId).nombre}</Link>
                   </td>
                   <td>{formatoBs(p.montoBs)}</td>
                   <td>

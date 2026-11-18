@@ -17,7 +17,7 @@ export default function Contrato() {
     e.preventDefault()
     if (!acepta) return setError('Debes aceptar el contrato y los riesgos.')
     if (codigo.length !== 6) return setError('Ingresa el código de 6 dígitos que te enviamos por correo.')
-    navegar(`/catalogo/${proyecto.id}/pago`, { state: { monto } })
+    navegar(`/inversiones/${proyecto.id}/pago`, { state: { monto } })
   }
 
   return (

@@ -17,7 +17,9 @@ export default function Invertir() {
     const valor = Number(monto)
     if (valor < proyecto.minimoBs) return setError(`El mínimo es ${formatoBs(proyecto.minimoBs)}.`)
     if (valor > cupo) return setError('El monto excede el cupo disponible.')
-    navegar(`/catalogo/${proyecto.id}/contrato`, { state: { monto: valor } })
+    navegar(`/inversiones/${proyecto.id}/contrato`, {
+      state: { monto: valor },
+    })
   }
 
   return (

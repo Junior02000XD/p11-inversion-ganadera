@@ -27,12 +27,14 @@ export default function PagoQr() {
     <Tarjeta titulo="Pagar con QR" subtitulo={`${proyecto.nombre} · Monto: ${formatoBs(monto)}`}>
       <div className="formulario">
         <div className="qr" role="img" aria-label="Código QR de pago" />
-        <span className="tenue">Escanéalo desde la app de tu banco. Tiempo restante de la reserva: {minutos}:{segundos}</span>
+        <span className="tenue">
+          Escanéalo desde la app de tu banco. Tiempo restante de la reserva: {minutos}:{segundos}
+        </span>
         <Progreso porcentaje={(restantes / RESERVA_SEGUNDOS) * 100} />
         {vencida ? (
           <Aviso>Pago rechazado o vencido: se libera tu cupo.</Aviso>
         ) : (
-          <button className="boton" onClick={() => navegar(`/catalogo/${proyecto.id}/ronda`, { state: { monto } })}>
+          <button className="boton" onClick={() => navegar(`/rondas/${proyecto.id}`, { state: { monto } })}>
             Ya pagué, verificar
           </button>
         )}
