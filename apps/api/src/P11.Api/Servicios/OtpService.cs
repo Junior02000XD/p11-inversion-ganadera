@@ -33,8 +33,9 @@ public class OtpService(AppDbContext db, ICorreoService correo, IOptions<OtpOpti
         });
         await db.SaveChangesAsync(ct);
 
+        var para = proposito == PropositoOtp.FirmarContrato ? "firmar el contrato de inversión" : "confirmar la cuenta";
         await correo.EnviarAsync(usuario.Email!, $"Tu código de verificación: {codigo}",
-            $"Tu código para confirmar la cuenta es {codigo}.\nVence en {_o.MinutosVigencia} minutos. " +
+            $"Tu código para {para} es {codigo}.\nVence en {_o.MinutosVigencia} minutos. " +
             "Si no fuiste tú, ignora este correo.", ct);
     }
 

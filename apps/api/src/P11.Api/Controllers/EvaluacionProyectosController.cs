@@ -14,7 +14,7 @@ namespace P11.Api.Controllers;
 [ApiController]
 [Route("api/analista/proyectos")]
 [Authorize(Roles = $"{Roles.Analista},{Roles.Administrador}")]
-public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto ciclo) : ControllerBase
+public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto ciclo, TimeProvider reloj) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<ProyectoEvaluacionDto>>> Listar(
@@ -46,7 +46,7 @@ public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto 
 
     /// <summary>
     /// La decisión del analista se convierte en un comando; el estado del proyecto decide si vale.
-    /// Un proyecto que no está en revisión técnica responde 409.
+    /// Un proyecto que no está en revisión técnica, o una aprobación sin riesgos ni supuestos, responde 409.
     /// </summary>
     [HttpPost("{id:guid}/decision")]
     public async Task<ActionResult<ProyectoDto>> Decidir(Guid id, EvaluacionRequest req, CancellationToken ct)
@@ -61,7 +61,7 @@ public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto 
             DecisionProyecto.Observar => new ObservarProyecto(id, analista, texto),
             DecisionProyecto.Rechazar => new RechazarProyecto(id, analista, texto),
             _ => new AprobarYPublicarProyecto(id, analista, texto.Length > 0 ? texto : "Aprobado en evaluación técnica.",
-                req.RiesgosCargados, req.TresEscenarios),
+                req.ADatosPublicacion(), reloj.GetUtcNow()),
         };
 
         try

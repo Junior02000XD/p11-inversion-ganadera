@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using P11.Api.Dominio;
+using P11.Api.Dominio.Inversiones;
 using P11.Api.Dominio.Proyectos;
 
 namespace P11.Api.Datos;
@@ -14,6 +15,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<DocumentoArchivo> Documentos => Set<DocumentoArchivo>();
     public DbSet<ProyectoGanadero> Proyectos => Set<ProyectoGanadero>();
     public DbSet<HistorialProyecto> HistorialProyectos => Set<HistorialProyecto>();
+    public DbSet<Inversion> Inversiones => Set<Inversion>();
 
     /// <summary>Montos en bolivianos, pesos y litros: dos decimales en todas las columnas decimal.</summary>
     protected override void ConfigureConventions(ModelConfigurationBuilder c) =>
@@ -67,6 +69,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(p => p.Estado).HasConversion<string>().HasMaxLength(20);
             e.Property(p => p.Nombre).HasMaxLength(150);
             e.Property(p => p.Ubicacion).HasMaxLength(200);
+            e.Property(p => p.NivelRiesgo).HasConversion<string>().HasMaxLength(10);
+            e.Property(p => p.Riesgos).HasMaxLength(1000);
             e.HasIndex(p => p.ProductorId);
             e.HasOne<Usuario>().WithMany().HasForeignKey(p => p.ProductorId);
         });
@@ -81,6 +85,23 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             e.HasIndex(h => h.ProyectoId);
             // La bitácora no se borra en cascada con el proyecto (RNF-03).
             e.HasOne<ProyectoGanadero>().WithMany().HasForeignKey(h => h.ProyectoId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // RF-13 a RF-16. Ni el proyecto ni el inversionista se borran en cascada: la inversión y la
+        // evidencia de la firma del contrato quedan siempre (RF-14).
+        b.Entity<Inversion>(e =>
+        {
+            e.ToTable("Inversiones");
+            e.Property(i => i.Estado).HasConversion<string>().HasMaxLength(20);
+            e.Property(i => i.ParticipacionPct).HasPrecision(9, 4);
+            e.Property(i => i.ContratoVersion).HasMaxLength(30);
+            e.Property(i => i.ContratoAceptadoPor).HasMaxLength(256);
+            e.Property(i => i.ReferenciaPago).HasMaxLength(30);
+            e.Property(i => i.CodigoConstancia).HasMaxLength(30);
+            e.HasIndex(i => i.ProyectoId);
+            e.HasIndex(i => i.InversionistaId);
+            e.HasOne<ProyectoGanadero>().WithMany().HasForeignKey(i => i.ProyectoId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Usuario>().WithMany().HasForeignKey(i => i.InversionistaId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

@@ -1,0 +1,1650 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guía del Proyecto 11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700&family=Source+Sans+3:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap">
+<!--
+  GUÍA DE ESTUDIO DEL PROYECTO 11 — cómo mantenerla
+  · Este archivo es la fuente: docs/guia/guia-de-estudio.html. Las capturas están en docs/guia/capturas/.
+  · Lo que cambia de sprint a sprint (estado de cada sprint y de cada caso de uso) está en el bloque
+    «DATOS DE LA GUÍA», en el <script> del final. Para el Sprint 3, se cambia ahí y no en el HTML.
+  · Cada sección empieza con un recuadro «En breve» que repite lo mínimo para leerla sola.
+  · Al terminar un cambio, sumar una fila en la sección «Historial de la guía».
+-->
+<style>
+/* Layout: índice fijo a la izquierda y una columna de lectura; en celular, el índice pasa a una barra de chips arriba.
+   Colores: los mismos tokens de la web del proyecto (estilo «Pampa verde»), para que la guía se sienta parte del producto. */
+:root {
+  --fondo: #f4f1e6;
+  --superficie: #fffdf6;
+  --hundido: #ebe5d2;
+  --texto: #2c3326;
+  --tenue: #646b59;
+  --borde: #ddd5bd;
+  --acento: #5c6e4a;
+  --acento-fuerte: #3d4a30;
+  --acento-suave: #e6ead8;
+  --destacado: #b8953c;
+  --ocre: #7c5d14;
+  --ocre-suave: #f3e5bd;
+  --peligro: #a12f2f;
+  --peligro-suave: #f8e4e2;
+  --ok: #46602f;
+  --ok-suave: #e2ead2;
+  --azul: #2f5a7a;
+  --azul-suave: #dfe9f1;
+  --codigo-fondo: #262c21;
+  --codigo-texto: #e9ebdf;
+  --codigo-clave: #d6b55c;
+  --codigo-texto2: #a9c08a;
+  --codigo-coment: #8f9884;
+  --codigo-tipo: #9cc3dd;
+  --sombra: 0 1px 2px rgb(60 70 40 / 0.08), 0 6px 18px rgb(60 70 40 / 0.08);
+  --fuente-texto: 'Source Sans 3', 'Segoe UI', Roboto, Arial, sans-serif;
+  --fuente-titulos: 'Bitter', Georgia, 'Times New Roman', serif;
+  --fuente-codigo: 'Source Code Pro', ui-monospace, Consolas, monospace;
+  --cabecera: #3d4a30;
+  --radio: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fondo: #151a12; --superficie: #1e251a; --hundido: #252d20; --texto: #e9ebdf; --tenue: #a3ab96; --borde: #343d2c;
+    --acento: #a9c08a; --acento-fuerte: #c9dbb0; --acento-suave: #2a3322; --destacado: #d6b55c; --ocre: #e0c06a; --ocre-suave: #352e18;
+    --peligro: #f0a29a; --peligro-suave: #3a1f1c; --ok: #b5cf94; --ok-suave: #26321d; --azul: #9cc3dd; --azul-suave: #1d2b36;
+    --codigo-fondo: #10140d; --sombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px rgb(0 0 0 / 0.25); --cabecera: #232b1d; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fondo: #151a12; --superficie: #1e251a; --hundido: #252d20; --texto: #e9ebdf; --tenue: #a3ab96; --borde: #343d2c;
+  --acento: #a9c08a; --acento-fuerte: #c9dbb0; --acento-suave: #2a3322; --destacado: #d6b55c; --ocre: #e0c06a; --ocre-suave: #352e18;
+  --peligro: #f0a29a; --peligro-suave: #3a1f1c; --ok: #b5cf94; --ok-suave: #26321d; --azul: #9cc3dd; --azul-suave: #1d2b36;
+  --codigo-fondo: #10140d; --sombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px rgb(0 0 0 / 0.25); --cabecera: #232b1d; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--fondo); color: var(--texto);
+  font-family: var(--fuente-texto); font-size: 17px; line-height: 1.6;
+}
+h1, h2, h3, h4 { font-family: var(--fuente-titulos); line-height: 1.2; text-wrap: balance; margin: 0; color: var(--texto); }
+h2 { font-size: 1.9rem; }
+h3 { font-size: 1.3rem; margin-top: 2rem; }
+h4 { font-size: 1.05rem; margin-top: 1.4rem; }
+p { margin: 0.6rem 0; }
+a { color: var(--acento); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--destacado); outline-offset: 2px;
+}
+code { font-family: var(--fuente-codigo); font-size: 0.86em; background: var(--hundido); padding: 0.08em 0.35em; border-radius: 5px; overflow-wrap: anywhere; }
+ul, ol { padding-left: 1.3rem; margin: 0.5rem 0; }
+li { margin: 0.25rem 0; }
+table { font-size: inherit; }
+img { max-width: 100%; }
+.tenue { color: var(--tenue); }
+
+/* ---- Cabecera ---- */
+.cabecera {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--cabecera); color: #f4f1e6;
+  padding-block: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 21; background: var(--cabecera); }
+.logo { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: #d9c48a; color: #3d4a30; font-weight: 700; font-size: 0.8rem; flex: 0 0 auto; }
+.cabecera-titulo { font-family: var(--fuente-titulos); font-weight: 700; font-size: 1.1rem; color: #f4f1e6; text-decoration: none; }
+.cabecera-sub { color: #d8dcc8; font-size: 0.9rem; }
+.cabecera .espacio { flex: 1; }
+.boton-indice { display: none; border: 1px solid #c9cfb6; background: transparent; color: #f4f1e6; border-radius: 999px; padding: 4px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
+
+/* ---- Marco: índice + contenido ---- */
+.marco { display: grid; grid-template-columns: 270px minmax(0, 1fr); align-items: start; }
+.indice {
+  position: sticky; top: 58px; max-height: calc(100vh - 58px); overflow-y: auto;
+  padding: 20px 12px 40px; background: var(--hundido); border-right: 1px solid var(--borde); align-self: stretch;
+}
+.indice p { margin: 4px 10px 8px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tenue); }
+.indice a { display: block; padding: 6px 10px; border-radius: 8px; color: var(--texto); text-decoration: none; font-size: 0.93rem; line-height: 1.3; border-left: 3px solid transparent; }
+.indice a:hover { background: var(--acento-suave); }
+.indice a.activo { border-left-color: var(--destacado); background: var(--acento-suave); font-weight: 600; }
+.indice a.sub { padding-left: 24px; font-size: 0.86rem; color: var(--tenue); }
+.indice .num { display: inline-block; min-width: 1.6em; color: var(--tenue); font-variant-numeric: tabular-nums; }
+
+main {
+  min-width: 0; padding-block: 28px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.columna { max-width: 900px; margin: 0 auto; }
+.seccion { padding-top: 26px; margin-top: 26px; border-top: 1px solid var(--borde); }
+.seccion:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+.eyebrow { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ocre); margin: 0 0 4px; }
+.lead { font-size: 1.12rem; color: var(--tenue); max-width: 65ch; }
+.texto { max-width: 68ch; }
+
+/* «En breve»: lo mínimo para leer la sección sin volver atrás */
+.breve {
+  margin: 14px 0 18px; padding: 12px 16px; border-radius: var(--radio);
+  background: var(--azul-suave); border: 1px solid color-mix(in srgb, var(--azul) 25%, transparent);
+}
+.breve strong:first-child { display: block; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--azul); margin-bottom: 2px; }
+.breve p { margin: 0.3rem 0; }
+
+.nota { padding: 10px 14px; border-radius: 10px; background: var(--ocre-suave); color: var(--texto); margin: 12px 0; }
+.nota-ok { background: var(--ok-suave); }
+.nota-peligro { background: var(--peligro-suave); }
+
+/* ---- Tarjetas y rejillas ---- */
+.rejilla { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); margin: 14px 0; }
+.rejilla-2 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin: 14px 0; }
+.tarjeta { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 14px 16px; min-width: 0; }
+.tarjeta h4 { margin-top: 0; }
+.tarjeta p { font-size: 0.95rem; }
+.tarjeta .etiqueta { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tenue); }
+.rol { border-top: 4px solid var(--acento); }
+.rol.productor { border-top-color: var(--destacado); }
+.rol.analista { border-top-color: var(--azul); }
+.rol.admin { border-top-color: var(--peligro); }
+
+.chip { display: inline-block; font-size: 0.76rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--hundido); color: var(--tenue); white-space: nowrap; vertical-align: middle; }
+.chip-ok { background: var(--ok-suave); color: var(--ok); }
+.chip-ocre { background: var(--ocre-suave); color: var(--ocre); }
+.chip-peligro { background: var(--peligro-suave); color: var(--peligro); }
+.chip-azul { background: var(--azul-suave); color: var(--azul); }
+
+/* ---- Tablas ---- */
+.tabla-scroll { overflow-x: auto; margin: 12px 0; border: 1px solid var(--borde); border-radius: var(--radio); background: var(--superficie); }
+.tabla { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+.tabla th { text-align: left; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--tenue); background: var(--hundido); padding: 8px 12px; white-space: nowrap; }
+.tabla td { padding: 8px 12px; border-top: 1px solid var(--borde); vertical-align: top; }
+.tabla td:first-child { font-weight: 600; }
+.tabla .centro { text-align: center; }
+.tabla .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.matriz td { text-align: center; font-weight: 400; }
+.matriz td:first-child { text-align: left; font-weight: 600; }
+.marca { color: var(--ok); font-weight: 700; }
+
+/* ---- Capturas ---- */
+.capturas { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); margin: 14px 0; }
+.capturas.una { grid-template-columns: minmax(0, 1fr); }
+figure { margin: 0; min-width: 0; }
+.captura button { display: block; width: 100%; padding: 0; border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; background: var(--superficie); cursor: zoom-in; }
+.captura img { display: block; width: 100%; height: 190px; object-fit: cover; object-position: top center; }
+.capturas.una .captura img { height: auto; max-height: 520px; }
+.captura figcaption { font-size: 0.86rem; color: var(--tenue); margin-top: 6px; line-height: 1.4; }
+.captura figcaption b { color: var(--texto); }
+dialog#visor { border: 0; padding: 0; background: transparent; max-width: min(1200px, 96vw); max-height: 94vh; }
+dialog#visor::backdrop { background: rgb(10 12 8 / 0.82); }
+dialog#visor img { display: block; max-width: 100%; max-height: 86vh; border-radius: 10px; margin: 0 auto; }
+dialog#visor p { color: #f4f1e6; text-align: center; margin: 8px 0 0; }
+dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; border-radius: 999px; background: #f4f1e6; color: #2c3326; font: inherit; font-weight: 700; padding: 4px 12px; cursor: pointer; }
+
+/* ---- Pasos numerados (un flujo real, el orden importa) ---- */
+.pasos { list-style: none; padding: 0; counter-reset: paso; display: grid; gap: 8px; }
+.pasos > li { counter-increment: paso; position: relative; padding: 10px 14px 10px 52px; background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; margin: 0; }
+.pasos > li::before { content: counter(paso); position: absolute; left: 12px; top: 10px; width: 28px; height: 28px; border-radius: 50%; background: var(--acento); color: var(--superficie); display: grid; place-items: center; font-weight: 700; font-size: 0.85rem; }
+.pasos > li.activo { border-color: var(--destacado); box-shadow: 0 0 0 2px var(--ocre-suave); }
+.pasos .donde { display: block; font-size: 0.85rem; color: var(--tenue); }
+.pasos-clic > li { cursor: pointer; }
+
+/* ---- Código ---- */
+.codigo { margin: 12px 0; border-radius: var(--radio); overflow: hidden; border: 1px solid var(--borde); background: var(--codigo-fondo); }
+.codigo-cabecera { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 6px 14px; background: var(--hundido); font-size: 0.82rem; color: var(--tenue); }
+.codigo-cabecera code { background: transparent; padding: 0; }
+.codigo pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
+.codigo pre code { background: transparent; padding: 0; font-size: 0.84rem; line-height: 1.55; color: var(--codigo-texto); overflow-wrap: normal; white-space: pre; }
+.hljs-keyword, .hljs-built_in, .hljs-literal { color: var(--codigo-clave); }
+.hljs-string, .hljs-template-string { color: var(--codigo-texto2); }
+.hljs-comment, .hljs-doctag { color: var(--codigo-coment); font-style: italic; }
+.hljs-title, .hljs-type, .hljs-class .hljs-title, .hljs-title.class_ { color: var(--codigo-tipo); }
+.hljs-number, .hljs-attr, .hljs-meta { color: #e8a87c; }
+.explica { margin: 0 0 18px; padding-left: 1.2rem; }
+.explica li { font-size: 0.95rem; }
+
+/* ---- Árbol del repositorio ---- */
+.arbol { font-family: var(--fuente-codigo); font-size: 0.9rem; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 10px 14px; }
+.arbol details { margin-left: 1rem; }
+.arbol > details { margin-left: 0; }
+.arbol summary { cursor: pointer; padding: 3px 0; list-style-position: outside; }
+.arbol summary b { color: var(--acento); }
+.arbol .hoja { margin: 2px 0 2px 1.9rem; }
+.arbol .desc { font-family: var(--fuente-texto); font-size: 0.9rem; color: var(--tenue); }
+
+/* ---- Diagramas SVG ---- */
+.diagrama { overflow-x: auto; margin: 14px 0; padding: 12px; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); }
+.diagrama svg { display: block; min-width: 640px; width: 100%; height: auto; }
+.d-caja { fill: var(--hundido); stroke: var(--borde); stroke-width: 1.5; }
+.d-caja.verde { fill: var(--acento-suave); stroke: var(--acento); }
+.d-caja.ocre { fill: var(--ocre-suave); stroke: var(--destacado); }
+.d-caja.azul { fill: var(--azul-suave); stroke: var(--azul); }
+.d-caja.roja { fill: var(--peligro-suave); stroke: var(--peligro); }
+.d-caja.prendida { stroke: var(--destacado); stroke-width: 3.5; }
+.d-titulo { fill: var(--texto); font-family: var(--fuente-titulos); font-weight: 700; font-size: 15px; }
+.d-texto { fill: var(--tenue); font-family: var(--fuente-texto); font-size: 12.5px; }
+.d-flecha { stroke: var(--tenue); stroke-width: 1.6; fill: none; }
+.d-etiqueta { fill: var(--ocre); font-family: var(--fuente-texto); font-size: 12px; font-weight: 600; }
+.d-punta { fill: var(--tenue); }
+
+/* ---- Glosario y práctica ---- */
+.buscador { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 12px 0; }
+.buscador input { flex: 1 1 240px; min-width: 0; font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); }
+.filtros { display: flex; gap: 6px; flex-wrap: wrap; }
+.filtros button { font: inherit; font-size: 0.88rem; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); cursor: pointer; }
+.filtros button[aria-pressed="true"] { background: var(--acento); border-color: var(--acento); color: var(--superficie); }
+.termino h4 { font-family: var(--fuente-texto); font-size: 1.02rem; font-weight: 700; }
+.termino .analogia { color: var(--tenue); font-size: 0.92rem; border-left: 3px solid var(--destacado); padding-left: 10px; margin-top: 6px; }
+.pregunta { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; margin: 8px 0; }
+.pregunta summary { cursor: pointer; padding: 10px 14px; font-weight: 600; }
+.pregunta summary .chip { margin-right: 6px; }
+.pregunta .respuesta { padding: 0 14px 12px 14px; border-top: 1px dashed var(--borde); }
+
+/* ---- Simulador de práctica ---- */
+.mini { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin: 12px 0; }
+.mini label { display: flex; flex-direction: column; font-size: 0.86rem; font-weight: 600; gap: 4px; }
+.mini input { font: inherit; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); min-width: 0; }
+.resultado-sim { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.resultado-sim div { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; padding: 10px 12px; }
+.resultado-sim b { display: block; font-family: var(--fuente-titulos); font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.resultado-sim span { font-size: 0.82rem; color: var(--tenue); }
+
+/* ---- Línea de tiempo de sprints ---- */
+.linea-tiempo { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 16px 0; }
+.hito { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; padding: 10px 12px; }
+.hito .fecha { font-size: 0.8rem; color: var(--tenue); font-variant-numeric: tabular-nums; }
+.hito strong { display: block; font-family: var(--fuente-titulos); }
+.hito p { font-size: 0.88rem; margin: 4px 0 6px; }
+.hito.actual { border-color: var(--destacado); box-shadow: 0 0 0 2px var(--ocre-suave); }
+
+.cu-bloque { margin-top: 30px; padding: 18px; background: var(--superficie); border: 1px solid var(--borde); border-radius: 16px; box-shadow: var(--sombra); }
+.cu-bloque > h3 { margin-top: 0; }
+.cu-meta { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 4px; }
+.cu-bloque .tabla-scroll { background: var(--fondo); }
+
+/* ---- Celular ---- */
+@media (max-width: 900px) {
+  .marco { grid-template-columns: minmax(0, 1fr); }
+  .boton-indice { display: inline-block; }
+  .cabecera-sub { display: none; }
+  .indice { display: none; position: fixed; top: 58px; left: 0; right: 0; bottom: 0; max-height: none; z-index: 15; border-right: 0; }
+  .indice.abierto { display: block; }
+  body { font-size: 16px; }
+  h2 { font-size: 1.55rem; }
+  .resultado-sim { grid-template-columns: minmax(0, 1fr); }
+  .cu-bloque { padding: 14px; }
+}
+</style>
+</head>
+<body>
+
+<header class="cabecera">
+  <span class="logo" aria-hidden="true">P11</span>
+  <a class="cabecera-titulo" href="#inicio">Guía del Proyecto 11</a>
+  <span class="cabecera-sub">Plataforma de inversión ganadera · Los Cesaritos</span>
+  <span class="espacio"></span>
+  <button class="boton-indice" id="boton-indice" type="button" aria-expanded="false" aria-controls="indice">Índice</button>
+</header>
+
+<div class="marco">
+<nav class="indice" id="indice" aria-label="Índice de la guía">
+  <p>Índice</p>
+  <a href="#inicio"><span class="num">0</span>Cómo usar esta guía</a>
+  <a href="#proyecto"><span class="num">1</span>El proyecto en un minuto</a>
+  <a href="#glosario"><span class="num">2</span>Palabras clave</a>
+  <a href="#tecnologias"><span class="num">3</span>Tecnologías y por qué</a>
+  <a href="#flujo"><span class="num">4</span>Cómo encaja todo</a>
+  <a href="#repositorio"><span class="num">5</span>Mapa del repositorio</a>
+  <a href="#codigo"><span class="num">6</span>Código clave, explicado</a>
+  <a href="#casos-de-uso"><span class="num">7</span>Casos de uso y pantallas</a>
+  <a class="sub" href="#cu-cuenta">Cuenta e identidad</a>
+  <a class="sub" href="#cu-admin">Usuarios y bitácora</a>
+  <a class="sub" href="#cu-postular">Postular proyecto</a>
+  <a class="sub" href="#cu-evaluar">Evaluar y publicar</a>
+  <a class="sub" href="#cu-catalogo">Catálogo y simulador</a>
+  <a class="sub" href="#cu-invertir">Invertir</a>
+  <a class="sub" href="#cu-sprint3">Los del Sprint 3</a>
+  <a href="#cifras"><span class="num">8</span>Cifras y reglas clave</a>
+  <a href="#patrones"><span class="num">9</span>Patrones de diseño</a>
+  <a href="#pruebas"><span class="num">10</span>Pruebas automáticas</a>
+  <a href="#demo"><span class="num">11</span>Levantar y mostrar la demo</a>
+  <a href="#practica"><span class="num">12</span>Preguntas para practicar</a>
+  <a href="#historial"><span class="num">13</span>Historial de la guía</a>
+</nav>
+
+<main>
+<div class="columna">
+
+<!-- ============================ 0. INICIO ============================ -->
+<section class="seccion" id="inicio">
+  <p class="eyebrow">Proyecto 11 · Universidad Privada del Valle, Santa Cruz</p>
+  <h1 style="font-size: clamp(2rem, 5vw, 2.8rem);">Guía del Proyecto 11</h1>
+  <p class="lead">Todo lo que hace falta para entender la plataforma de inversión ganadera: qué resuelve, con qué está hecha, dónde está cada cosa en el código y cómo funciona cada pantalla, con sus reglas.</p>
+
+  <div class="linea-tiempo" id="linea-tiempo"><!-- se llena con los DATOS DE LA GUÍA --></div>
+
+  <div class="rejilla-2">
+    <div class="tarjeta">
+      <h4>Cómo leerla</h4>
+      <p>Cada sección se puede leer sola. Arriba de cada una hay un recuadro <b>«En breve»</b> con lo mínimo que necesitas saber de las secciones anteriores, así no tienes que volver atrás.</p>
+      <p>Las palabras técnicas se explican en la sección <a href="#glosario">Palabras clave</a>, con ejemplos de la vida real.</p>
+    </div>
+    <div class="tarjeta">
+      <h4>Por dónde empezar</h4>
+      <ul>
+        <li>Si recién llegas: secciones 1, 3 y 4.</li>
+        <li>Si te van a preguntar por una pantalla: sección 7.</li>
+        <li>Si te van a pedir código: secciones 5 y 6.</li>
+        <li>Para repasar rápido: secciones 8 y 12.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="nota">Las capturas son de la aplicación real funcionando (API, base de datos SQL Server y correo de prueba). Haz clic en cualquiera para verla en grande.</p>
+</section>
+
+<!-- ============================ 1. PROYECTO ============================ -->
+<section class="seccion" id="proyecto">
+  <p class="eyebrow">Sección 1</p>
+  <h2>El proyecto en un minuto</h2>
+  <div class="breve"><strong>En breve</strong><p>Esta es la primera sección: no necesitas nada previo.</p></div>
+
+  <h3>El problema</h3>
+  <p class="texto">En Santa Cruz hay productores de ganado (engorde de novillos y lecherías) que necesitan capital para comprar animales o alimento, pero no tienen garantías para un préstamo del banco. Del otro lado hay personas en la ciudad que querrían invertir montos chicos en ganado, pero no conocen a nadie del rubro y no confían en arreglos de palabra.</p>
+  <h3>La solución</h3>
+  <p class="texto">Una plataforma (web y Android) que conecta a los dos. El productor postula su proyecto, un analista técnico lo revisa y lo publica con sus riesgos, y los inversionistas aportan desde <b>Bs 100</b>. Todo queda registrado: quién firmó, cuánto pagó, qué pasó con el ganado y cómo se repartió el resultado.</p>
+
+  <h3>Los cuatro roles</h3>
+  <div class="rejilla">
+    <div class="tarjeta rol"><span class="etiqueta">Se registra solo</span><h4>Inversionista</h4><p>Explora el catálogo, simula escenarios, invierte, firma el contrato con un código y paga con QR. Ve su portafolio y su constancia.</p></div>
+    <div class="tarjeta rol productor"><span class="etiqueta">Se registra solo</span><h4>Productor</h4><p>Dueño del ganado. Sube los documentos de su predio, llena la ficha del proyecto y la envía a evaluación.</p></div>
+    <div class="tarjeta rol analista"><span class="etiqueta">Cuenta interna</span><h4>Analista</h4><p>Equipo técnico. Revisa identidades y documentos, evalúa proyectos y los publica con riesgos y supuestos.</p></div>
+    <div class="tarjeta rol admin"><span class="etiqueta">Cuenta interna</span><h4>Administrador</h4><p>Gestiona usuarios y roles, consulta la bitácora y puede operar <b>todas</b> las pantallas, con el selector «Ver como».</p></div>
+  </div>
+
+  <h3>El recorrido de un proyecto</h3>
+  <p class="texto">Un proyecto pasa por estos momentos. Los tres primeros están hechos (Sprints 1 y 2); los demás se construyen en el Sprint 3.</p>
+  <ol class="pasos">
+    <li><b>Postular.</b> El productor verifica su identidad, sube RUNSA y título del predio, y llena la ficha. <span class="donde">Sprint 1 · RF-01 a RF-08</span></li>
+    <li><b>Evaluar y publicar.</b> El analista observa, rechaza o aprueba. Si aprueba, carga riesgos y supuestos y el proyecto entra al catálogo. <span class="donde">Sprint 2 · RF-09, RF-10</span></li>
+    <li><b>Invertir.</b> Los inversionistas simulan, reservan cupo, firman con un código y pagan con QR. Reciben su participación y su constancia. <span class="donde">Sprint 2 · RF-11 a RF-16</span></li>
+    <li><b>Cerrar la ronda, comprar y trasladar el ganado.</b> <span class="donde">Sprint 3 · RF-17, RF-24, RF-25</span></li>
+    <li><b>Registrar avances e incidencias</b> (pesajes, mortalidad, reclamos al seguro), también sin conexión desde Android. <span class="donde">Sprint 3 · RF-18 a RF-21</span></li>
+    <li><b>Liquidar.</b> Se vende el ganado, se descuentan costos y se reparte el resultado según la participación. <span class="donde">Sprint 3 · RF-22, RF-23, RF-26</span></li>
+  </ol>
+  <p class="nota">Regla de oro del proyecto (RNF-06): <b>ninguna pantalla promete una ganancia segura</b>. Toda rentabilidad se muestra como estimación, junto a sus riesgos.</p>
+
+  <h3>Quién es quién en el equipo</h3>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Integrante</th><th>Rol Scrum</th></tr></thead>
+    <tbody>
+      <tr><td>Sergio Ricardo Aguilera Pantoja</td><td>Scrum Master</td></tr>
+      <tr><td>Matías Raldes León</td><td>Product Owner</td></tr>
+      <tr><td>Julio César Cruz Kübber</td><td>Desarrollador</td></tr>
+      <tr><td>Jael Brandon Quiroga Vedia</td><td>Desarrollador</td></tr>
+    </tbody>
+  </table></div>
+  <p class="texto">El repositorio cubre tres materias: <b>Proyecto de Sistemas 1</b> (el producto por sprints), <b>Programación Web 3</b> (la API con SQL Server y Swagger) e <b>Ingeniería de Software</b> (requisitos, diagramas UML y patrones de diseño).</p>
+</section>
+
+<!-- ============================ 2. GLOSARIO ============================ -->
+<section class="seccion" id="glosario">
+  <p class="eyebrow">Sección 2</p>
+  <h2>Palabras clave</h2>
+  <div class="breve"><strong>En breve</strong><p>El sistema tiene dos partes que se hablan: la <b>web</b> (lo que ve el usuario en el navegador) y la <b>API</b> (el programa del servidor que aplica las reglas y guarda los datos en la base de datos). Aquí está el vocabulario para hablar de ambas.</p></div>
+
+  <div class="buscador">
+    <label for="buscar-termino" style="font-weight:700">Buscar</label>
+    <input id="buscar-termino" type="search" placeholder="Escribe una palabra: token, migración, 409…">
+  </div>
+  <div class="rejilla" id="terminos">
+    <div class="tarjeta termino"><h4>Frontend (la web)</h4><p>La parte que corre en el navegador: pantallas, botones, formularios. En P11 está en <code>apps/web</code>, hecha con React.</p><p class="analogia">Es el mostrador de una tienda: lo que el cliente ve y toca.</p></div>
+    <div class="tarjeta termino"><h4>Backend (la API)</h4><p>El programa que corre en el servidor. Recibe pedidos, aplica las reglas del negocio y guarda en la base de datos. En P11 está en <code>apps/api</code>, hecho con ASP.NET Core.</p><p class="analogia">Es la trastienda: donde se verifica, se cobra y se anota.</p></div>
+    <div class="tarjeta termino"><h4>API</h4><p>Conjunto de direcciones a las que la web (o Android) le pide cosas al servidor. Habla en JSON por HTTP.</p><p class="analogia">Es la ventanilla con un menú fijo: pides algo de la lista y te responden.</p></div>
+    <div class="tarjeta termino"><h4>Endpoint</h4><p>Una dirección concreta de la API con su método, por ejemplo <code>POST /api/inversiones</code> (reservar cupo).</p><p class="analogia">Una ventanilla específica: «depósitos», «retiros».</p></div>
+    <div class="tarjeta termino"><h4>Métodos HTTP</h4><p><code>GET</code> consulta, <code>POST</code> crea o ejecuta una acción, <code>PUT</code> reemplaza (edita), <code>DELETE</code> borra.</p><p class="analogia">Mirar, pedir, cambiar, cancelar.</p></div>
+    <div class="tarjeta termino"><h4>Código de estado</h4><p>Número con el que la API dice cómo le fue: <code>200</code> bien, <code>201</code> creado, <code>204</code> bien sin contenido, <code>400</code> datos inválidos, <code>401</code> sin sesión o credenciales malas, <code>403</code> tu rol no puede, <code>404</code> no existe (o no es tuyo), <code>409</code> choca con una regla o con el estado actual, <code>423</code> cuenta bloqueada.</p><p class="analogia">Como el semáforo de un trámite: aprobado, observado, rechazado.</p></div>
+    <div class="tarjeta termino"><h4>JSON</h4><p>Formato de texto para mandar datos: <code>{ "proyectoId": "…", "montoBs": 1000 }</code>.</p><p class="analogia">Un formulario con casillas que las dos partes saben leer.</p></div>
+    <div class="tarjeta termino"><h4>Base de datos relacional</h4><p>Guarda los datos en tablas relacionadas entre sí (usuarios, proyectos, inversiones). En P11 es SQL Server.</p><p class="analogia">Un archivador con carpetas que se citan unas a otras por número.</p></div>
+    <div class="tarjeta termino"><h4>Tabla, fila, columna</h4><p>Una tabla es un tipo de dato (<code>Inversiones</code>); cada fila es un registro (una inversión) y cada columna un campo (<code>MontoBs</code>).</p><p class="analogia">Una hoja de Excel.</p></div>
+    <div class="tarjeta termino"><h4>Clave foránea (FK)</h4><p>Columna que apunta a una fila de otra tabla. <code>Inversiones.ProyectoId</code> apunta a <code>Proyectos.Id</code>.</p><p class="analogia">En la boleta, el número de cliente que te lleva a su ficha.</p></div>
+    <div class="tarjeta termino"><h4>ORM (Entity Framework Core)</h4><p>Traduce clases de C# a tablas y consultas SQL. Escribes <code>db.Inversiones.Add(x)</code> y EF genera el <code>INSERT</code>.</p><p class="analogia">Un traductor entre el idioma del programa y el de la base.</p></div>
+    <div class="tarjeta termino"><h4>Migración</h4><p>Archivo que describe un cambio en la estructura de la base (crear tabla, agregar columna). La API las aplica sola al arrancar. Hay dos: <code>Inicial</code> y <code>Sprint2Inversiones</code>.</p><p class="analogia">El plano de una remodelación, con fecha, que se puede repetir en otra casa igual.</p></div>
+    <div class="tarjeta termino"><h4>Entidad / Dominio</h4><p>Las clases que representan el negocio y sus reglas: <code>ProyectoGanadero</code>, <code>Inversion</code>. Están en la carpeta <code>Dominio/</code>.</p><p class="analogia">El reglamento interno de la empresa.</p></div>
+    <div class="tarjeta termino"><h4>DTO</h4><p>«Objeto de transferencia de datos»: la forma exacta de lo que entra o sale por la API (<code>ReservaRequest</code>, <code>InversionDto</code>). Separa lo que se muestra de lo que se guarda.</p><p class="analogia">El formulario impreso que se entrega en ventanilla, distinto del expediente interno.</p></div>
+    <div class="tarjeta termino"><h4>Controlador</h4><p>Clase de la API que recibe los pedidos de un tema y responde (<code>InversionesController</code>). Debería ser delgado: valida, llama a las reglas y responde.</p><p class="analogia">El cajero: atiende, pero sigue el reglamento.</p></div>
+    <div class="tarjeta termino"><h4>Servicio</h4><p>Clase con lógica que usan varios controladores (<code>OtpService</code>, <code>GestorInversiones</code>). Están en <code>Servicios/</code>.</p><p class="analogia">Un área de apoyo: contabilidad, mensajería.</p></div>
+    <div class="tarjeta termino"><h4>Inyección de dependencias</h4><p>Las clases no crean lo que necesitan: lo reciben en el constructor. <code>Program.cs</code> dice qué clase se entrega para cada interfaz.</p><p class="analogia">El restaurante no cría sus gallinas: el proveedor se las trae.</p></div>
+    <div class="tarjeta termino"><h4>Interfaz</h4><p>Un contrato: lista lo que una clase sabe hacer sin decir cómo (<code>ICorreoService.EnviarAsync</code>). Permite cambiar la implementación sin tocar a quien la usa.</p><p class="analogia">El enchufe: cualquier aparato que lo respete funciona.</p></div>
+    <div class="tarjeta termino"><h4>Autenticación vs. autorización</h4><p>Autenticación: quién eres (login). Autorización: qué puedes hacer (tu rol). En la API, <code>[Authorize(Roles = "…")]</code> hace la segunda.</p><p class="analogia">Mostrar el carnet en la puerta vs. tener pase a la zona VIP.</p></div>
+    <div class="tarjeta termino"><h4>JWT (token)</h4><p>Texto firmado que la API entrega al iniciar sesión. La web lo manda en cada pedido (<code>Authorization: Bearer …</code>). Dura 120 minutos y lleva el id, el correo y el rol.</p><p class="analogia">La manilla de un evento: te la ponen al entrar y la muestras en cada puerta.</p></div>
+    <div class="tarjeta termino"><h4>OTP</h4><p>Código de un solo uso enviado por correo: 6 dígitos, vence en 10 minutos, 3 intentos. Se usa al confirmar la cuenta y al firmar el contrato de inversión.</p><p class="analogia">El código que te manda el banco para confirmar una transferencia.</p></div>
+    <div class="tarjeta termino"><h4>Hash</h4><p>Huella de un dato que no se puede revertir. Las contraseñas y los OTP se guardan como hash, nunca en texto.</p><p class="analogia">Como una huella digital: identifica, pero no reconstruye la mano.</p></div>
+    <div class="tarjeta termino"><h4>Cifrado (AES-256-GCM)</h4><p>Convierte un archivo en algo ilegible sin la clave. Las fotos del CI, la selfie y los documentos del predio se guardan cifrados (RNF-02).</p><p class="analogia">Una caja fuerte: con la llave se abre, sin ella no.</p></div>
+    <div class="tarjeta termino"><h4>Componente (React)</h4><p>Una pieza de pantalla reutilizable, escrita como función: <code>Tarjeta</code>, <code>Campo</code>, <code>Aviso</code>. Cada pantalla de <code>paginas/</code> es un componente.</p><p class="analogia">Piezas de Lego.</p></div>
+    <div class="tarjeta termino"><h4>Estado (useState)</h4><p>Lo que una pantalla recuerda mientras está abierta: lo que escribiste, el error a mostrar. Al cambiar, React vuelve a dibujar.</p><p class="analogia">La pizarra del aula: se borra y se vuelve a escribir.</p></div>
+    <div class="tarjeta termino"><h4>useEffect</h4><p>Código que React ejecuta después de dibujar, por ejemplo pedir datos a la API al abrir la pantalla.</p><p class="analogia">«Apenas abras la tienda, revisa el correo.»</p></div>
+    <div class="tarjeta termino"><h4>Ruta</h4><p>La dirección de una pantalla en la web: <code>/catalogo</code>, <code>/inversiones/:id/contrato</code>. Las define <code>main.jsx</code>.</p><p class="analogia">El número de oficina dentro del edificio.</p></div>
+    <div class="tarjeta termino"><h4>Proxy de Vite</h4><p>En desarrollo, la web corre en el puerto 5173 y la API en el 7080. Vite reenvía todo lo que empieza con <code>/api</code> a la API, así el navegador cree que es un solo sitio.</p><p class="analogia">La recepcionista que pasa la llamada al interno correcto.</p></div>
+    <div class="tarjeta termino"><h4>Swagger / OpenAPI</h4><p>Página que lista todos los endpoints de la API y permite probarlos («Try it out»). En <code>/swagger</code>.</p><p class="analogia">El menú del restaurante, con la opción de pedir una probadita.</p></div>
+    <div class="tarjeta termino"><h4>Prueba automática</h4><p>Código que usa el sistema y verifica el resultado. <b>Unitaria</b>: prueba una clase sola. <b>De integración</b>: levanta la API entera y le hace pedidos reales. En P11 hay 99.</p><p class="analogia">El control de calidad que revisa cada lote antes de salir.</p></div>
+    <div class="tarjeta termino"><h4>Patrón de diseño</h4><p>Solución conocida y con nombre a un problema que se repite al programar (State, Command, Prototype…). Ver la sección 9.</p><p class="analogia">Una receta clásica: no la inventas, la adaptas.</p></div>
+    <div class="tarjeta termino"><h4>Docker / contenedor</h4><p>Forma de correr programas (SQL Server, Mailpit) ya configurados, sin instalarlos a mano.</p><p class="analogia">Un contenedor de barco: llega cerrado y funciona igual en cualquier puerto.</p></div>
+    <div class="tarjeta termino"><h4>Mailpit</h4><p>Buzón falso para desarrollo: atrapa todos los correos de la API (OTP, avisos) y los muestra en <code>http://localhost:8025</code>. No envía nada de verdad.</p><p class="analogia">Un buzón de práctica.</p></div>
+    <div class="tarjeta termino"><h4>Git, rama, commit, pull request</h4><p>Git guarda la historia del código. Un <b>commit</b> es una foto de un cambio; una <b>rama</b> es una línea de trabajo aparte; un <b>pull request</b> pide unir una rama a <code>main</code> con revisión.</p><p class="analogia">Versiones de un documento con autor, fecha y comentario.</p></div>
+    <div class="tarjeta termino"><h4>RF, RNF, CU</h4><p><b>RF</b>: requerimiento funcional (lo que el sistema hace, RF-01 a RF-27). <b>RNF</b>: no funcional (cómo lo hace: seguridad, usabilidad, RNF-01 a RNF-11). <b>CU</b>: caso de uso, una tarea completa de un actor.</p><p class="analogia">RF: «la tienda vende». RNF: «y atiende en menos de 5 minutos».</p></div>
+    <div class="tarjeta termino"><h4>Sprint, MV</h4><p>Un sprint es un bloque de trabajo de dos semanas que termina con algo que funciona. MV1, MV2: versión mínima de cada sprint.</p><p class="analogia">Entregas parciales de una obra.</p></div>
+    <div class="tarjeta termino"><h4>Semilla (seed)</h4><p>Datos que la API crea sola al arrancar: los roles y las cuentas internas (<code>admin@p11.local</code>, <code>analista@p11.local</code>).</p><p class="analogia">El inventario inicial con que abre la tienda.</p></div>
+    <div class="tarjeta termino"><h4>Servicio de fondo</h4><p>Tarea que la API ejecuta sola cada cierto tiempo. <code>VencimientoReservas</code> revisa cada minuto las reservas vencidas, libera su cupo y avisa.</p><p class="analogia">El guardia que da una vuelta cada hora.</p></div>
+  </div>
+  <p id="sin-terminos" class="tenue" hidden>No hay palabras que coincidan con esa búsqueda.</p>
+</section>
+
+<!-- ============================ 3. TECNOLOGÍAS ============================ -->
+<section class="seccion" id="tecnologias">
+  <p class="eyebrow">Sección 3</p>
+  <h2>Tecnologías y por qué las elegimos</h2>
+  <div class="breve"><strong>En breve</strong>
+    <p>El sistema tiene una <b>web</b> (lo que ve el usuario), una <b>API</b> (el programa del servidor con las reglas), una <b>base de datos</b> (donde se guarda todo) y, desde el Sprint 3, una app <b>Android</b>. Cada tecnología cubre una de esas partes.</p>
+  </div>
+
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Parte</th><th>Tecnología</th><th>Dónde</th></tr></thead>
+    <tbody>
+      <tr><td>Web</td><td>React 19 + Vite 7 + React Router 7, en JavaScript</td><td><code>apps/web</code></td></tr>
+      <tr><td>API</td><td>ASP.NET Core (.NET 10), en C#</td><td><code>apps/api/src/P11.Api</code></td></tr>
+      <tr><td>Base de datos</td><td>SQL Server 2022 con Entity Framework Core 10</td><td>Docker o instalación local</td></tr>
+      <tr><td>Usuarios y sesión</td><td>ASP.NET Core Identity + JWT</td><td><code>Program.cs</code>, <code>TokenJwtService.cs</code></td></tr>
+      <tr><td>Documentación de la API</td><td>OpenAPI + Swagger UI (también Scalar)</td><td><code>/swagger</code>, <code>/scalar</code></td></tr>
+      <tr><td>Pruebas</td><td>xUnit + WebApplicationFactory + base en memoria + reloj falso</td><td><code>apps/api/tests</code></td></tr>
+      <tr><td>Correo de desarrollo</td><td>Mailpit en Docker</td><td><code>docker-compose.yml</code></td></tr>
+      <tr><td>Android (Sprint 3)</td><td>Java nativo con Retrofit, Room y WorkManager</td><td><code>apps/android</code></td></tr>
+      <tr><td>Diagramas</td><td>StarUML (<code>.mdj</code>) y PNG exportados</td><td><code>docs/diagramas</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="rejilla-2">
+    <div class="tarjeta"><span class="etiqueta">Web</span><h4>React</h4>
+      <p><b>Qué es:</b> una biblioteca para armar pantallas con piezas reutilizables (componentes). Cuando cambian los datos, React vuelve a dibujar solo lo necesario.</p>
+      <p><b>Por qué:</b> es la más usada, tiene muchísima documentación y el equipo ya la conocía. Las piezas comunes (<code>Tarjeta</code>, <code>Campo</code>, <code>Aviso</code>) se escriben una vez y se usan en las más de 40 pantallas.</p>
+      <p><b>En vez de:</b> Angular (más pesado y con TypeScript obligatorio, más curva de aprendizaje) o Vue (parecido, pero con menos material en la carrera).</p></div>
+    <div class="tarjeta"><span class="etiqueta">Web</span><h4>Vite</h4>
+      <p><b>Qué es:</b> la herramienta que levanta la web en desarrollo (<code>npm run dev</code>) y arma la versión final (<code>npm run build</code>).</p>
+      <p><b>Por qué:</b> arranca en un segundo y casi no necesita configuración. Su <b>proxy</b> reenvía <code>/api</code> a la API, así web y API parecen un solo sitio y no hay problemas de CORS.</p>
+      <p><b>En vez de:</b> Create React App, que fue abandonado, o configurar webpack a mano.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Web</span><h4>React Router</h4>
+      <p><b>Qué es:</b> permite tener varias pantallas con su dirección (<code>/catalogo</code>) sin recargar la página.</p>
+      <p><b>Por qué:</b> cada caso de uso es una pestaña con su ruta, y las pantallas internas cuelgan de ella (<code>/inversiones/:id/pago</code>), así el menú marca dónde estás.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Web</span><h4>JavaScript (sin TypeScript)</h4>
+      <p><b>Por qué:</b> menos curva para todo el equipo. <b>Lo que se pierde:</b> el editor no avisa si un dato tiene la forma equivocada. Para compensar, cada pantalla comenta arriba qué devuelve la API.</p></div>
+    <div class="tarjeta"><span class="etiqueta">API</span><h4>ASP.NET Core (.NET 10) y C#</h4>
+      <p><b>Qué es:</b> el framework web de Microsoft para escribir APIs en C#.</p>
+      <p><b>Por qué:</b> es el que usa Programación Web 3; C# tiene tipos fuertes (muchos errores aparecen antes de ejecutar), trae Identity para usuarios, genera la documentación OpenAPI y tiene muy buen soporte para pruebas.</p>
+      <p><b>En vez de:</b> Node con Express (más libre, pero sin estructura ni tipos por defecto) o Spring Boot (Java, más pesado de configurar).</p></div>
+    <div class="tarjeta"><span class="etiqueta">Datos</span><h4>Entity Framework Core</h4>
+      <p><b>Qué es:</b> el ORM: escribimos clases (<code>Inversion</code>) y EF crea las tablas, las migraciones y las consultas SQL.</p>
+      <p><b>Por qué:</b> menos SQL repetido, migraciones versionadas en git y consultas con LINQ que el compilador revisa. Para las pruebas se cambia SQL Server por una base en memoria sin tocar el código.</p>
+      <p><b>En vez de:</b> Dapper o SQL a mano: más control, pero mucho más código para lo mismo.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Datos</span><h4>SQL Server 2022</h4>
+      <p><b>Qué es:</b> base de datos relacional de Microsoft.</p>
+      <p><b>Por qué relacional:</b> los datos están muy relacionados (usuario → proyecto → inversión) y manejamos dinero, donde importa que todo sea consistente.</p>
+      <p><b>Por qué SQL Server:</b> el proyecto empezó con PostgreSQL y se cambió el <b>18/11/2026</b> porque Programación Web 3 lo pide. Gracias a EF Core, el cambio fue de una línea (<code>UseSqlServer</code>) más una migración nueva.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Seguridad</span><h4>Identity + JWT</h4>
+      <p><b>Identity</b> ya resuelve lo delicado: guardar contraseñas como hash, exigir correo confirmado, contar intentos fallidos y bloquear, y manejar roles. Hacerlo a mano sería riesgoso.</p>
+      <p><b>JWT</b>: la API no guarda sesiones; cada pedido trae su token firmado. Sirve igual para la web y para Android.</p>
+      <p><b>En vez de:</b> cookies de sesión, que funcionan peor con una app móvil.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Seguridad</span><h4>OTP por correo</h4>
+      <p><b>Por qué correo:</b> la ERS v2.0 lo pide (RNF-01) y es gratis. <b>En vez de:</b> SMS, que cuesta por mensaje y necesita un proveedor.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Documentación</span><h4>Swagger UI</h4>
+      <p>Página que lista cada endpoint con sus parámetros, sus respuestas (200, 400, 404, 409) y un botón para probarlo con el token. La rúbrica de Programación Web 3 lo pide y sirve para mostrar la API sin la web.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Pruebas</span><h4>xUnit + WebApplicationFactory</h4>
+      <p>Levantan la API real en memoria y le hacen pedidos HTTP de verdad, con una base de datos en memoria y un buzón de correo falso. <b>FakeTimeProvider</b> deja adelantar el reloj para probar vencimientos (OTP a los 10 min, reserva a los 30 min) sin esperar.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Herramientas</span><h4>Docker y Mailpit</h4>
+      <p>Docker corre SQL Server y Mailpit sin instalarlos. Mailpit atrapa los correos para ver los OTP en la demo.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Sprint 3</span><h4>Android en Java nativo</h4>
+      <p><b>Por qué:</b> el productor registra avances en el campo, muchas veces sin señal (RNF-04). <b>Room</b> guarda en el teléfono, <b>WorkManager</b> envía al recuperar la conexión y <b>Retrofit</b> llama a la misma API.</p>
+      <p><b>En vez de:</b> Flutter o React Native: el trabajo sin conexión y el acceso al GPS y la cámara son más directos en nativo.</p></div>
+  </div>
+</section>
+
+<!-- ============================ 4. FLUJO ============================ -->
+<section class="seccion" id="flujo">
+  <p class="eyebrow">Sección 4</p>
+  <h2>Cómo encaja todo</h2>
+  <div class="breve"><strong>En breve</strong>
+    <p>La <b>web</b> (React) corre en el navegador; la <b>API</b> (ASP.NET Core, en C#) corre en el servidor y es la única que habla con la <b>base de datos</b> (SQL Server). La web nunca toca la base: siempre le pide a la API. Después de iniciar sesión, la web guarda un <b>token JWT</b> y lo manda en cada pedido para decir quién es.</p>
+  </div>
+
+  <h3>El dibujo general</h3>
+  <p class="texto">Haz clic en un paso del recorrido de abajo y se marca en el dibujo la parte que trabaja en ese momento.</p>
+  <div class="diagrama" role="img" aria-label="Arquitectura: la web y la futura app Android llaman a la API por HTTP; la API tiene controladores, servicios y dominio, y Entity Framework, y habla con SQL Server, con Mailpit para correos y con una carpeta de archivos cifrados.">
+    <svg viewBox="0 0 900 410" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="punta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-punta"/></marker></defs>
+      <!-- Clientes -->
+      <rect id="n-web" class="d-caja verde" x="20" y="40" width="230" height="130" rx="12"/>
+      <text class="d-titulo" x="36" y="68">Web (React + Vite)</text>
+      <text class="d-texto" x="36" y="92">apps/web · puerto 5173</text>
+      <text class="d-texto" x="36" y="112">Pantallas en paginas/</text>
+      <text class="d-texto" x="36" y="132">api.js agrega el token</text>
+      <text class="d-texto" x="36" y="152">Vite reenvía /api → API</text>
+      <rect class="d-caja" x="20" y="240" width="230" height="100" rx="12" stroke-dasharray="6 5"/>
+      <text class="d-titulo" x="36" y="268">App Android</text>
+      <text class="d-texto" x="36" y="292">Sprint 3 · Java nativo</text>
+      <text class="d-texto" x="36" y="312">Misma API, sin conexión</text>
+      <!-- API -->
+      <rect class="d-caja" x="300" y="16" width="360" height="380" rx="16"/>
+      <text class="d-titulo" x="318" y="44">API (ASP.NET Core · .NET 10)</text>
+      <text class="d-texto" x="318" y="64">apps/api/src/P11.Api · puerto 7080 (https)</text>
+      <rect id="n-ctrl" class="d-caja azul" x="320" y="80" width="320" height="80" rx="10"/>
+      <text class="d-titulo" x="336" y="106">Controllers/</text>
+      <text class="d-texto" x="336" y="128">Reciben el pedido, revisan rol (401/403),</text>
+      <text class="d-texto" x="336" y="146">validan la entrada (400) y responden.</text>
+      <rect id="n-dom" class="d-caja ocre" x="320" y="180" width="320" height="90" rx="10"/>
+      <text class="d-titulo" x="336" y="206">Servicios/ y Dominio/</text>
+      <text class="d-texto" x="336" y="228">Las reglas del negocio: estados, cupo,</text>
+      <text class="d-texto" x="336" y="246">OTP, avisos, patrones de diseño.</text>
+      <text class="d-texto" x="336" y="262">Si una regla no se cumple → 409.</text>
+      <rect id="n-ef" class="d-caja verde" x="320" y="290" width="320" height="86" rx="10"/>
+      <text class="d-titulo" x="336" y="316">Datos/ (Entity Framework Core)</text>
+      <text class="d-texto" x="336" y="338">AppDbContext traduce clases a tablas;</text>
+      <text class="d-texto" x="336" y="356">Migraciones/ crea y actualiza la base.</text>
+      <!-- Externos -->
+      <rect id="n-mail" class="d-caja ocre" x="710" y="30" width="170" height="86" rx="12"/>
+      <text class="d-titulo" x="726" y="58">Mailpit</text>
+      <text class="d-texto" x="726" y="80">Correos de prueba</text>
+      <text class="d-texto" x="726" y="98">localhost:8025</text>
+      <rect id="n-arch" class="d-caja roja" x="710" y="160" width="170" height="86" rx="12"/>
+      <text class="d-titulo" x="726" y="188">Archivos</text>
+      <text class="d-texto" x="726" y="210">CI, selfie, RUNSA</text>
+      <text class="d-texto" x="726" y="228">cifrados (AES-256)</text>
+      <rect id="n-sql" class="d-caja azul" x="710" y="290" width="170" height="86" rx="12"/>
+      <text class="d-titulo" x="726" y="318">SQL Server</text>
+      <text class="d-texto" x="726" y="340">Base P11, tablas</text>
+      <text class="d-texto" x="726" y="358">localhost:1433</text>
+      <!-- Flechas -->
+      <path class="d-flecha" d="M250,110 L318,118" marker-end="url(#punta)"/>
+      <text class="d-etiqueta" x="258" y="102">HTTP</text><text class="d-etiqueta" x="258" y="136">JSON</text>
+      <path class="d-flecha" d="M250,290 C290,290 290,150 318,140" stroke-dasharray="6 5" marker-end="url(#punta)"/>
+      <path class="d-flecha" d="M480,160 L480,178" marker-end="url(#punta)"/>
+      <path class="d-flecha" d="M480,270 L480,288" marker-end="url(#punta)"/>
+      <path class="d-flecha" d="M640,330 L708,330" marker-end="url(#punta)"/>
+      <text class="d-etiqueta" x="652" y="322">SQL</text>
+      <path class="d-flecha" d="M640,200 C680,200 680,80 708,76" marker-end="url(#punta)"/>
+      <text class="d-etiqueta" x="664" y="136">SMTP</text>
+      <path class="d-flecha" d="M640,230 L708,210" marker-end="url(#punta)"/>
+    </svg>
+  </div>
+
+  <h3>El viaje de un pedido: reservar Bs 1.000</h3>
+  <p class="texto">Así viaja un clic desde la pantalla hasta la base de datos y de vuelta. Es el paso 1 del caso de uso «Invertir en un proyecto» (RF-13).</p>
+  <ol class="pasos pasos-clic" id="viaje">
+    <li data-nodo="n-web" tabindex="0"><b>La pantalla manda el pedido.</b> En <code>Invertir.jsx</code>, el botón «Reservar cupo por 30 min» llama a <code>api('/inversiones', { cuerpo: { proyectoId, montoBs: 1000 } })</code>.<span class="donde">apps/web/src/paginas/Invertir.jsx</span></li>
+    <li data-nodo="n-web" tabindex="0"><b>Se agrega el token.</b> <code>api.js</code> pone <code>Authorization: Bearer &lt;token&gt;</code> y envía <code>POST /api/inversiones</code>. Vite lo reenvía a la API.<span class="donde">apps/web/src/api.js · función pedir()</span></li>
+    <li data-nodo="n-ctrl" tabindex="0"><b>La API revisa quién eres.</b> Valida la firma del token. Si falta o venció: <b>401</b>. Si tu rol no es Inversionista ni Administrador: <b>403</b>. Lo hace el atributo <code>[Authorize(Roles = …)]</code>.<span class="donde">Controllers/InversionesController.cs · encabezado de la clase</span></li>
+    <li data-nodo="n-ctrl" tabindex="0"><b>El controlador revisa la entrada y el contexto.</b> ¿El monto es mayor a 0? ¿Tu identidad está verificada? ¿El proyecto está publicado y con la ronda abierta?<span class="donde">InversionesController.Reservar()</span></li>
+    <li data-nodo="n-dom" tabindex="0"><b>Se calcula el cupo libre.</b> <code>GestorInversiones</code> suma lo pagado y las reservas vigentes de ese proyecto (las vencidas ya no cuentan).<span class="donde">Servicios/Inversiones/GestorInversiones.cs · CupoAsync()</span></li>
+    <li data-nodo="n-dom" tabindex="0"><b>Se aplican las reglas.</b> Bajo el mínimo: <b>400</b> mostrando el cupo. Más que el cupo: <b>409</b>. Otra reserva tuya en curso en el mismo proyecto: <b>409</b>.<span class="donde">InversionesController.Reservar()</span></li>
+    <li data-nodo="n-ef" tabindex="0"><b>Se guarda.</b> <code>Inversion.Reservar(...)</code> crea la reserva con vencimiento a los 30 minutos y <code>db.SaveChangesAsync()</code> hace el <code>INSERT</code> en la tabla <code>Inversiones</code>.<span class="donde">Dominio/Inversiones/Inversion.cs · Datos/AppDbContext.cs</span></li>
+    <li data-nodo="n-sql" tabindex="0"><b>SQL Server guarda la fila</b> con sus claves foráneas al proyecto y al usuario.<span class="donde">tabla Inversiones</span></li>
+    <li data-nodo="n-web" tabindex="0"><b>Vuelve la respuesta.</b> <b>201 Created</b> con la inversión en JSON. La web lee su <code>id</code> y navega a <code>/inversiones/{id}/contrato</code>.<span class="donde">Invertir.jsx · navegar(...)</span></li>
+  </ol>
+
+  <h3>Cómo funciona el inicio de sesión</h3>
+  <ol class="pasos">
+    <li><code>Login.jsx</code> envía correo y contraseña a <code>POST /api/auth/login</code>.</li>
+    <li>Identity compara la contraseña con el hash guardado. Si falla, suma un intento: al 5.º la cuenta se bloquea 15 minutos (<b>423</b>) y llega un correo de aviso. Si la cuenta no confirmó su correo: <b>403</b>.</li>
+    <li>Si está bien, <code>TokenJwtService</code> firma un token con el id, el correo y el rol, válido por 120 minutos.</li>
+    <li>La web lo guarda en <code>sessionStorage</code> (sobrevive a recargar la página, no a cerrar la pestaña) y lo manda en cada pedido.</li>
+    <li><code>sesion.jsx</code> pide <code>GET /api/auth/yo</code> para saber quién eres, y el menú muestra solo las pestañas de tu rol (<code>casosDeUso.js</code>).</li>
+  </ol>
+  <p class="nota">La web esconde las pestañas que tu rol no usa, pero <b>la seguridad real está en la API</b>: aunque alguien escriba la dirección a mano, la API responde 403 si el rol no corresponde.</p>
+</section>
+
+<!-- ============================ 5. REPOSITORIO ============================ -->
+<section class="seccion" id="repositorio">
+  <p class="eyebrow">Sección 5</p>
+  <h2>Mapa del repositorio</h2>
+  <div class="breve"><strong>En breve</strong>
+    <p>Es un <b>monorepo</b>: un solo repositorio con la API (C#), la web (React) y la app Android, más toda la documentación. La API se organiza en capas: <b>Controllers</b> (reciben pedidos), <b>Contratos</b> (forma de los datos que entran y salen), <b>Dominio</b> (reglas del negocio), <b>Servicios</b> (lógica compartida) y <b>Datos</b> (base de datos).</p>
+  </div>
+
+  <p class="texto">Abre cada carpeta para ver qué hay. Lo marcado con <span class="chip chip-ok">Sprint 2</span> es nuevo en este sprint.</p>
+  <div class="arbol">
+    <details open><summary><b>p11-inversion-ganadera/</b> <span class="desc">raíz: README, docker-compose.yml (Mailpit), global.json (.NET 10)</span></summary>
+      <details open><summary><b>apps/api/</b> <span class="desc">la API y sus pruebas (solución P11.sln)</span></summary>
+        <details open><summary><b>src/P11.Api/</b> <span class="desc">el proyecto de la API</span></summary>
+          <div class="hoja">Program.cs <span class="desc">arranque: registra servicios, seguridad, base de datos y Swagger</span></div>
+          <div class="hoja">appsettings.json <span class="desc">reglas configurables: 5 intentos, OTP de 6 dígitos y 10 min, JWT de 120 min, archivos de 5 MB</span></div>
+          <details><summary><b>Controllers/</b> <span class="desc">un controlador por tema; cada método es un endpoint</span></summary>
+            <div class="hoja">AuthController.cs <span class="desc">registro, OTP, login, «quién soy» (RF-01, RF-02)</span></div>
+            <div class="hoja">VerificacionController.cs <span class="desc">enviar CI y selfie, ver estado (RF-03, RF-04)</span></div>
+            <div class="hoja">DocumentosProductorController.cs <span class="desc">RUNSA y título del predio (RF-05)</span></div>
+            <div class="hoja">AnalistaController.cs <span class="desc">revisión manual de identidades y documentos</span></div>
+            <div class="hoja">ProyectosController.cs <span class="desc">CRUD de la ficha y envío a evaluación (RF-07, RF-08)</span></div>
+            <div class="hoja">EvaluacionProyectosController.cs <span class="desc">observar, rechazar, aprobar y publicar (RF-09, RF-10)</span></div>
+            <div class="hoja">CatalogoController.cs <span class="chip chip-ok">Sprint 2</span> <span class="desc">catálogo con filtros y simulador (RF-11, RF-12)</span></div>
+            <div class="hoja">InversionesController.cs <span class="chip chip-ok">Sprint 2</span> <span class="desc">reserva, contrato con OTP, pago QR (RF-13 a RF-16)</span></div>
+            <div class="hoja">PortafolioController.cs <span class="chip chip-ok">Sprint 2</span> <span class="desc">participaciones pagadas y constancia (RF-16)</span></div>
+            <div class="hoja">AdminUsuariosController.cs, AdminBitacoraController.cs <span class="desc">usuarios, roles, bloqueo y bitácora (RF-06, RNF-03)</span></div>
+          </details>
+          <details><summary><b>Contratos/Dtos.cs</b> <span class="desc">todos los DTO: lo que entra (con sus validaciones) y lo que sale</span></summary></details>
+          <details><summary><b>Dominio/</b> <span class="desc">las reglas del negocio, sin saber nada de HTTP</span></summary>
+            <div class="hoja">Usuario.cs, Roles.cs, Enums.cs, CodigoOtp.cs, DocumentoArchivo.cs</div>
+            <div class="hoja">Proyectos/ <span class="desc">ProyectoGanadero (engorde y lechería), CreadorProyecto (Factory Method), Estados/EstadoFicha (State), DatosPublicacion <span class="chip chip-ok">Sprint 2</span></span></div>
+            <div class="hoja">Inversiones/ <span class="chip chip-ok">Sprint 2</span> <span class="desc">Inversion (reservar, firmar, pagar, vencer) y ContratoInversion (texto y versión)</span></div>
+            <div class="hoja">Simulacion/ <span class="desc">ConfiguracionEscenario (Prototype) y PreparadorEscenarios</span></div>
+            <div class="hoja">Expediente/, Liquidaciones/ <span class="desc">Builder, Composite y Strategy, listos para el Sprint 3</span></div>
+          </details>
+          <details><summary><b>Servicios/</b> <span class="desc">lógica que usan varios controladores</span></summary>
+            <div class="hoja">OtpService.cs <span class="desc">genera y valida códigos (solo guarda el hash)</span></div>
+            <div class="hoja">VerificacionService.cs <span class="desc">fachada de la verificación de identidad</span></div>
+            <div class="hoja">TokenJwtService.cs <span class="desc">firma los tokens</span></div>
+            <div class="hoja">AlmacenDisco.cs, AlmacenCifrado.cs <span class="desc">guardar archivos cifrados (Decorator)</span></div>
+            <div class="hoja">CorreoSmtpService.cs, CorreoConReintentos.cs <span class="desc">enviar correos (Adapter y Decorator)</span></div>
+            <div class="hoja">Avisos/ <span class="desc">qué se avisa y por qué canal (Bridge); AvisoInversion <span class="chip chip-ok">Sprint 2</span></span></div>
+            <div class="hoja">Documentos/ <span class="desc">VisorDocumentosProxy: solo el dueño o un analista abre un archivo</span></div>
+            <div class="hoja">Proyectos/ <span class="desc">RequisitosEnvio (Chain), ComandosProyecto (Command), GestorCicloProyecto, ObservadoresProyecto (Observer)</span></div>
+            <div class="hoja">Inversiones/ <span class="chip chip-ok">Sprint 2</span> <span class="desc">GestorInversiones (cupo y vencimientos) y VencimientoReservas (servicio de fondo)</span></div>
+            <div class="hoja">Simulacion/ <span class="chip chip-ok">Sprint 2</span> <span class="desc">SimuladorEscenarios: arma los tres escenarios</span></div>
+          </details>
+          <details><summary><b>Datos/</b> <span class="desc">la base de datos</span></summary>
+            <div class="hoja">AppDbContext.cs <span class="desc">qué tablas hay y cómo se relacionan</span></div>
+            <div class="hoja">Migraciones/ <span class="desc">Inicial y Sprint2Inversiones <span class="chip chip-ok">Sprint 2</span></span></div>
+            <div class="hoja">SemillaDatos.cs <span class="desc">crea roles y cuentas internas al arrancar</span></div>
+          </details>
+          <details><summary><b>Configuracion/</b> <span class="desc">opciones validadas al arrancar, documento de Swagger, claves de desarrollo</span></summary></details>
+        </details>
+        <details><summary><b>tests/P11.Tests/</b> <span class="desc">99 pruebas automáticas</span></summary>
+          <div class="hoja">Integracion/ <span class="desc">levantan la API entera: AutenticacionTests, VerificacionTests, ProyectosTests, EvaluacionProyectosTests, CatalogoTests <span class="chip chip-ok">Sprint 2</span>, InversionesTests <span class="chip chip-ok">Sprint 2</span>…</span></div>
+          <div class="hoja">Patrones/ <span class="desc">una prueba por patrón de diseño</span></div>
+        </details>
+      </details>
+      <details open><summary><b>apps/web/</b> <span class="desc">la web (npm run dev)</span></summary>
+        <div class="hoja">vite.config.js <span class="desc">puerto 5173 y proxy de /api hacia la API</span></div>
+        <details open><summary><b>src/</b></summary>
+          <div class="hoja">main.jsx <span class="desc">todas las rutas, agrupadas por caso de uso</span></div>
+          <div class="hoja">casosDeUso.js <span class="desc">la lista de los 16 casos de uso: de aquí salen el menú y los permisos</span></div>
+          <div class="hoja">api.js <span class="desc">cómo se llama a la API, manejo de errores y formatos (Bs, fechas)</span></div>
+          <div class="hoja">sesion.jsx <span class="desc">quién está conectado</span></div>
+          <div class="hoja">componentes.jsx <span class="desc">piezas comunes: Tarjeta, Campo, Aviso, Datos, Progreso, VistaPorRol, CuentaRegresiva</span></div>
+          <div class="hoja">estilos.css, estilo.js <span class="desc">los dos estilos visuales: Pampa verde y Cuero y madera</span></div>
+          <div class="hoja">datosEjemplo.js <span class="desc">datos de ejemplo para las pantallas del Sprint 3</span></div>
+          <div class="hoja">paginas/ <span class="desc">una pantalla por archivo (41 en total)</span></div>
+        </details>
+      </details>
+      <details><summary><b>apps/android/</b> <span class="desc">la app, se inicia en el Sprint 3</span></summary></details>
+      <details><summary><b>docs/</b> <span class="desc">toda la documentación</span></summary>
+        <div class="hoja">requisitos/ <span class="desc">ERS 2.0 (RF-01 a RF-27, RNF-01 a RNF-11)</span></div>
+        <div class="hoja">analisis/, procesos/ <span class="desc">PESTEL, Canvas, modelo de negocio, BPMN</span></div>
+        <div class="hoja">diagramas/ <span class="desc">los 9 diagramas UML (.mdj) y sus PNG, mockups</span></div>
+        <div class="hoja">patrones/ <span class="desc">mapa patrón → archivo → prueba, informes y guías</span></div>
+        <div class="hoja">sprints/ <span class="desc">alcance, guion de demo y capturas de cada sprint</span></div>
+        <div class="hoja">guia/ <span class="desc">esta guía y sus capturas</span></div>
+      </details>
+    </details>
+  </div>
+
+  <h3>¿Dónde está…?</h3>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Si te preguntan…</th><th>Está en</th></tr></thead>
+    <tbody>
+      <tr><td>¿Dónde se decide qué pestañas ve cada rol?</td><td><code>apps/web/src/casosDeUso.js</code> (web) y <code>[Authorize(Roles = …)]</code> en cada controlador (API)</td></tr>
+      <tr><td>¿Dónde se bloquea la cuenta al 5.º intento?</td><td><code>Program.cs</code> (opciones de Identity) con los valores de <code>appsettings.json</code> → <code>ReglasSeguridad</code>; el aviso, en <code>AuthController.Login</code></td></tr>
+      <tr><td>¿Dónde se genera y valida el OTP?</td><td><code>Servicios/OtpService.cs</code></td></tr>
+      <tr><td>¿Dónde se cifran los archivos?</td><td><code>Servicios/AlmacenCifrado.cs</code></td></tr>
+      <tr><td>¿Dónde se valida la ficha del proyecto?</td><td>Dos capas: atributos en <code>Contratos/Dtos.cs</code> (<code>ProyectoEntradaDto</code>) y reglas en <code>ProyectoGanadero.Validar()</code></td></tr>
+      <tr><td>¿Qué impide enviar a evaluación sin documentos?</td><td><code>Servicios/Proyectos/RequisitosEnvio.cs</code> (cadena de requisitos)</td></tr>
+      <tr><td>¿Dónde están los estados del proyecto?</td><td><code>Dominio/Proyectos/Estados/EstadoFicha.cs</code></td></tr>
+      <tr><td>¿Qué se exige para publicar?</td><td><code>Dominio/Proyectos/DatosPublicacion.cs</code> → <code>Incumplido()</code></td></tr>
+      <tr><td>¿Dónde se filtra el catálogo?</td><td><code>Controllers/CatalogoController.cs</code> → <code>Listar()</code></td></tr>
+      <tr><td>¿Dónde está la fórmula del simulador?</td><td><code>Dominio/Simulacion/ConfiguracionEscenario.cs</code> → <code>Calcular()</code></td></tr>
+      <tr><td>¿Dónde se calcula el cupo libre?</td><td><code>Servicios/Inversiones/GestorInversiones.cs</code> → <code>CuposAsync()</code></td></tr>
+      <tr><td>¿Dónde se valida el monto mínimo?</td><td><code>InversionesController.Reservar()</code></td></tr>
+      <tr><td>¿Cuánto dura la reserva y dónde se define?</td><td>30 minutos, <code>Inversion.MinutosReserva</code></td></tr>
+      <tr><td>¿Dónde se calcula la participación?</td><td><code>Inversion.ConfirmarPago()</code></td></tr>
+      <tr><td>¿Quién libera las reservas vencidas?</td><td><code>Servicios/Inversiones/VencimientoReservas.cs</code> (cada minuto) y también al tocar la inversión</td></tr>
+      <tr><td>¿Dónde está el texto del contrato?</td><td><code>Dominio/Inversiones/ContratoInversion.cs</code></td></tr>
+      <tr><td>¿Dónde se crean las tablas?</td><td><code>Datos/AppDbContext.cs</code> y <code>Datos/Migraciones/</code></td></tr>
+      <tr><td>¿Dónde se crean las cuentas de admin y analista?</td><td><code>Datos/SemillaDatos.cs</code> con los datos de <code>appsettings.Development.json</code></td></tr>
+      <tr><td>¿Dónde se manda el token en la web?</td><td><code>apps/web/src/api.js</code> → <code>pedir()</code></td></tr>
+      <tr><td>¿Dónde está el «Ver como» del Administrador?</td><td><code>componentes.jsx</code> → <code>VistaPorRol</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ 6. CÓDIGO ============================ -->
+<section class="seccion" id="codigo">
+  <p class="eyebrow">Sección 6</p>
+  <h2>Código clave, explicado</h2>
+  <div class="breve"><strong>En breve</strong>
+    <p>La web está en <b>JavaScript con React</b>: cada pantalla es una función que devuelve lo que se dibuja. La API está en <b>C#</b>: un <b>controlador</b> recibe el pedido, las clases del <b>dominio</b> aplican las reglas y <b>Entity Framework</b> guarda en la base. Los fragmentos son reales, a veces recortados (lo recortado se marca con <code>…</code>).</p>
+  </div>
+
+  <h3>1. El menú sale de una lista de casos de uso</h3>
+  <div class="codigo"><div class="codigo-cabecera"><code>apps/web/src/casosDeUso.js</code><span>JavaScript</span></div>
+<pre><code class="language-javascript">export const CASOS_DE_USO = [
+  { id: 'identidad', nombre: 'Registrar cuenta y verificar identidad', ruta: '/identidad',
+    roles: [INVERSIONISTA, PRODUCTOR, ANALISTA] },
+  { id: 'catalogo', nombre: 'Explorar catálogo y simular escenarios', ruta: '/catalogo',
+    roles: [INVERSIONISTA] },
+  { id: 'invertir', nombre: 'Invertir en un proyecto', ruta: '/inversiones',
+    roles: [INVERSIONISTA] },
+  // … 16 casos de uso en total, en el orden del diagrama
+]
+
+/** Las pestañas de un rol. El Administrador ve todas. */
+export const casosDe = (rol) =&gt;
+  CASOS_DE_USO.filter((c) =&gt; rol === ADMINISTRADOR || c.roles.includes(rol))</code></pre></div>
+  <ul class="explica">
+    <li>Cada caso de uso del diagrama es un objeto con su nombre exacto, su ruta y qué roles lo usan.</li>
+    <li><code>casosDe(rol)</code> filtra la lista: el menú lateral dibuja solo esas pestañas. El Administrador pasa siempre.</li>
+    <li>Así se cumplió el pedido del docente: <b>pestañas = casos de uso</b>, con una sola fuente para el menú y los permisos de las rutas.</li>
+  </ul>
+
+  <h3>2. Cómo la web llama a la API</h3>
+  <div class="codigo"><div class="codigo-cabecera"><code>apps/web/src/api.js</code><span>JavaScript</span></div>
+<pre><code class="language-javascript">async function pedir(ruta, init = {}) {
+  const headers = new Headers(init.headers)
+  if (token) headers.set('Authorization', `Bearer ${token}`)
+  try {
+    return await fetch(`/api${ruta}`, { ...init, headers })
+  } catch {
+    throw new ErrorApi(0, 'No se pudo conectar con el servidor.')
+  }
+}
+
+/** Llama a la API. Con `cuerpo` envía JSON; con `form`, archivos. */
+export async function api(ruta, opciones = {}) {
+  // … arma el método y el cuerpo
+  const r = await pedir(ruta, init)
+  if (!r.ok) throw await error(r, ruta)   // convierte 400/409 en un mensaje legible
+  return r.status === 204 ? {} : await r.json()
+}</code></pre></div>
+  <ul class="explica">
+    <li>Todas las pantallas usan <code>api(...)</code>; nadie llama a <code>fetch</code> directo. Así el token y los errores se manejan en un solo lugar.</li>
+    <li>Si la API responde con error, <code>error()</code> arma un <code>ErrorApi</code> con el mensaje (<code>mensaje</code>) y los errores por campo (<code>errors</code>), que las pantallas muestran bajo cada casilla.</li>
+    <li>Un 401 fuera del login borra el token: la sesión venció.</li>
+  </ul>
+
+  <h3>3. Un controlador: reservar cupo</h3>
+  <div class="codigo"><div class="codigo-cabecera"><code>Controllers/InversionesController.cs</code><span>C#</span></div>
+<pre><code class="language-csharp">[ApiController]
+[Route("api/inversiones")]
+[Authorize(Roles = $"{Roles.Inversionista},{Roles.Administrador}")]
+public class InversionesController(AppDbContext db, GestorInversiones gestor, OtpService otp,
+    UserManager&lt;Usuario&gt; usuarios) : ControllerBase
+{
+    [HttpPost]
+    public async Task&lt;ActionResult&lt;InversionDto&gt;&gt; Reservar(ReservaRequest req, CancellationToken ct)
+    {
+        var usuario = await usuarios.FindByIdAsync(User.IdUsuario().ToString());
+        if (usuario?.EstadoVerificacion != EstadoVerificacion.Verificado)
+            return Conflict(new Respuesta("Tu identidad todavía no está verificada: …"));
+
+        var proyecto = await db.Proyectos.FirstOrDefaultAsync(
+            p =&gt; p.Id == req.ProyectoId &amp;&amp; p.Estado == EstadoProyecto.EnFinanciamiento, ct);
+        if (proyecto is null) return NotFound(new Respuesta("Ese proyecto no está en el catálogo."));
+
+        var cupo = await gestor.CupoAsync(proyecto.Id, proyecto.MontoRequeridoBs, ct);
+        if (req.MontoBs &lt; proyecto.MontoMinimoBs) { /* … */ return ValidationProblem(ModelState); } // 400
+        if (req.MontoBs &gt; cupo.LibreBs)
+            return Conflict(new Respuesta($"El monto supera el cupo disponible: quedan …"));    // 409
+
+        var inversion = Inversion.Reservar(proyecto.Id, usuario.Id, req.MontoBs, gestor.Ahora);
+        db.Inversiones.Add(inversion);
+        await db.SaveChangesAsync(ct);
+        return CreatedAtAction(nameof(Obtener), new { id = inversion.Id }, InversionDto.Desde(inversion, proyecto)); // 201
+    }
+}</code></pre></div>
+  <ul class="explica">
+    <li><code>[Route]</code> fija la dirección; <code>[HttpPost]</code> dice que este método atiende <code>POST /api/inversiones</code>.</li>
+    <li><code>[Authorize(Roles = …)]</code> deja pasar solo a inversionistas y administradores (si no, 403).</li>
+    <li>Lo que necesita (la base, el gestor, el servicio de OTP) llega por el constructor: es <b>inyección de dependencias</b>.</li>
+    <li>Cada regla que falla devuelve un código distinto: <code>NotFound</code> = 404, <code>ValidationProblem</code> = 400, <code>Conflict</code> = 409, <code>CreatedAtAction</code> = 201.</li>
+    <li><code>async</code>/<code>await</code>: mientras espera a la base, el servidor atiende otros pedidos.</li>
+  </ul>
+
+  <h3>4. Una entidad que cuida sus reglas</h3>
+  <div class="codigo"><div class="codigo-cabecera"><code>Dominio/Inversiones/Inversion.cs</code><span>C#</span></div>
+<pre><code class="language-csharp">public enum EstadoInversion { Reservada, Firmada, Pagada, Vencida, Rechazada }
+
+public class Inversion
+{
+    public const int MinutosReserva = 30;                                // RF-13
+    public EstadoInversion Estado { get; private set; } = EstadoInversion.Reservada;
+
+    public void FirmarContrato(string version, string correo, DateTimeOffset ahora)   // RF-14
+    {
+        ExigirVigente(ahora);                       // si pasaron los 30 min: reserva vencida
+        if (Estado != EstadoInversion.Reservada)
+            throw new ReglaInversionException("El contrato de esta inversión ya está firmado.");
+        Estado = EstadoInversion.Firmada;
+        ContratoVersion = version; ContratoAceptadoPor = correo; ContratoAceptadoEn = ahora;
+    }
+
+    public void ConfirmarPago(ProyectoGanadero proyecto, DateTimeOffset ahora)        // RF-15, RF-16
+    {
+        ExigirVigente(ahora);
+        if (Estado != EstadoInversion.Firmada || ReferenciaPago is null)
+            throw new ReglaInversionException("Esta inversión no tiene un pago pendiente.");
+        Estado = EstadoInversion.Pagada;
+        ParticipacionPct = Math.Round(MontoBs / proyecto.MontoRequeridoBs * 100, 4);
+        if (proyecto is ProyectoEngorde engorde)
+            ParticipacionKg = Math.Round(ParticipacionPct.Value / 100 * engorde.CantidadAnimales * engorde.PesoInicialKg, 2);
+        CodigoConstancia = $"CP-{ahora:yyyyMMdd}-{…}";
+    }
+}</code></pre></div>
+  <ul class="explica">
+    <li><code>private set</code>: nadie de afuera puede escribir <code>inversion.Estado = Pagada</code>. El estado solo cambia por los métodos, que revisan las reglas.</li>
+    <li>Si una regla no se cumple, se lanza <code>ReglaInversionException</code> y el controlador responde <b>409</b> con ese mensaje.</li>
+    <li>La hora llega como parámetro (<code>ahora</code>) en vez de leer el reloj del sistema: así las pruebas pueden «adelantar» 31 minutos.</li>
+  </ul>
+
+  <h3>5. Los estados del proyecto (patrón State)</h3>
+  <div class="codigo"><div class="codigo-cabecera"><code>Dominio/Proyectos/Estados/EstadoFicha.cs</code><span>C#</span></div>
+<pre><code class="language-csharp">public abstract class EstadoFicha
+{
+    public virtual EstadoFicha EnviarARevision()  =&gt; throw Invalida("enviar a evaluación");
+    public virtual EstadoFicha Observar()         =&gt; throw Invalida("observar");
+    public virtual EstadoFicha Rechazar()         =&gt; throw Invalida("rechazar");
+    public virtual EstadoFicha AprobarYPublicar() =&gt; throw Invalida("aprobar ni publicar");
+}
+
+public sealed class EnBorrador : EstadoFicha
+{
+    public override bool PuedeEditarse =&gt; true;
+    public override EstadoFicha EnviarARevision() =&gt; EnRevisionTecnica.Instancia;
+}
+
+public sealed class EnRevisionTecnica : EstadoFicha
+{
+    public override EstadoFicha Observar()         =&gt; EnBorrador.Instancia;      // vuelve al productor
+    public override EstadoFicha Rechazar()         =&gt; Rechazado.Instancia;       // final
+    public override EstadoFicha AprobarYPublicar() =&gt; EnFinanciamiento.Instancia; // al catálogo
+}</code></pre></div>
+  <ul class="explica">
+    <li>Por defecto, toda operación está prohibida. Cada estado «abre» solo las que admite.</li>
+    <li>Pedir algo no permitido da el mensaje «Un proyecto en financiamiento no se puede rechazar.» y la API responde 409.</li>
+    <li>Para el Sprint 3 (ronda cerrada, compra, ejecución, liquidación) se agregan clases nuevas sin tocar las existentes.</li>
+  </ul>
+
+  <h3>6. Requisitos en cadena (Chain of Responsibility)</h3>
+  <div class="codigo"><div class="codigo-cabecera"><code>Servicios/Proyectos/RequisitosEnvio.cs</code><span>C#</span></div>
+<pre><code class="language-csharp">public Task&lt;string?&gt; RevisarAsync(ProyectoGanadero proyecto, CancellationToken ct = default)
+{
+    var cadena = new FichaCompleta();                   // RF-08: campos válidos
+    cadena.Luego(new ProductorVerificado(db))           // RF-04: identidad verificada
+          .Luego(new DocumentosDelPredio(db));          // RF-05: RUNSA + título o contrato aprobados
+    return cadena.RevisarAsync(proyecto, ct);           // devuelve el primer motivo que falla, o null
+}</code></pre></div>
+  <ul class="explica">
+    <li>Cada eslabón revisa una sola cosa. El primero que falla responde con su motivo y corta la cadena.</li>
+    <li>El orden va de lo más barato a lo más caro: la ficha se revisa en memoria; los documentos requieren una consulta.</li>
+  </ul>
+
+  <h3>7. El simulador (Prototype)</h3>
+  <div class="codigo"><div class="codigo-cabecera"><code>Servicios/Simulacion/SimuladorEscenarios.cs</code> y <code>Dominio/Simulacion/ConfiguracionEscenario.cs</code><span>C#</span></div>
+<pre><code class="language-csharp">var baseConfig = new ConfiguracionEscenario { ProyectoId = proyecto.Id, MontoInversionBs = montoBs, … };
+baseConfig.Supuestos["rendimiento"] = proyecto.RendimientoPct / 100;   // los cargó el analista
+baseConfig.Supuestos["costos"]      = proyecto.CostosPct / 100;
+baseConfig.Supuestos["mortalidad"]  = proyecto.MortalidadPct / 100;
+
+// Clona la base tres veces: pesimista (rendimiento − variación), esperado, optimista (+ variación)
+PreparadorEscenarios.Preparar(baseConfig, proyecto.VariacionPct / 100)
+    .Select(c =&gt; c.Calcular());
+
+// En ConfiguracionEscenario.Calcular():
+// valor = monto × (1 + rendimiento − costos − mortalidad)</code></pre></div>
+  <ul class="explica">
+    <li>Se arma una configuración base y se <b>clona</b> para cada escenario; cada copia tiene sus propios supuestos y la base no cambia.</li>
+    <li>Cada resultado lleva la advertencia «Estimación, no rentabilidad garantizada» (RNF-06).</li>
+    <li>La fórmula es provisional: la ERS dice que la definitiva se acuerda con el cliente.</li>
+  </ul>
+
+  <h3>8. Una pantalla de React</h3>
+  <div class="codigo"><div class="codigo-cabecera"><code>apps/web/src/paginas/Invertir.jsx</code><span>JSX</span></div>
+<pre><code class="language-javascript">export default function Invertir() {
+  const { proyectoId } = useParams()                 // sale de la ruta /inversiones/nueva/:proyectoId
+  const [monto, setMonto] = useState('')
+  const [errorMonto, setErrorMonto] = useState(null)
+
+  async function reservar(e) {
+    e.preventDefault()
+    try {
+      const inversion = await api('/inversiones', { cuerpo: { proyectoId, montoBs: Number(monto) } })
+      navegar(`/inversiones/${inversion.id}/contrato`)  // siguiente paso: el contrato
+    } catch (err) {
+      setErrorMonto(err.campos?.MontoBs ?? null)        // 400: error bajo la casilla
+      if (!err.campos?.MontoBs) setError(mensajeDe(err)) // 409: aviso general
+    }
+  }
+
+  return (
+    &lt;Campo etiqueta="Monto (Bs)" ayuda={`Mínimo … · Cupo disponible …`} error={errorMonto}&gt;
+      &lt;input type="number" value={monto} onChange={(e) =&gt; setMonto(e.target.value)} /&gt;
+    &lt;/Campo&gt;
+  )
+}</code></pre></div>
+  <ul class="explica">
+    <li><code>useState</code> guarda lo que escribe el usuario; cada cambio vuelve a dibujar la pantalla.</li>
+    <li>La pantalla no decide si el monto es válido: lo decide la API, y la pantalla muestra lo que responde. Así la regla vive en un solo lugar.</li>
+    <li><code>Campo</code> es un componente común: pinta la etiqueta, la ayuda y los errores en rojo.</li>
+  </ul>
+
+  <h3>9. Una prueba automática</h3>
+  <div class="codigo"><div class="codigo-cabecera"><code>tests/P11.Tests/Integracion/InversionesTests.cs</code><span>C#</span></div>
+<pre><code class="language-csharp">[Fact]
+public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_cupo_disponible()
+{
+    var proyecto = await PasosInversion.ProyectoPublicado(f, "Engorde Cupo", meta: 5_000, minimo: 200);
+    var (inv, _) = await PasosInversion.InversionistaVerificado(f);
+
+    var bajo = await inv.PostAsJsonAsync("/api/inversiones", new { proyectoId = proyecto, montoBs = 150 });
+    Assert.Equal(HttpStatusCode.BadRequest, bajo.StatusCode);
+
+    var alto = await inv.PostAsJsonAsync("/api/inversiones", new { proyectoId = proyecto, montoBs = 6_000 });
+    Assert.Equal(HttpStatusCode.Conflict, alto.StatusCode);
+}</code></pre></div>
+  <ul class="explica">
+    <li>Prepara el escenario (un proyecto publicado y un inversionista verificado), hace el pedido real y comprueba la respuesta con <code>Assert</code>.</li>
+    <li>El nombre de la prueba dice qué demuestra; se lee como el criterio de aceptación de la ERS.</li>
+  </ul>
+</section>
+
+<!-- ============================ 7. CASOS DE USO ============================ -->
+<section class="seccion" id="casos-de-uso">
+  <p class="eyebrow">Sección 7</p>
+  <h2>Casos de uso y pantallas</h2>
+  <div class="breve"><strong>En breve</strong>
+    <p>Un <b>caso de uso (CU)</b> es una tarea completa que hace un actor, como «Invertir en un proyecto». El docente pidió que <b>cada pestaña del menú sea un caso de uso</b>, con su nombre exacto del diagrama D1. Cada rol ve solo sus pestañas; el <b>Administrador</b> ve las 16 y, donde hay varios actores, elige a quién representar con «Ver como».</p>
+    <p>Cada pantalla le pide datos a la <b>API</b>, que aplica las reglas y responde con un código: <b>400</b> (dato inválido), <b>404</b> (no existe o no es tuyo), <b>409</b> (choca con una regla o con el estado), <b>403</b> (tu rol no puede).</p>
+  </div>
+
+  <h3>Qué rol ve cada caso de uso</h3>
+  <div class="tabla-scroll"><table class="tabla matriz" id="matriz-cu"><!-- se llena con los DATOS DE LA GUÍA --></table></div>
+  <p class="texto"><span class="chip chip-ok">Con API</span> funciona de punta a punta con la base de datos. <span class="chip chip-ocre">Ejemplo</span> la pantalla existe pero muestra datos de ejemplo (<code>datosEjemplo.js</code>); su API llega en el Sprint 3.</p>
+
+  <!-- ---------- CU: cuenta e identidad ---------- -->
+  <div class="cu-bloque" id="cu-cuenta">
+    <h3>Registrar cuenta y verificar identidad <small style="font-weight:500">(+ Iniciar sesión)</small></h3>
+    <div class="cu-meta"><span class="chip chip-ok">Sprint 1</span><span class="chip">Inversionista</span><span class="chip">Productor</span><span class="chip">Analista (revisión manual)</span><span class="chip">RF-01 a RF-04</span><span class="chip">RNF-01, RNF-02, RNF-07</span></div>
+    <p class="texto">La persona crea su cuenta, la confirma con un código que llega al correo, inicia sesión y verifica su identidad con fotos de su CI y una selfie. Sin identidad verificada no puede invertir ni enviar proyectos (RF-04). «Iniciar sesión» no es una pestaña: es la puerta de entrada.</p>
+
+    <h4>Pantallas</h4>
+    <div class="capturas">
+      <figure class="captura"><button type="button"><img src="capturas/01-login.jpg" alt="Pantalla de inicio de sesión" loading="lazy"></button><figcaption><b>1.</b> Inicio de sesión: la entrada pública.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/02-registro-con-errores.jpg" alt="Registro con errores en celular y CI" loading="lazy"></button><figcaption><b>2.</b> Registro con datos inválidos: el error aparece bajo cada casilla.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/03-registro-completo.jpg" alt="Registro completo" loading="lazy"></button><figcaption><b>3.</b> Registro completo, con la casilla de términos marcada.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/04-otp-ingresado.jpg" alt="Código OTP ingresado" loading="lazy"></button><figcaption><b>4.</b> Código de 6 dígitos que llegó al correo.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/05-otp-confirmado.jpg" alt="Cuenta confirmada" loading="lazy"></button><figcaption><b>5.</b> Cuenta confirmada.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/06-login-incorrecto.jpg" alt="Credenciales incorrectas con intentos restantes" loading="lazy"></button><figcaption><b>6.</b> Contraseña incorrecta: avisa cuántos intentos quedan.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/07-identidad-formulario.jpg" alt="Formulario de identidad con consentimiento" loading="lazy"></button><figcaption><b>7.</b> CI (dos caras), selfie y consentimiento obligatorio.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/08-identidad-verificada.jpg" alt="Identidad verificada con historial" loading="lazy"></button><figcaption><b>8.</b> Verificada, con historial: fecha, responsable y motivo.</figcaption></figure>
+    </div>
+
+    <h4>Flujo paso a paso</h4>
+    <ol class="pasos">
+      <li>En <code>/registro</code> llena sus datos y elige si es Inversionista o Productor. <span class="donde">POST /api/auth/registro → crea el usuario y envía el OTP</span></li>
+      <li>El correo trae un código de 6 dígitos (en desarrollo se ve en Mailpit). <span class="donde">OtpService guarda solo el hash del código</span></li>
+      <li>En <code>/verificar-cuenta</code> escribe el código y la cuenta queda confirmada. <span class="donde">POST /api/auth/otp/verificar</span></li>
+      <li>Inicia sesión en <code>/ingresar</code> y recibe su token; entra directo a su primera pestaña. <span class="donde">POST /api/auth/login</span></li>
+      <li>En «Registrar cuenta y verificar identidad» marca el consentimiento y sube CI y selfie. <span class="donde">POST /api/verificacion · las fotos se guardan cifradas</span></li>
+      <li>El proveedor (simulado) compara el rostro. Coincidencia ≥ 80 %: <b>Verificado</b>. Menor: <b>En revisión</b> y un analista decide. <span class="donde">VerificacionService · AnalistaController</span></li>
+    </ol>
+
+    <h4>Reglas de cada casilla</h4>
+    <div class="tabla-scroll"><table class="tabla">
+      <thead><tr><th>Casilla</th><th>Regla</th><th>Si no se cumple</th></tr></thead>
+      <tbody>
+        <tr><td>Nombre completo</td><td>Obligatorio, de 3 a 120 caracteres</td><td>400, error bajo la casilla</td></tr>
+        <tr><td>Correo electrónico</td><td>Formato de correo; <b>único</b> en el sistema</td><td>400 si el formato es malo; 409 «Ya existe una cuenta con ese correo.»</td></tr>
+        <tr><td>Celular</td><td>De 7 a 15 dígitos, puede empezar con <code>+</code>. La web quita espacios y guiones</td><td>400 «El celular no es válido.»</td></tr>
+        <tr><td>CI</td><td>De 5 a 12 dígitos, con complemento opcional (<code>1234567-1A</code>); <b>único</b></td><td>400 «El CI no es válido.»; 409 «Ya existe una cuenta con ese CI.»</td></tr>
+        <tr><td>Contraseña</td><td>Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo</td><td>400 con lo que falta, en español</td></tr>
+        <tr><td>Soy</td><td>Solo Inversionista o Productor (Analista y Administrador son cuentas internas)</td><td>400 «Solo pueden registrarse inversionistas o productores.»</td></tr>
+        <tr><td>Acepto los términos</td><td>Obligatoria en la web</td><td>El botón «Crear cuenta» queda deshabilitado</td></tr>
+        <tr><td>Código OTP</td><td>6 dígitos, vence a los 10 minutos, 3 intentos; un código nuevo anula el anterior</td><td>400: incorrecto, vencido o sin intentos (hay que pedir otro)</td></tr>
+        <tr><td>Contraseña al ingresar</td><td>5 intentos fallidos seguidos bloquean la cuenta 15 minutos</td><td>401 «Quedan N intentos»; al 5.º, 423 con la hora de desbloqueo y un correo de aviso</td></tr>
+        <tr><td>Cuenta sin confirmar</td><td>Debe confirmar el correo antes de entrar</td><td>403 con el botón «Ingresar el código»</td></tr>
+        <tr><td>Consentimiento</td><td>Obligatorio antes de subir CI y selfie (RNF-07)</td><td>Botón deshabilitado; la API responde 400</td></tr>
+        <tr><td>Fotos (CI anverso, reverso, selfie)</td><td>JPG o PNG reales (se revisan los primeros bytes, no la extensión), de 1 KB a 5 MB</td><td>400 «Imagen ilegible: vuelve a tomar la foto (…)»</td></tr>
+        <tr><td>Reenviar la verificación</td><td>Solo si está Pendiente o Rechazada</td><td>409 «Tu verificación ya está en estado …»</td></tr>
+        <tr><td>Decisión del analista</td><td>Rechazar exige motivo</td><td>400 «Para rechazar hay que indicar el motivo.»</td></tr>
+      </tbody>
+    </table></div>
+    <h4>Dónde está</h4>
+    <ul>
+      <li><b>Web:</b> <code>Registro.jsx</code>, <code>VerificarCuenta.jsx</code>, <code>Login.jsx</code>, <code>Identidad.jsx</code>, <code>RevisionesAnalista.jsx</code></li>
+      <li><b>API:</b> <code>AuthController</code>, <code>VerificacionController</code>, <code>AnalistaController</code>, <code>OtpService</code>, <code>VerificacionService</code> (Facade), <code>AlmacenCifrado</code> (Decorator), <code>CorreoSmtpService</code> (Adapter), <code>AvisoBloqueo</code> (Bridge)</li>
+      <li><b>Pruebas:</b> <code>AutenticacionTests</code>, <code>OtpServiceTests</code>, <code>VerificacionTests</code></li>
+    </ul>
+    <p class="nota">Para mostrar la revisión manual en la demo: sube una selfie cuyo nombre de archivo contenga <code>revision</code> (por ejemplo <code>selfie-revision.png</code>). El simulador le da un puntaje bajo y queda «En revisión».</p>
+  </div>
+
+  <!-- ---------- CU: usuarios y bitácora ---------- -->
+  <div class="cu-bloque" id="cu-admin">
+    <h3>Gestionar usuarios, roles y permisos · Consultar bitácora de auditoría</h3>
+    <div class="cu-meta"><span class="chip chip-ok">Sprint 1 y corrección del 18/11</span><span class="chip">Administrador</span><span class="chip">RF-06</span><span class="chip">RNF-03</span></div>
+    <p class="texto">El Administrador busca usuarios, cambia su rol, desbloquea cuentas y elimina las que no tienen proyectos. La bitácora reúne en una lista cada cambio de estado de identidades y proyectos, con quién lo hizo y por qué. Además, el Administrador puede entrar a <b>todas</b> las pestañas; en las que tienen varios actores aparece «Ver como».</p>
+    <div class="capturas">
+      <figure class="captura"><button type="button"><img src="capturas/27-admin-usuarios.jpg" alt="Administración de usuarios" loading="lazy"></button><figcaption><b>27.</b> Usuarios: rol, estado, bloqueo. El menú muestra las 16 pestañas.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/28-admin-bitacora.jpg" alt="Bitácora de auditoría" loading="lazy"></button><figcaption><b>28.</b> Bitácora: fecha, módulo, acción, estados, responsable y motivo.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/29-admin-ver-como.jpg" alt="Selector Ver como" loading="lazy"></button><figcaption><b>29.</b> «Ver como»: el Administrador opera como Productor, Analista o Inversionista.</figcaption></figure>
+    </div>
+    <h4>Reglas</h4>
+    <div class="tabla-scroll"><table class="tabla">
+      <thead><tr><th>Acción</th><th>Regla</th><th>Si no se cumple</th></tr></thead>
+      <tbody>
+        <tr><td>Cambiar rol</td><td>Debe ser un rol existente; no puede cambiar el suyo. Rige desde el próximo inicio de sesión</td><td>400</td></tr>
+        <tr><td>Eliminar cuenta</td><td>No la propia; no una con proyectos (se sugiere bloquearla)</td><td>400 / 409</td></tr>
+        <tr><td>Filtrar bitácora</td><td>«Desde» no puede ser posterior a «hasta»</td><td>400</td></tr>
+        <tr><td>Entrar a una pestaña ajena</td><td>Cada endpoint declara sus roles</td><td>403 en la API; la web redirige a la primera pestaña del rol</td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li><b>Web:</b> <code>AdminUsuarios.jsx</code>, <code>Bitacora.jsx</code>, <code>VistaPorRol</code> en <code>componentes.jsx</code></li>
+      <li><b>API:</b> <code>AdminUsuariosController</code>, <code>AdminBitacoraController</code> · <b>Pruebas:</b> <code>RolesTests</code></li>
+    </ul>
+  </div>
+
+  <!-- ---------- CU: postular ---------- -->
+  <div class="cu-bloque" id="cu-postular">
+    <h3>Postular proyecto</h3>
+    <div class="cu-meta"><span class="chip chip-ok">Sprint 1</span><span class="chip">Productor</span><span class="chip">Administrador (en nombre de un productor)</span><span class="chip">RF-05, RF-07, RF-08</span></div>
+    <p class="texto">El productor carga la ficha de su proyecto. Según la línea (Engorde o Lechería) cambian los campos. Se guarda como <b>borrador</b>, que puede editar o borrar. Para enviarla a evaluación necesita tres cosas: ficha completa, identidad verificada y documentos del predio aprobados.</p>
+    <div class="capturas">
+      <figure class="captura"><button type="button"><img src="capturas/09-ficha-con-errores.jpg" alt="Ficha con errores" loading="lazy"></button><figcaption><b>9.</b> Ficha incompleta: cada campo marca su error (RF-08).</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/10-ficha-engorde-completa.jpg" alt="Ficha de engorde completa" loading="lazy"></button><figcaption><b>10.</b> Ficha de engorde completa.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/11-enviar-sin-documentos.jpg" alt="Error al enviar sin documentos" loading="lazy"></button><figcaption><b>11.</b> Enviar sin documentos aprobados: no pasa (RF-05).</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/12-documentos-predio-pendientes.jpg" alt="Documentos del predio pendientes" loading="lazy"></button><figcaption><b>12.</b> RUNSA y título subidos, pendientes de revisión.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/14-proyecto-en-revision.jpg" alt="Proyecto enviado a evaluación" loading="lazy"></button><figcaption><b>14.</b> Con todo aprobado: «Enviado a evaluación técnica».</figcaption></figure>
+    </div>
+    <h4>Estados del proyecto</h4>
+    <div class="diagrama" role="img" aria-label="Estados del proyecto: Borrador pasa a En revisión técnica; de ahí a Borrador si se observa, a Rechazado o a En financiamiento.">
+      <svg viewBox="0 0 860 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="punta2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-punta"/></marker></defs>
+        <rect class="d-caja ocre" x="20" y="70" width="160" height="60" rx="30"/><text class="d-titulo" x="100" y="106" text-anchor="middle">Borrador</text>
+        <rect class="d-caja azul" x="290" y="70" width="210" height="60" rx="30"/><text class="d-titulo" x="395" y="106" text-anchor="middle">En revisión técnica</text>
+        <rect class="d-caja roja" x="640" y="10" width="200" height="56" rx="28"/><text class="d-titulo" x="740" y="44" text-anchor="middle">Rechazado</text>
+        <rect class="d-caja verde" x="640" y="134" width="200" height="56" rx="28"/><text class="d-titulo" x="740" y="168" text-anchor="middle">En financiamiento</text>
+        <path class="d-flecha" d="M180,92 L288,92" marker-end="url(#punta2)"/><text class="d-etiqueta" x="190" y="84">Enviar (productor)</text>
+        <path class="d-flecha" d="M290,118 C240,150 220,150 180,118" marker-end="url(#punta2)"/><text class="d-etiqueta" x="190" y="160">Observar (analista)</text>
+        <path class="d-flecha" d="M500,90 L638,42" marker-end="url(#punta2)"/><text class="d-etiqueta" x="530" y="52">Rechazar</text>
+        <path class="d-flecha" d="M500,112 L638,160" marker-end="url(#punta2)"/><text class="d-etiqueta" x="510" y="160">Aprobar y publicar</text>
+      </svg>
+    </div>
+    <p class="texto">Solo un <b>borrador</b> se puede editar o eliminar. Un proyecto observado vuelve a borrador con las observaciones del analista para corregirlo.</p>
+
+    <h4>Reglas de cada casilla de la ficha</h4>
+    <div class="tabla-scroll"><table class="tabla">
+      <thead><tr><th>Casilla</th><th>Regla</th><th>Mensaje si no se cumple</th></tr></thead>
+      <tbody>
+        <tr><td>Línea</td><td>Engorde o Lechería; <b>no se cambia</b> después de crear</td><td>«La línea productiva no se puede cambiar; crea un proyecto nuevo.»</td></tr>
+        <tr><td>Nombre del proyecto</td><td>Obligatorio, hasta 150 caracteres</td><td>«El nombre es obligatorio.»</td></tr>
+        <tr><td>Ubicación del predio</td><td>Obligatoria, hasta 200 caracteres</td><td>«La ubicación es obligatoria.»</td></tr>
+        <tr><td>Monto requerido (Bs)</td><td>Mayor a 0 (es la meta de la ronda)</td><td>«El monto requerido debe ser mayor a 0.»</td></tr>
+        <tr><td>Inversión mínima (Bs)</td><td>Mayor a 0 y no mayor que el monto requerido</td><td>«El monto mínimo no puede superar al requerido.»</td></tr>
+        <tr><td>Plazo (meses)</td><td>Entre 1 y 120</td><td>«El plazo debe estar entre 1 y 120 meses.»</td></tr>
+        <tr><td colspan="3" style="background:var(--hundido)"><b>Solo engorde</b></td></tr>
+        <tr><td>Cabezas de ganado</td><td>Entre 1 y 100.000</td><td>«Indica la cantidad de animales…»</td></tr>
+        <tr><td>Peso inicial promedio (kg)</td><td>Mayor a 0, hasta 2.000</td><td>«Indica el peso inicial promedio…»</td></tr>
+        <tr><td>Peso meta (kg)</td><td><b>Mayor que el peso inicial</b>, hasta 2.000</td><td>«El peso meta debe ser mayor al inicial.»</td></tr>
+        <tr><td>Costos estimados (Bs)</td><td>Mayor a 0</td><td>«Indica los costos estimados.»</td></tr>
+        <tr><td colspan="3" style="background:var(--hundido)"><b>Solo lechería</b></td></tr>
+        <tr><td>Vacas en ordeño</td><td>Entre 1 y 100.000</td><td>«Indica las vacas en ordeño…»</td></tr>
+        <tr><td>Litros por día</td><td>Mayor a 0</td><td>«Indica los litros por día.»</td></tr>
+        <tr><td>Precio del litro (Bs)</td><td>Mayor a 0, hasta 1.000</td><td>«Indica el precio del litro…»</td></tr>
+        <tr><td colspan="3" style="background:var(--hundido)"><b>Documentos del predio</b></td></tr>
+        <tr><td>Tipo</td><td>RUNSA, Título de propiedad o Contrato de alquiler</td><td>400 «Ese tipo de documento no corresponde al predio.»</td></tr>
+        <tr><td>Archivo</td><td>PDF, JPG o PNG reales, hasta 5 MB; se guarda cifrado</td><td>400 «Formato no admitido…» o «…de hasta 5 MB.»</td></tr>
+      </tbody>
+    </table></div>
+    <p class="nota">Las reglas se revisan en <b>dos capas</b>: primero los atributos del DTO (obligatorios y rangos, en <code>Contratos/Dtos.cs</code>) y, si pasan, las reglas del dominio (por ejemplo «peso meta mayor al inicial», en <code>ProyectoEngorde.ValidarLinea()</code>). Por eso, en la captura 9, el error del peso meta aparece recién cuando los demás campos están bien.</p>
+    <h4>Para enviar a evaluación (en este orden)</h4>
+    <ol class="pasos">
+      <li>Ficha completa y válida. <span class="donde">409 «La ficha tiene campos con error: …»</span></li>
+      <li>Identidad del productor verificada. <span class="donde">409 «Tu identidad todavía no está verificada.»</span></li>
+      <li>RUNSA y (título o contrato de alquiler) <b>aprobados</b> por un analista. <span class="donde">409 «Faltan documentos aprobados: …»</span></li>
+    </ol>
+    <ul>
+      <li><b>Web:</b> <code>MisProyectos.jsx</code>, <code>NuevoProyecto.jsx</code> (crear y editar), <code>Documentos.jsx</code></li>
+      <li><b>API:</b> <code>ProyectosController</code>, <code>DocumentosProductorController</code>, <code>CreadorProyecto</code> (Factory Method), <code>RequisitosEnvio</code> (Chain of Responsibility), <code>EstadoFicha</code> (State)</li>
+      <li><b>Pruebas:</b> <code>ProyectosTests</code>, <code>FactoryMethodTests</code>, <code>ChainOfResponsibilityTests</code>, <code>StateTests</code></li>
+    </ul>
+  </div>
+
+  <!-- ---------- CU: evaluar ---------- -->
+  <div class="cu-bloque" id="cu-evaluar">
+    <h3>Evaluar y publicar proyecto</h3>
+    <div class="cu-meta"><span class="chip chip-ok">Sprint 2</span><span class="chip">Analista</span><span class="chip">RF-09, RF-10</span><span class="chip">RNF-03, RNF-06</span></div>
+    <p class="texto">El analista ve los proyectos que llegaron a revisión y los documentos del predio por aprobar. Para cada proyecto decide: <b>observar</b> (vuelve al productor para corregir), <b>rechazar</b> (queda cerrado con su motivo) o <b>aprobar y publicar</b>. Para publicar tiene que cargar los riesgos y los supuestos con los que el simulador arma los tres escenarios.</p>
+    <div class="capturas">
+      <figure class="captura"><button type="button"><img src="capturas/13-analista-evaluacion-y-predio.jpg" alt="Lista de evaluación y documentos por revisar" loading="lazy"></button><figcaption><b>13.</b> Proyectos por evaluar y documentos del predio por revisar.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/15-evaluar-formulario-completo.jpg" alt="Formulario de evaluación completo" loading="lazy"></button><figcaption><b>15.</b> Ficha, checklist, riesgos y supuestos de los escenarios.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/16-evaluar-sin-supuestos.jpg" alt="Error al publicar sin supuestos" loading="lazy"></button><figcaption><b>16.</b> Sin la variación no hay tres escenarios: no publica (409).</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/17-evaluacion-publicado.jpg" alt="Proyecto publicado" loading="lazy"></button><figcaption><b>17.</b> Publicado: ya está en el catálogo.</figcaption></figure>
+    </div>
+    <h4>Flujo paso a paso</h4>
+    <ol class="pasos">
+      <li>Al entrar un proyecto a revisión, los analistas reciben un correo (patrón Observer). <span class="donde">AvisarALosAnalistas</span></li>
+      <li>En «Evaluar y publicar proyecto» aprueba los documentos del predio y abre el proyecto con «Evaluar». <span class="donde">GET /api/analista/proyectos/{id}</span></li>
+      <li>Revisa la ficha y el checklist (guía para el analista; no se guarda).</li>
+      <li>Decide. Cada decisión es un <b>comando</b> que cambia el estado, guarda una fila en la bitácora y avisa al productor por correo. <span class="donde">POST /api/analista/proyectos/{id}/decision</span></li>
+      <li>Si aprueba, el proyecto pasa a <b>En financiamiento</b>, aparece en el catálogo y la ronda queda abierta <b>30 días</b>.</li>
+    </ol>
+    <h4>Reglas de cada casilla</h4>
+    <div class="tabla-scroll"><table class="tabla">
+      <thead><tr><th>Casilla</th><th>Regla</th><th>Para qué sirve</th></tr></thead>
+      <tbody>
+        <tr><td>Observaciones</td><td>Obligatorias para observar o rechazar (400 si faltan)</td><td>Le llegan al productor por correo y se ven en su lista</td></tr>
+        <tr><td>Nivel de riesgo</td><td>Bajo, Medio o Alto; obligatorio para aprobar</td><td>Filtro «Riesgo» del catálogo</td></tr>
+        <tr><td>Riesgos del proyecto</td><td>Texto obligatorio para aprobar, hasta 1.000 caracteres</td><td>Lo lee el inversionista en el simulador y en el contrato</td></tr>
+        <tr><td>Rendimiento esperado (%)</td><td>Entre 0 y 100</td><td>Ganancia bruta sobre lo invertido en todo el plazo</td></tr>
+        <tr><td>Costos y comisión (%)</td><td>Entre 0 y 100</td><td>Se resta del rendimiento</td></tr>
+        <tr><td>Pérdida por mortalidad (%)</td><td>Entre 0 y 50</td><td>Se resta del rendimiento</td></tr>
+        <tr><td>Variación entre escenarios (%)</td><td>Entre 1 y 50</td><td>Pesimista = rendimiento − variación; optimista = rendimiento + variación</td></tr>
+      </tbody>
+    </table></div>
+    <p class="texto">Si falta algo para publicar: <b>409</b> «No se publica un proyecto sin riesgos…» o «…sin los supuestos de los tres escenarios.» Si el proyecto ya no está en revisión: <b>409</b> «Un proyecto en financiamiento no se puede rechazar.»</p>
+    <ul>
+      <li><b>Web:</b> <code>Evaluacion.jsx</code>, <code>EvaluarProyecto.jsx</code>, <code>RevisionesAnalista.jsx</code></li>
+      <li><b>API:</b> <code>EvaluacionProyectosController</code>, <code>ComandosProyecto</code> y <code>GestorCicloProyecto</code> (Command), <code>ObservadoresProyecto</code> (Observer), <code>DatosPublicacion</code>, <code>EstadoFicha</code> (State)</li>
+      <li><b>Pruebas:</b> <code>EvaluacionProyectosTests</code>, <code>CommandTests</code>, <code>ObserverTests</code>, <code>StateTests</code></li>
+    </ul>
+  </div>
+
+  <!-- ---------- CU: catálogo ---------- -->
+  <div class="cu-bloque" id="cu-catalogo">
+    <h3>Explorar catálogo y simular escenarios</h3>
+    <div class="cu-meta"><span class="chip chip-ok">Sprint 2</span><span class="chip">Inversionista</span><span class="chip">RF-11, RF-12</span><span class="chip">RNF-06</span></div>
+    <p class="texto">El inversionista ve los proyectos publicados, los filtra y, en cada uno, simula cuánto podría valer su aporte en tres escenarios. Toda cifra viene con la advertencia de que es una estimación.</p>
+    <div class="capturas">
+      <figure class="captura"><button type="button"><img src="capturas/18-catalogo.jpg" alt="Catálogo de proyectos" loading="lazy"></button><figcaption><b>18.</b> Catálogo: riesgo, avance de la ronda, cupo libre y cierre.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/19-catalogo-filtrado.jpg" alt="Catálogo filtrado" loading="lazy"></button><figcaption><b>19.</b> Filtrado por línea Engorde y plazo de hasta 10 meses.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/20-simulador.jpg" alt="Simulador con tres escenarios" loading="lazy"></button><figcaption><b>20.</b> Simulador: tres escenarios con sus supuestos y la advertencia.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/32-celular-catalogo.jpg" alt="Catálogo en celular" loading="lazy"></button><figcaption><b>32.</b> El mismo catálogo en un celular.</figcaption></figure>
+    </div>
+    <h4>Filtros del catálogo (RF-11)</h4>
+    <div class="tabla-scroll"><table class="tabla">
+      <thead><tr><th>Filtro</th><th>Muestra solo los proyectos…</th><th>Parámetro</th></tr></thead>
+      <tbody>
+        <tr><td>Línea</td><td>de esa línea (Engorde o Lechería)</td><td><code>linea</code></td></tr>
+        <tr><td>Plazo máximo (meses)</td><td>que duran ese plazo o menos</td><td><code>plazoMaximo</code></td></tr>
+        <tr><td>Monto mínimo hasta (Bs)</td><td>cuya inversión mínima no supera ese monto («¿en cuáles puedo entrar con Bs 500?»)</td><td><code>minimoHasta</code></td></tr>
+        <tr><td>Zona</td><td>cuya ubicación contiene ese texto, sin importar mayúsculas</td><td><code>zona</code></td></tr>
+        <tr><td>Riesgo</td><td>con ese nivel de riesgo</td><td><code>riesgo</code></td></tr>
+      </tbody>
+    </table></div>
+    <p class="texto">Los filtros se combinan y los aplica la API: <code>GET /api/catalogo?linea=Engorde&amp;plazoMaximo=10</code>. Solo aparecen proyectos <b>En financiamiento</b>; un borrador nunca se ve (404 si se pide por su id).</p>
+    <h4>El simulador (RF-12), con un ejemplo</h4>
+    <p class="texto">Con los supuestos que cargó el analista, el valor al final del plazo es <b>monto × (1 + rendimiento − costos − mortalidad)</b>. El pesimista resta la variación al rendimiento y el optimista la suma. Cambia los números para practicar:</p>
+    <div class="mini" id="mini-sim">
+      <label for="sim-monto">Monto (Bs)<input id="sim-monto" type="number" value="1000" min="1"></label>
+      <label for="sim-rend">Rendimiento %<input id="sim-rend" type="number" value="22" step="0.1"></label>
+      <label for="sim-costos">Costos %<input id="sim-costos" type="number" value="8" step="0.1"></label>
+      <label for="sim-mort">Mortalidad %<input id="sim-mort" type="number" value="2" step="0.1"></label>
+      <label for="sim-var">Variación %<input id="sim-var" type="number" value="8" step="0.1"></label>
+    </div>
+    <div class="resultado-sim" id="sim-resultado" aria-live="polite">
+      <div><span>Pesimista</span><b id="sim-p">Bs 1.040</b><span id="sim-p-d">rendimiento 14 %</span></div>
+      <div><span>Esperado</span><b id="sim-e">Bs 1.120</b><span id="sim-e-d">rendimiento 22 %</span></div>
+      <div><span>Optimista</span><b id="sim-o">Bs 1.200</b><span id="sim-o-d">rendimiento 30 %</span></div>
+    </div>
+    <p class="nota">Ejemplo: 1.000 × (1 + 0,22 − 0,08 − 0,02) = <b>1.120</b>. Es una estimación: el resultado puede ser menor al aporte (RNF-06). La fórmula es provisional hasta definirla con el cliente.</p>
+    <ul>
+      <li><b>Web:</b> <code>Catalogo.jsx</code>, <code>Simulador.jsx</code></li>
+      <li><b>API:</b> <code>CatalogoController</code> (<code>GET /api/catalogo</code>, <code>GET /api/catalogo/{id}</code>, <code>POST /api/catalogo/{id}/simulacion</code>), <code>SimuladorEscenarios</code>, <code>ConfiguracionEscenario</code> (Prototype)</li>
+      <li><b>Pruebas:</b> <code>CatalogoTests</code> (filtros, borrador oculto, tres escenarios, monto 0, productor sin acceso), <code>PrototypeTests</code></li>
+    </ul>
+  </div>
+
+  <!-- ---------- CU: invertir ---------- -->
+  <div class="cu-bloque" id="cu-invertir">
+    <h3>Invertir en un proyecto <small style="font-weight:500">(+ constancia en «Consultar portafolio»)</small></h3>
+    <div class="cu-meta"><span class="chip chip-ok">Sprint 2</span><span class="chip">Inversionista</span><span class="chip">RF-13, RF-14, RF-15, RF-16</span><span class="chip">RNF-01, RNF-05, RNF-09</span></div>
+    <p class="texto">Es el corazón del Sprint 2. En cuatro pasos: <b>reservar</b> el cupo por 30 minutos, <b>firmar</b> el contrato con un código OTP, <b>pagar</b> con QR (simulado) y <b>recibir</b> la participación con su constancia.</p>
+    <div class="capturas">
+      <figure class="captura"><button type="button"><img src="capturas/21-invertir-bajo-el-minimo.jpg" alt="Monto bajo el mínimo" loading="lazy"></button><figcaption><b>21.</b> Monto bajo el mínimo: muestra el cupo disponible (RF-13).</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/22-contrato-con-otp.jpg" alt="Contrato con OTP" loading="lazy"></button><figcaption><b>22.</b> Contrato, cuenta regresiva de la reserva y código OTP (RF-14).</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/23-pago-qr.jpg" alt="Pago con QR" loading="lazy"></button><figcaption><b>23.</b> Pago con QR simulado, con referencia y tiempo restante (RF-15).</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/24-constancia.jpg" alt="Constancia de participación" loading="lazy"></button><figcaption><b>24.</b> Constancia: participación en %, kg y datos del contrato (RF-16).</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/25-portafolio.jpg" alt="Portafolio" loading="lazy"></button><figcaption><b>25.</b> Portafolio con la participación y el total invertido.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/26-inversiones-y-mis-inversiones.jpg" alt="Invertir y mis inversiones" loading="lazy"></button><figcaption><b>26.</b> Pestaña «Invertir»: proyectos abiertos y el estado de cada inversión mía.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/30-mailpit-correos.jpg" alt="Correos en Mailpit" loading="lazy"></button><figcaption><b>30.</b> Mailpit: códigos OTP, avisos y la constancia por correo.</figcaption></figure>
+    </div>
+    <h4>Estados de una inversión</h4>
+    <div class="diagrama" role="img" aria-label="Estados de una inversión: Reservada pasa a Firmada y luego a Pagada. Reservada o Firmada pasan a Vencida si pasan 30 minutos. Firmada pasa a Rechazada si la pasarela rechaza el pago.">
+      <svg viewBox="0 0 860 210" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="punta3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-punta"/></marker></defs>
+        <rect class="d-caja ocre" x="20" y="30" width="170" height="56" rx="28"/><text class="d-titulo" x="105" y="64" text-anchor="middle">Reservada</text>
+        <rect class="d-caja ocre" x="340" y="30" width="170" height="56" rx="28"/><text class="d-titulo" x="425" y="64" text-anchor="middle">Firmada</text>
+        <rect class="d-caja verde" x="670" y="30" width="170" height="56" rx="28"/><text class="d-titulo" x="755" y="64" text-anchor="middle">Pagada</text>
+        <rect class="d-caja roja" x="180" y="146" width="170" height="56" rx="28"/><text class="d-titulo" x="265" y="180" text-anchor="middle">Vencida</text>
+        <rect class="d-caja roja" x="520" y="146" width="170" height="56" rx="28"/><text class="d-titulo" x="605" y="180" text-anchor="middle">Rechazada</text>
+        <path class="d-flecha" d="M190,58 L338,58" marker-end="url(#punta3)"/><text class="d-etiqueta" x="200" y="50">contrato + OTP</text>
+        <path class="d-flecha" d="M510,58 L668,58" marker-end="url(#punta3)"/><text class="d-etiqueta" x="530" y="50">pago aprobado</text>
+        <path class="d-flecha" d="M105,86 L230,144" marker-end="url(#punta3)"/>
+        <path class="d-flecha" d="M425,86 L300,144" marker-end="url(#punta3)"/><text class="d-etiqueta" x="196" y="122">pasan 30 min</text>
+        <path class="d-flecha" d="M460,86 L580,144" marker-end="url(#punta3)"/><text class="d-etiqueta" x="530" y="122">pago rechazado</text>
+      </svg>
+    </div>
+    <p class="texto">El <b>cupo libre</b> es: meta − lo ya pagado − las reservas que todavía no vencieron. Una reserva <b>vencida</b> o <b>rechazada</b> deja de ocupar cupo en el acto, y el inversionista recibe un correo.</p>
+
+    <h4>Flujo paso a paso</h4>
+    <ol class="pasos">
+      <li><b>Reservar.</b> Desde el simulador o la pestaña «Invertir» elige el monto. <span class="donde">POST /api/inversiones → 201, estado Reservada, vence a los 30 min</span></li>
+      <li><b>Leer el contrato.</b> Ve el texto con su versión y los riesgos, y la cuenta regresiva. <span class="donde">GET /api/inversiones/{id}/contrato</span></li>
+      <li><b>Pedir el código.</b> «Enviarme el código por correo». <span class="donde">POST /api/inversiones/{id}/contrato/codigo</span></li>
+      <li><b>Firmar.</b> Marca «Leí y acepto» y escribe el código. Se guarda quién, cuándo y qué versión aceptó. <span class="donde">POST /api/inversiones/{id}/contrato/firmar → Firmada</span></li>
+      <li><b>Pagar.</b> Se genera el QR con una referencia única; vence junto con la reserva. <span class="donde">POST /api/inversiones/{id}/pago</span></li>
+      <li><b>Confirmación de la pasarela</b> (simulada con «Ya pagué, verificar»). Aprobado: <b>Pagada</b>, participación y constancia. «Simular pago rechazado»: <b>Rechazada</b> y cupo liberado. <span class="donde">POST /api/inversiones/{id}/pago/confirmar</span></li>
+      <li><b>Constancia y portafolio.</b> Llega por correo y se ve en «Consultar portafolio». <span class="donde">GET /api/portafolio · GET /api/portafolio/{id}/constancia</span></li>
+    </ol>
+
+    <h4>Reglas de cada paso</h4>
+    <div class="tabla-scroll"><table class="tabla">
+      <thead><tr><th>Regla</th><th>Detalle</th><th>Si no se cumple</th></tr></thead>
+      <tbody>
+        <tr><td>Identidad verificada</td><td>Un usuario no verificado no puede invertir (RF-04)</td><td>409 «Tu identidad todavía no está verificada…»</td></tr>
+        <tr><td>Proyecto publicado</td><td>Solo proyectos En financiamiento</td><td>404 «Ese proyecto no está en el catálogo.»</td></tr>
+        <tr><td>Ronda abierta</td><td>Hasta 30 días después de publicar</td><td>409 «La ronda de este proyecto ya cerró.»</td></tr>
+        <tr><td>Monto (Bs)</td><td>Mayor a 0 y <b>al menos el mínimo</b> del proyecto</td><td>400 bajo la casilla: «El mínimo para invertir es … Cupo disponible: …»</td></tr>
+        <tr><td>Cupo</td><td>El monto no puede superar el cupo libre</td><td>409 «El monto supera el cupo disponible: quedan …»</td></tr>
+        <tr><td>Una reserva a la vez</td><td>No dos reservas en curso en el mismo proyecto</td><td>409 «Ya tienes una reserva en curso…»</td></tr>
+        <tr><td>Aceptar el contrato</td><td>Casilla «Leí y acepto» obligatoria</td><td>400 «Debes aceptar el contrato y los riesgos…»</td></tr>
+        <tr><td>Código OTP</td><td>6 dígitos, 10 minutos, 3 intentos (RNF-01)</td><td>400 «El código no es correcto.» / «…venció» / «Agotaste los intentos.»</td></tr>
+        <tr><td>Pagar</td><td>Solo con el contrato firmado</td><td>409 «Primero acepta el contrato y los riesgos; sin eso no se habilita el pago.»</td></tr>
+        <tr><td>Tiempo</td><td>Firmar y pagar dentro de los 30 minutos de la reserva</td><td>409 «Tu reserva venció y el cupo se liberó…», más un correo</td></tr>
+        <tr><td>Privacidad</td><td>Cada inversionista ve solo sus inversiones</td><td>404 si pide la de otro</td></tr>
+      </tbody>
+    </table></div>
+    <h4>Cómo se calcula la participación (RF-16)</h4>
+    <ul>
+      <li><b>Porcentaje</b> = aporte ÷ meta × 100. Ejemplo: 1.000 ÷ 100.000 × 100 = <b>1 %</b>.</li>
+      <li><b>Kilos</b> (solo engorde) = porcentaje × cabezas × peso inicial. Ejemplo: 1 % × 120 × 180 kg = <b>216 kg</b>.</li>
+      <li><b>Constancia</b>: código <code>CP-AAAAMMDD-XXXXXX</code>, con el contrato aceptado y la referencia del pago.</li>
+    </ul>
+    <p class="nota nota-ok">Aunque el servicio de fondo no haya pasado todavía, el cupo siempre se calcula bien: una reserva vencida ya no cuenta. El servicio <code>VencimientoReservas</code> solo cambia su estado a «Vencida» y manda el aviso.</p>
+    <ul>
+      <li><b>Web:</b> <code>Inversiones.jsx</code>, <code>Invertir.jsx</code>, <code>Contrato.jsx</code>, <code>PagoQr.jsx</code>, <code>Portafolio.jsx</code>, <code>Constancia.jsx</code>, <code>CuentaRegresiva</code> en <code>componentes.jsx</code></li>
+      <li><b>API:</b> <code>InversionesController</code>, <code>PortafolioController</code>, <code>Inversion</code>, <code>ContratoInversion</code>, <code>GestorInversiones</code>, <code>VencimientoReservas</code>, <code>AvisoInversion</code> (Bridge), <code>OtpService</code></li>
+      <li><b>Pruebas:</b> <code>InversionesTests</code> (flujo completo, mínimo y cupo, vencimiento, rechazo, sin verificar, doble reserva, inversión ajena)</li>
+    </ul>
+  </div>
+
+  <!-- ---------- Sprint 3 ---------- -->
+  <div class="cu-bloque" id="cu-sprint3">
+    <h3>Los casos de uso del Sprint 3</h3>
+    <div class="cu-meta"><span class="chip chip-ocre">Pantallas con datos de ejemplo</span></div>
+    <p class="texto">Estas pestañas ya existen y se pueden recorrer, pero leen de <code>datosEjemplo.js</code>: todavía no guardan nada. En el Sprint 3 cada una cambia ese import por llamadas a la API, igual que se hizo en el Sprint 2 con el catálogo y la inversión.</p>
+    <div class="tabla-scroll"><table class="tabla">
+      <thead><tr><th>Caso de uso</th><th>Actores</th><th>RF</th><th>Pantallas</th></tr></thead>
+      <tbody>
+        <tr><td>Cerrar ronda de financiamiento</td><td>Productor, Inversionista</td><td>RF-17</td><td><code>Rondas.jsx</code>, <code>Ronda.jsx</code></td></tr>
+        <tr><td>Registrar compra del ganado</td><td>Analista</td><td>RF-24</td><td><code>Compra.jsx</code></td></tr>
+        <tr><td>Registrar traslado del ganado</td><td>Analista</td><td>RF-25</td><td><code>Traslado.jsx</code></td></tr>
+        <tr><td>Registrar avance productivo</td><td>Productor, Analista</td><td>RF-18, RF-19</td><td><code>Avance.jsx</code>, <code>AvancesPendientes.jsx</code>, <code>AvancesRecibidos.jsx</code></td></tr>
+        <tr><td>Gestionar incidencias</td><td>Productor, Analista</td><td>RF-20</td><td><code>Incidencias.jsx</code>, <code>NuevaIncidencia.jsx</code>, <code>Incidencia.jsx</code></td></tr>
+        <tr><td>Gestionar reclamo al seguro</td><td>Analista</td><td>RF-21</td><td><code>Reclamos.jsx</code></td></tr>
+        <tr><td>Liquidar proyecto</td><td>Productor, Analista, Inversionista</td><td>RF-23</td><td><code>CierreProyecto.jsx</code>, <code>Liquidacion.jsx</code>, <code>MiLiquidacion.jsx</code></td></tr>
+        <tr><td>Consultar expediente del proyecto</td><td>Productor, Inversionista, Analista</td><td>RF-22</td><td><code>Expedientes.jsx</code>, <code>Expediente.jsx</code></td></tr>
+      </tbody>
+    </table></div>
+    <p class="texto">Parte del dominio ya está lista y probada: el <b>Builder</b> del expediente (<code>Dominio/Expediente</code>) y el <b>Composite</b> y la <b>Strategy</b> de la liquidación (<code>Dominio/Liquidaciones</code>).</p>
+  </div>
+</section>
+
+<!-- ============================ 8. CIFRAS ============================ -->
+<section class="seccion" id="cifras">
+  <p class="eyebrow">Sección 8</p>
+  <h2>Cifras y reglas clave</h2>
+  <div class="breve"><strong>En breve</strong><p>Son los números que más se preguntan. Casi todos se pueden cambiar sin tocar código, en <code>apps/api/src/P11.Api/appsettings.json</code>; los del Sprint 2 están como constantes en el dominio.</p></div>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Regla</th><th>Valor</th><th>Requerimiento</th><th>Dónde se define</th></tr></thead>
+    <tbody>
+      <tr><td>Contraseña mínima</td><td class="num">8 caracteres + mayúscula, minúscula, número y símbolo</td><td>RF-01</td><td><code>ReglasSeguridad</code></td></tr>
+      <tr><td>Intentos antes del bloqueo</td><td class="num">5</td><td>RF-02</td><td><code>ReglasSeguridad</code></td></tr>
+      <tr><td>Duración del bloqueo</td><td class="num">15 min</td><td>RF-02</td><td><code>ReglasSeguridad</code></td></tr>
+      <tr><td>Código OTP</td><td class="num">6 dígitos · 10 min · 3 intentos</td><td>RNF-01</td><td><code>Otp</code></td></tr>
+      <tr><td>Duración de la sesión (token)</td><td class="num">120 min</td><td>RF-02</td><td><code>Jwt</code></td></tr>
+      <tr><td>Coincidencia de rostro para verificar sola</td><td class="num">≥ 80 % (el simulador da 92 %)</td><td>RF-03</td><td><code>Verificacion</code></td></tr>
+      <tr><td>Tamaño de archivos</td><td class="num">hasta 5 MB; imagen de al menos 1 KB</td><td>RF-03, RF-05</td><td><code>Archivos</code></td></tr>
+      <tr><td>Cifrado de archivos</td><td class="num">AES-256-GCM</td><td>RNF-02</td><td><code>AlmacenCifrado</code></td></tr>
+      <tr><td>Plazo del proyecto</td><td class="num">1 a 120 meses</td><td>RF-07</td><td><code>ProyectoEntradaDto</code></td></tr>
+      <tr><td>Duración de la ronda</td><td class="num">30 días desde la publicación</td><td>RF-10, RF-17</td><td><code>DatosPublicacion.DiasRonda</code></td></tr>
+      <tr><td>Reserva del cupo</td><td class="num">30 min</td><td>RF-13</td><td><code>Inversion.MinutosReserva</code></td></tr>
+      <tr><td>Revisión de reservas vencidas</td><td class="num">cada 1 min</td><td>RF-15</td><td><code>VencimientoReservas</code></td></tr>
+      <tr><td>Versión del contrato</td><td class="num">1.0 (2026-11)</td><td>RF-14</td><td><code>ContratoInversion.Version</code></td></tr>
+      <tr><td>Inversión mínima típica</td><td class="num">Bs 100 (la fija cada proyecto)</td><td>RF-13</td><td>ficha del proyecto</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ 9. PATRONES ============================ -->
+<section class="seccion" id="patrones">
+  <p class="eyebrow">Sección 9</p>
+  <h2>Patrones de diseño en el código</h2>
+  <div class="breve"><strong>En breve</strong><p>Un <b>patrón de diseño</b> es una solución conocida, con nombre, a un problema que se repite al programar. Hay tres familias: <b>creacionales</b> (cómo se crean objetos), <b>estructurales</b> (cómo se combinan) y <b>de comportamiento</b> (cómo reparten tareas). Cada patrón del proyecto tiene su archivo y su prueba. Las guías detalladas están en <code>docs/patrones/</code>.</p></div>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Patrón</th><th>Familia</th><th>Qué resuelve en P11</th><th>Dónde</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>Factory Method</td><td>Creacional</td><td>Crear la ficha correcta según la línea (engorde o lechería), cada una con sus campos y reglas</td><td><code>CreadorProyecto.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Prototype</td><td>Creacional</td><td>Clonar la configuración base para los tres escenarios del simulador</td><td><code>ConfiguracionEscenario.cs</code>, <code>SimuladorEscenarios.cs</code></td><td><span class="chip chip-ok">En uso desde el Sprint 2</span></td></tr>
+      <tr><td>Builder</td><td>Creacional</td><td>Armar el expediente del proyecto paso a paso</td><td><code>ConstructorExpediente.cs</code></td><td><span class="chip chip-ocre">Sprint 3</span></td></tr>
+      <tr><td>Configuración inyectada</td><td>(en vez de Singleton)</td><td>Reglas de appsettings validadas al arrancar y recibidas como <code>IOptions</code></td><td><code>Opciones.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Adapter</td><td>Estructural</td><td>El sistema pide «enviar correo» sin saber de SMTP</td><td><code>CorreoSmtpService.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Decorator</td><td>Estructural</td><td>Agregar cifrado al almacén de archivos y reintentos al correo sin cambiarlos</td><td><code>AlmacenCifrado.cs</code>, <code>CorreoConReintentos.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Proxy</td><td>Estructural</td><td>Solo el dueño o un analista abre un documento; cada acceso queda registrado</td><td><code>VisorDocumentosProxy.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Facade</td><td>Estructural</td><td>Una sola puerta para verificar identidad (guardar, comparar, cambiar estado, avisar)</td><td><code>VerificacionService.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Bridge</td><td>Estructural</td><td>Separar qué se avisa (bloqueo, constancia) de por dónde llega (correo, Telegram)</td><td><code>Servicios/Avisos/</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Composite</td><td>Estructural</td><td>Conceptos de la liquidación agrupados en árbol</td><td><code>ConceptoLiquidacion.cs</code></td><td><span class="chip chip-ocre">Sprint 3</span></td></tr>
+      <tr><td>State</td><td>Comportamiento</td><td>Qué se puede hacer con el proyecto según su estado</td><td><code>EstadoFicha.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Chain of Responsibility</td><td>Comportamiento</td><td>Los tres requisitos para enviar a evaluación, en cadena</td><td><code>RequisitosEnvio.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Command</td><td>Comportamiento</td><td>Cada decisión es un objeto que se ejecuta igual y deja bitácora</td><td><code>ComandosProyecto.cs</code>, <code>GestorCicloProyecto.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Observer</td><td>Comportamiento</td><td>Avisar al productor y a los analistas cuando cambia el estado</td><td><code>ObservadoresProyecto.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Strategy</td><td>Comportamiento</td><td>Cambiar la regla de reparto de la liquidación sin tocar el cálculo</td><td><code>ReglaReparto.cs</code></td><td><span class="chip chip-ocre">Sprint 3</span></td></tr>
+      <tr><td>Template Method</td><td>Comportamiento</td><td>Validación común + validación propia de cada línea</td><td><code>ProyectoGanadero.Validar()</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Iterator</td><td>Comportamiento</td><td>Recorrer el árbol de la liquidación (lo da C# con <code>yield</code>)</td><td><code>GrupoConceptos.Detalle()</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="texto"><b>No se aplican</b>, con justificación en <code>docs/patrones/README.md</code>: Abstract Factory, Flyweight, Mediator (el flujo de inversión son pasos en secuencia, no objetos que conversan) y Memento (no hay requisito de deshacer).</p>
+</section>
+
+<!-- ============================ 10. PRUEBAS ============================ -->
+<section class="seccion" id="pruebas">
+  <p class="eyebrow">Sección 10</p>
+  <h2>Pruebas automáticas</h2>
+  <div class="breve"><strong>En breve</strong><p>Una prueba automática es código que usa el sistema y comprueba el resultado. Las <b>de integración</b> levantan la API completa en memoria y le hacen pedidos HTTP reales, con una base de datos en memoria y un correo falso; no necesitan SQL Server. Las <b>de patrones</b> prueban una clase sola.</p></div>
+  <p class="texto">Se corren con <code>cd apps/api &amp;&amp; dotnet test</code>. Resultado actual: <b>99 pruebas, 0 fallas</b> (44 al cerrar el Sprint 1, 87 antes del Sprint 2).</p>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Archivo</th><th class="num">Pruebas</th><th>Qué demuestra</th></tr></thead>
+    <tbody>
+      <tr><td>AutenticacionTests</td><td class="num">7</td><td>Registro, CI o correo repetido, OTP, login con intentos y bloqueo</td></tr>
+      <tr><td>OtpServiceTests</td><td class="num">4</td><td>Código vencido, 3 intentos, un solo uso, solo se guarda el hash</td></tr>
+      <tr><td>VerificacionTests</td><td class="num">5</td><td>Consentimiento, imágenes ilegibles, revisión manual, archivos cifrados</td></tr>
+      <tr><td>RolesTests</td><td class="num">5</td><td>Cada rol entra solo a lo suyo; el Administrador a todo</td></tr>
+      <tr><td>ProyectosTests</td><td class="num">4</td><td>Ficha por línea, requisitos para enviar a evaluación</td></tr>
+      <tr><td>EvaluacionProyectosTests</td><td class="num">3</td><td>Observar, publicar solo con riesgos y supuestos, roles</td></tr>
+      <tr><td>CatalogoTests <span class="chip chip-ok">Sprint 2</span></td><td class="num">5</td><td>Filtros, borrador oculto, tres escenarios con advertencia</td></tr>
+      <tr><td>InversionesTests <span class="chip chip-ok">Sprint 2</span></td><td class="num">7</td><td>Flujo completo, mínimo (400), cupo (409), vencimiento, rechazo, sin verificar, privacidad</td></tr>
+      <tr><td>Patrones/*</td><td class="num">59</td><td>Una o más pruebas por patrón (State, Command, Prototype, Decorator…)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="texto">Trucos que usan las pruebas: <code>ApiFactory</code> reemplaza SQL Server por una base en memoria y el SMTP por <code>CorreoEnMemoria</code> (así leen el OTP del correo); <code>ApiFactoryConReloj</code> usa <code>FakeTimeProvider</code> para adelantar 31 minutos y vencer una reserva sin esperar.</p>
+</section>
+
+<!-- ============================ 11. DEMO ============================ -->
+<section class="seccion" id="demo">
+  <p class="eyebrow">Sección 11</p>
+  <h2>Levantar y mostrar la demo</h2>
+  <div class="breve"><strong>En breve</strong><p>Para ver todo funcionando hacen falta cuatro cosas corriendo a la vez: <b>SQL Server</b> (la base), <b>Mailpit</b> (los correos), la <b>API</b> y la <b>web</b>. La API crea la base y las cuentas internas sola al arrancar.</p></div>
+  <h3>Una sola vez por máquina</h3>
+  <ol class="pasos">
+    <li>Instalar .NET SDK 10, Node.js 20.19 o superior y Docker.</li>
+    <li>SQL Server: en Windows, SQL Server Express o Developer; en Linux o Mac, <code>docker run -d --name p11-sql -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='&lt;una clave fuerte&gt;' -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest</code></li>
+    <li>Guardar la cadena de conexión sin subirla al repo: en <code>apps/api/src/P11.Api</code>, <code>dotnet user-secrets set "ConnectionStrings:Principal" "&lt;tu cadena&gt;"</code></li>
+    <li><code>dotnet dev-certs https --trust</code> (para el https local).</li>
+  </ol>
+  <h3>Cada vez (una terminal por comando, desde la raíz)</h3>
+  <div class="codigo"><div class="codigo-cabecera"><span>Terminal</span><span>bash</span></div>
+<pre><code class="language-bash">docker compose up -d                                           # Mailpit en http://localhost:8025
+cd apps/api/src/P11.Api &amp;&amp; dotnet run --launch-profile https   # API en https://localhost:7080
+cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      # web en http://localhost:5173</code></pre></div>
+  <h3>Cuentas</h3>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Rol</th><th>Correo</th><th>Contraseña</th></tr></thead>
+    <tbody>
+      <tr><td>Administrador</td><td><code>admin@p11.local</code></td><td><code>Admin.p11-2026</code></td></tr>
+      <tr><td>Analista</td><td><code>analista@p11.local</code></td><td><code>Analista.p11-2026</code></td></tr>
+      <tr><td>Productor e Inversionista</td><td colspan="2">Se registran desde la web; el OTP se lee en Mailpit</td></tr>
+    </tbody>
+  </table></div>
+  <p class="texto">Swagger queda en <code>https://localhost:7080/swagger</code>: <code>POST /api/auth/login</code> con una cuenta, copiar el <code>token</code>, tocar <b>Authorize</b> y pegarlo.</p>
+  <div class="capturas una">
+    <figure class="captura"><button type="button"><img src="capturas/31-swagger.jpg" alt="Swagger UI" loading="lazy"></button><figcaption><b>31.</b> Swagger UI con los grupos de endpoints, incluidos Catalogo, Inversiones y Portafolio.</figcaption></figure>
+  </div>
+  <h3>Guion sugerido del Sprint 2 (≈ 8 minutos)</h3>
+  <ol class="pasos">
+    <li><b>Productor</b> con identidad verificada y documentos aprobados envía «Engorde Chiquitania 2026» a evaluación. (Si no hay uno, crearlo como en el Sprint 1.)</li>
+    <li><b>Analista</b>: «Evaluar». Intentar aprobar sin la variación → no publica (409). Completar riesgos y supuestos → publicado. Mostrar el correo al productor en Mailpit.</li>
+    <li><b>Inversionista</b>: catálogo, filtrar por Engorde, abrir el proyecto y simular Bs 1.000 → 1.040 / 1.120 / 1.200 con la advertencia.</li>
+    <li>«Invertir»: probar Bs 50 → error con el cupo disponible. Reservar Bs 1.000.</li>
+    <li>Contrato: pedir el código, leerlo en Mailpit, firmar.</li>
+    <li>Pago QR: «Ya pagué, verificar» → constancia (1 %, 216 kg). Mostrar el portafolio y el correo con la constancia.</li>
+    <li><b>Administrador</b>: entrar a «Invertir en un proyecto» o «Liquidar proyecto» y mostrar «Ver como»; abrir la bitácora.</li>
+    <li>Cerrar con <code>dotnet test</code>: 99 pruebas en verde.</li>
+  </ol>
+  <h3>Si algo falla</h3>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Síntoma</th><th>Causa probable</th></tr></thead>
+    <tbody>
+      <tr><td>La web dice «No se pudo conectar con el servidor.»</td><td>La API no está corriendo o no está en el puerto 7080</td></tr>
+      <tr><td>La API no arranca por la base</td><td>SQL Server apagado, o falta la cadena en <code>user-secrets</code></td></tr>
+      <tr><td>No llega el OTP</td><td>Mailpit no está corriendo: <code>docker compose up -d</code></td></tr>
+      <tr><td>«Tu identidad todavía no está verificada»</td><td>El usuario no pasó por «Registrar cuenta y verificar identidad»</td></tr>
+      <tr><td>El catálogo está vacío</td><td>Ningún proyecto fue aprobado por el analista todavía</td></tr>
+      <tr><td>Error de certificado en https</td><td>Falta <code>dotnet dev-certs https --trust</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ 12. PRÁCTICA ============================ -->
+<section class="seccion" id="practica">
+  <p class="eyebrow">Sección 12</p>
+  <h2>Preguntas para practicar</h2>
+  <div class="breve"><strong>En breve</strong><p>Piensa tu respuesta en voz alta y después ábrela para comparar. Si una respuesta usa una palabra que no conoces, búscala en <a href="#glosario">Palabras clave</a>.</p></div>
+  <div class="filtros" id="filtro-preguntas" role="group" aria-label="Filtrar preguntas por tema">
+    <button type="button" data-tema="todas" aria-pressed="true">Todas</button>
+    <button type="button" data-tema="general" aria-pressed="false">General</button>
+    <button type="button" data-tema="tecnologia" aria-pressed="false">Tecnologías</button>
+    <button type="button" data-tema="codigo" aria-pressed="false">Código</button>
+    <button type="button" data-tema="cu" aria-pressed="false">Casos de uso</button>
+    <button type="button" data-tema="seguridad" aria-pressed="false">Seguridad</button>
+    <button type="button" data-tema="patrones" aria-pressed="false">Patrones y pruebas</button>
+  </div>
+  <div id="preguntas">
+    <details class="pregunta" data-tema="general"><summary><span class="chip">General</span>¿Qué problema resuelve el proyecto, en una frase?</summary><div class="respuesta"><p>Conecta a productores ganaderos que necesitan capital y no tienen garantías bancarias con inversionistas urbanos que quieren invertir montos chicos, con verificación, contratos y trazabilidad de cada boliviano.</p></div></details>
+    <details class="pregunta" data-tema="general"><summary><span class="chip">General</span>¿Qué entra en el Sprint 2 y cómo quedó?</summary><div class="respuesta"><p>Evaluación y publicación (RF-09, RF-10), catálogo con filtros (RF-11), simulador de tres escenarios (RF-12), y la inversión completa: cupo y reserva (RF-13), contrato con OTP (RF-14), pago QR simulado (RF-15) y participación con constancia (RF-16). Todo tiene endpoint, pantalla conectada y pruebas automáticas.</p></div></details>
+    <details class="pregunta" data-tema="general"><summary><span class="chip">General</span>¿Por qué el pago es «simulado»?</summary><div class="respuesta"><p>La ERS deja el proveedor de la pasarela «por definir». La API ya tiene los dos momentos reales de una pasarela: generar el cobro (QR con referencia y vencimiento) y recibir la confirmación. El botón «Ya pagué, verificar» hace de pasarela; cuando haya un proveedor real, solo cambia quién llama a <code>/pago/confirmar</code>.</p></div></details>
+    <details class="pregunta" data-tema="general"><summary><span class="chip">General</span>¿Qué significa que el Administrador «ve todo»?</summary><div class="respuesta"><p>Fue una corrección del docente: el Administrador está asociado a los 16 casos de uso, así que ve las 16 pestañas y la API lo deja pasar en todos los controladores. En los CU con varios actores elige «Ver como» Productor, Analista o Inversionista.</p></div></details>
+    <details class="pregunta" data-tema="tecnologia"><summary><span class="chip">Tecnologías</span>¿Por qué cambiaron de PostgreSQL a SQL Server?</summary><div class="respuesta"><p>Porque Programación Web 3 pide SQL Server. Como usamos Entity Framework Core, el cambio fue cambiar el proveedor (<code>UseSqlServer</code>) y regenerar la migración; el resto del código no se tocó.</p></div></details>
+    <details class="pregunta" data-tema="tecnologia"><summary><span class="chip">Tecnologías</span>¿Por qué React y no Angular?</summary><div class="respuesta"><p>Por la curva de aprendizaje y la documentación: React es más liviano, el equipo ya lo conocía y nos permite armar las pantallas con componentes comunes (<code>Tarjeta</code>, <code>Campo</code>, <code>Aviso</code>). Angular obliga a TypeScript y a una estructura más pesada.</p></div></details>
+    <details class="pregunta" data-tema="tecnologia"><summary><span class="chip">Tecnologías</span>¿Qué hace Vite además de levantar la web?</summary><div class="respuesta"><p>Arma la versión final optimizada (<code>npm run build</code>) y, en desarrollo, su proxy reenvía <code>/api</code> a la API. Así el navegador ve un solo sitio y no hay problemas de CORS.</p></div></details>
+    <details class="pregunta" data-tema="tecnologia"><summary><span class="chip">Tecnologías</span>¿Qué es Entity Framework y qué es una migración?</summary><div class="respuesta"><p>EF Core es el ORM: traduce clases de C# a tablas y consultas SQL. Una migración es un archivo con un cambio de la estructura de la base. Hay dos: <code>Inicial</code> y <code>Sprint2Inversiones</code> (tabla <code>Inversiones</code> y columnas de publicación). La API las aplica sola al arrancar.</p></div></details>
+    <details class="pregunta" data-tema="tecnologia"><summary><span class="chip">Tecnologías</span>¿Para qué sirve Mailpit?</summary><div class="respuesta"><p>Es un buzón falso para desarrollo: atrapa todos los correos de la API (OTP, avisos, constancias) y los muestra en <code>localhost:8025</code> sin enviarlos de verdad.</p></div></details>
+    <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Qué hay en Controllers, Dominio y Servicios?</summary><div class="respuesta"><p><b>Controllers</b>: reciben el pedido HTTP, revisan roles y entrada, y responden con un código. <b>Dominio</b>: las clases del negocio con sus reglas (<code>ProyectoGanadero</code>, <code>Inversion</code>), sin saber nada de HTTP. <b>Servicios</b>: lógica que usan varios controladores (OTP, correo, cupo).</p></div></details>
+    <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Qué es un DTO y por qué no devolver la entidad directamente?</summary><div class="respuesta"><p>Es la forma exacta de los datos que entran o salen por la API. Separarlo de la entidad evita exponer campos internos, permite validar la entrada con atributos (<code>[Required]</code>, <code>[Range]</code>) y deja cambiar la base sin romper a la web.</p></div></details>
+    <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Por qué <code>Estado</code> tiene <code>private set</code>?</summary><div class="respuesta"><p>Para que nadie de afuera pueda cambiar el estado a mano. Solo cambia por los métodos (<code>FirmarContrato</code>, <code>ConfirmarPago</code>…), que revisan las reglas antes. Si la regla no se cumple, lanzan una excepción y la API responde 409.</p></div></details>
+    <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Qué es la inyección de dependencias? Da un ejemplo.</summary><div class="respuesta"><p>Las clases reciben lo que necesitan por el constructor en vez de crearlo. <code>InversionesController</code> recibe <code>AppDbContext</code>, <code>GestorInversiones</code> y <code>OtpService</code>; <code>Program.cs</code> decide qué se entrega. En las pruebas se cambia el correo real por uno en memoria sin tocar el controlador.</p></div></details>
+    <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Cómo sabe la web qué pestañas mostrar?</summary><div class="respuesta"><p>De <code>casosDeUso.js</code>: una lista con los 16 CU, su ruta y sus roles. <code>casosDe(rol)</code> filtra la lista para el menú y <code>RequiereSesion</code> protege cada ruta. La seguridad real está en la API (<code>[Authorize(Roles)]</code>).</p></div></details>
+    <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Dónde se valida el monto mínimo, en la web o en la API?</summary><div class="respuesta"><p>En la API (<code>InversionesController.Reservar</code>). La web solo muestra el mínimo y el cupo como ayuda y pinta el error que devuelve la API. Así la regla vive en un solo lugar y nadie la puede saltar desde Swagger o Android.</p></div></details>
+    <details class="pregunta" data-tema="cu"><summary><span class="chip">Casos de uso</span>¿Qué pasa si el inversionista no paga en 30 minutos?</summary><div class="respuesta"><p>La reserva vence: deja de ocupar cupo en el acto, el servicio de fondo la marca como «Vencida» (revisa cada minuto) y le llega un correo diciendo que se liberó. Si intenta firmar o pagar después, la API responde 409.</p></div></details>
+    <details class="pregunta" data-tema="cu"><summary><span class="chip">Casos de uso</span>¿Cómo se calcula el cupo libre?</summary><div class="respuesta"><p>Meta del proyecto − lo ya pagado − las reservas vigentes (reservadas o firmadas que no vencieron). Lo hace <code>GestorInversiones.CuposAsync</code>.</p></div></details>
+    <details class="pregunta" data-tema="cu"><summary><span class="chip">Casos de uso</span>Si invierto Bs 1.000 en un proyecto de Bs 100.000 con 120 cabezas de 180 kg, ¿qué participación tengo?</summary><div class="respuesta"><p>1.000 ÷ 100.000 = <b>1 %</b>. En kilos: 1 % × 120 × 180 = <b>216 kg</b> de ganado. Queda en la constancia.</p></div></details>
+    <details class="pregunta" data-tema="cu"><summary><span class="chip">Casos de uso</span>¿Qué necesita un productor para enviar su proyecto a evaluación?</summary><div class="respuesta"><p>Tres cosas, en este orden: la ficha completa y válida, su identidad verificada, y el RUNSA más el título de propiedad o el contrato de alquiler aprobados por un analista. Si falta una, la API responde 409 con el motivo.</p></div></details>
+    <details class="pregunta" data-tema="cu"><summary><span class="chip">Casos de uso</span>¿Qué diferencia hay entre observar y rechazar?</summary><div class="respuesta"><p>Observar devuelve el proyecto a <b>borrador</b> con las observaciones para que el productor lo corrija y lo reenvíe. Rechazar es <b>final</b>: queda guardado con su motivo y no se publica. Los dos exigen texto y avisan al productor por correo.</p></div></details>
+    <details class="pregunta" data-tema="cu"><summary><span class="chip">Casos de uso</span>¿Qué se exige para publicar un proyecto?</summary><div class="respuesta"><p>Que esté en revisión técnica y que el analista cargue el nivel de riesgo, el texto de riesgos y los cuatro supuestos de los escenarios (rendimiento, costos, mortalidad y variación) dentro de sus rangos. Si falta algo, 409 y no se publica (RF-10).</p></div></details>
+    <details class="pregunta" data-tema="cu"><summary><span class="chip">Casos de uso</span>¿Cómo funciona el filtro «Monto mínimo hasta»?</summary><div class="respuesta"><p>Muestra los proyectos cuya inversión mínima es menor o igual al monto escrito. Responde a «¿en qué proyectos puedo entrar con Bs 500?».</p></div></details>
+    <details class="pregunta" data-tema="cu"><summary><span class="chip">Casos de uso</span>¿Por qué el simulador muestra una advertencia?</summary><div class="respuesta"><p>Por RNF-06: ninguna pantalla puede mostrar rentabilidad como garantizada. Los escenarios son estimaciones con supuestos; el pesimista puede dar menos de lo invertido.</p></div></details>
+    <details class="pregunta" data-tema="seguridad"><summary><span class="chip">Seguridad</span>¿Cómo se protege la contraseña?</summary><div class="respuesta"><p>Identity la guarda como hash (no se puede revertir), exige 8 caracteres con mayúscula, minúscula, número y símbolo, y bloquea la cuenta 15 minutos al 5.º intento fallido, con un correo de aviso.</p></div></details>
+    <details class="pregunta" data-tema="seguridad"><summary><span class="chip">Seguridad</span>¿Dónde se usa el OTP y por qué?</summary><div class="respuesta"><p>Al confirmar la cuenta y al firmar el contrato de inversión (RNF-01). Prueba que quien actúa tiene acceso al correo. Se guarda solo su hash, vence a los 10 minutos y tiene 3 intentos.</p></div></details>
+    <details class="pregunta" data-tema="seguridad"><summary><span class="chip">Seguridad</span>¿Qué evidencia queda de la firma del contrato?</summary><div class="respuesta"><p>En la inversión se guardan la versión del contrato, el correo de quien aceptó y la fecha y hora (RF-14). No hay ningún endpoint que borre inversiones, y las claves foráneas no borran en cascada.</p></div></details>
+    <details class="pregunta" data-tema="seguridad"><summary><span class="chip">Seguridad</span>¿Cómo se protegen las fotos del CI?</summary><div class="respuesta"><p>Se piden solo con consentimiento explícito (RNF-07), se guardan cifradas con AES-256-GCM (RNF-02) y solo las abre su dueño o un analista, a través de un Proxy que registra cada acceso.</p></div></details>
+    <details class="pregunta" data-tema="seguridad"><summary><span class="chip">Seguridad</span>¿Qué pasa si un inversionista pide la inversión de otro?</summary><div class="respuesta"><p>La API responde 404, como si no existiera: cada consulta filtra por el id del usuario del token. Así no se revela ni que existe.</p></div></details>
+    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Patrones</span>¿Qué patrón usa el simulador y por qué?</summary><div class="respuesta"><p>Prototype: arma una configuración base con los supuestos del analista y la clona para el pesimista, el esperado y el optimista. Cada copia tiene sus propios supuestos y la base no se toca.</p></div></details>
+    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Patrones</span>¿Cómo trabajan juntos State, Command y Observer al evaluar?</summary><div class="respuesta"><p>La decisión del analista se convierte en un <b>Command</b>. El gestor lo ejecuta: el <b>State</b> del proyecto decide si la transición vale (si no, 409), se guarda una fila en la bitácora y los <b>Observers</b> avisan al productor y a los analistas.</p></div></details>
+    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Patrones</span>¿Por qué no usaron Mediator en el flujo de inversión?</summary><div class="respuesta"><p>Porque reservar, firmar, pagar y asignar son pasos en secuencia de una sola entidad, no objetos que conversan entre sí. Alcanza con la entidad <code>Inversion</code> y un servicio; Mediator sumaría una capa sin resolver nada.</p></div></details>
+    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cómo prueban que una reserva vence sin esperar 30 minutos?</summary><div class="respuesta"><p>Con <code>FakeTimeProvider</code>: un reloj falso que la prueba adelanta 31 minutos. Como la API pide la hora a ese reloj, cree que pasó el tiempo. Lo usa <code>InversionesTests</code>.</p></div></details>
+    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cuántas pruebas hay y cómo se corren?</summary><div class="respuesta"><p>99, todas en verde. Se corren con <code>dotnet test</code> desde <code>apps/api</code>. No necesitan SQL Server: usan una base en memoria.</p></div></details>
+  </div>
+</section>
+
+<!-- ============================ 13. HISTORIAL ============================ -->
+<section class="seccion" id="historial">
+  <p class="eyebrow">Sección 13</p>
+  <h2>Historial de la guía</h2>
+  <div class="breve"><strong>En breve</strong><p>La guía se actualiza con cada sprint. Cada cambio suma una fila aquí; la historia completa está en git (<code>git log -- docs/guia</code>).</p></div>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Fecha</th><th>Cambio</th></tr></thead>
+    <tbody>
+      <tr><td class="num">20/11/2026</td><td>Primera versión, al cerrar el Sprint 2: proyecto, tecnologías, arquitectura, repositorio, código, casos de uso de los Sprints 1 y 2 con 33 capturas reales, patrones, pruebas, demo y preguntas.</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Cómo actualizarla en el Sprint 3</h3>
+  <ol class="pasos">
+    <li>En el <code>&lt;script&gt;</code> del final, bloque «DATOS DE LA GUÍA»: marcar el sprint como hecho y cambiar el estado de cada caso de uso de <code>'ejemplo'</code> a <code>'api'</code>.</li>
+    <li>Copiar un bloque <code>cu-bloque</code> de la sección 7 para cada caso de uso nuevo, con sus capturas en <code>docs/guia/capturas/</code>.</li>
+    <li>Actualizar la tabla de pruebas, las cifras clave y el mapa del repositorio.</li>
+    <li>Sumar una fila a este historial.</li>
+  </ol>
+</section>
+
+</div>
+</main>
+</div>
+
+<dialog id="visor" aria-label="Captura ampliada">
+  <button type="button" id="cerrar-visor">Cerrar</button>
+  <img id="visor-img" src="" alt="">
+  <p id="visor-texto"></p>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/highlight.min.js" integrity="sha384-F/bZzf7p3Joyp5psL90p/p89AZJsndkSoGwRpXcZhleCWhd8SnRuoYo4d0yirjJp" crossorigin="anonymous"></script>
+<script>
+// ======================= DATOS DE LA GUÍA =======================
+// Para actualizar en cada sprint. estado: 'hecho' | 'actual' | 'pendiente'.
+const SPRINTS = [
+  { nombre: 'Sprint 0', fecha: '25/10/2026', resumen: 'Planificación y backlog', estado: 'hecho' },
+  { nombre: 'Sprint 1 · MV1', fecha: '06/11/2026', resumen: 'Registro, OTP, login, identidad, roles, ficha en borrador', estado: 'hecho' },
+  { nombre: 'Sprint 2 · MV2', fecha: '20/11/2026', resumen: 'Evaluación, catálogo, simulador, inversión con OTP y pago QR', estado: 'actual' },
+  { nombre: 'Sprint 3', fecha: '04/12/2026', resumen: 'Ronda, compra, avance, incidencias, expediente, liquidación, Android', estado: 'pendiente' },
+  { nombre: 'Defensa final', fecha: '11/12/2026', resumen: 'Proyecto completo', estado: 'pendiente' },
+]
+// Casos de uso del diagrama D1, en su orden. roles: actores además del Administrador.
+// estado: 'api' (funciona con la base de datos) | 'ejemplo' (pantalla con datos de ejemplo).
+const I = 'Inversionista', P = 'Productor', A = 'Analista'
+const CASOS_DE_USO = [
+  { nombre: 'Registrar cuenta y verificar identidad', roles: [I, P, A], estado: 'api', sprint: 1, ancla: 'cu-cuenta' },
+  { nombre: 'Gestionar usuarios, roles y permisos', roles: [], estado: 'api', sprint: 1, ancla: 'cu-admin' },
+  { nombre: 'Consultar bitácora de auditoría', roles: [], estado: 'api', sprint: 1, ancla: 'cu-admin' },
+  { nombre: 'Postular proyecto', roles: [P], estado: 'api', sprint: 1, ancla: 'cu-postular' },
+  { nombre: 'Evaluar y publicar proyecto', roles: [A], estado: 'api', sprint: 2, ancla: 'cu-evaluar' },
+  { nombre: 'Explorar catálogo y simular escenarios', roles: [I], estado: 'api', sprint: 2, ancla: 'cu-catalogo' },
+  { nombre: 'Invertir en un proyecto', roles: [I], estado: 'api', sprint: 2, ancla: 'cu-invertir' },
+  { nombre: 'Cerrar ronda de financiamiento', roles: [P, I], estado: 'ejemplo', sprint: 3, ancla: 'cu-sprint3' },
+  { nombre: 'Registrar compra del ganado', roles: [A], estado: 'ejemplo', sprint: 3, ancla: 'cu-sprint3' },
+  { nombre: 'Registrar traslado del ganado', roles: [A], estado: 'ejemplo', sprint: 3, ancla: 'cu-sprint3' },
+  { nombre: 'Registrar avance productivo', roles: [P, A], estado: 'ejemplo', sprint: 3, ancla: 'cu-sprint3' },
+  { nombre: 'Gestionar incidencias', roles: [P, A], estado: 'ejemplo', sprint: 3, ancla: 'cu-sprint3' },
+  { nombre: 'Gestionar reclamo al seguro', roles: [A], estado: 'ejemplo', sprint: 3, ancla: 'cu-sprint3' },
+  { nombre: 'Liquidar proyecto', roles: [P, I, A], estado: 'ejemplo', sprint: 3, ancla: 'cu-sprint3' },
+  { nombre: 'Consultar expediente del proyecto', roles: [P, I, A], estado: 'ejemplo', sprint: 3, ancla: 'cu-sprint3' },
+  { nombre: 'Consultar portafolio', roles: [I], estado: 'api', sprint: 2, ancla: 'cu-invertir', nota: 'participaciones y constancia; el resto, Sprint 3' },
+]
+// ===================== FIN DE LOS DATOS =====================
+
+const $ = (s, r = document) => r.querySelector(s)
+const $$ = (s, r = document) => [...r.querySelectorAll(s)]
+const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
+
+// Línea de tiempo de los sprints
+$('#linea-tiempo').innerHTML = SPRINTS.map((s) => {
+  const chip = s.estado === 'hecho' ? '<span class="chip chip-ok">Entregado</span>'
+    : s.estado === 'actual' ? '<span class="chip chip-ocre">Este sprint</span>' : '<span class="chip">Por venir</span>'
+  return `<div class="hito${s.estado === 'actual' ? ' actual' : ''}"><span class="fecha">${s.fecha}</span><strong>${escapar(s.nombre)}</strong><p>${escapar(s.resumen)}</p>${chip}</div>`
+}).join('')
+
+// Matriz rol × caso de uso
+const ROLES = [I, P, A, 'Administrador']
+$('#matriz-cu').innerHTML =
+  `<thead><tr><th>Caso de uso</th>${ROLES.map((r) => `<th class="centro">${r}</th>`).join('')}<th>Estado</th></tr></thead><tbody>` +
+  CASOS_DE_USO.map((c) => {
+    const celdas = ROLES.map((r) => (r === 'Administrador' || c.roles.includes(r) ? '<td><span class="marca" aria-label="sí">✓</span></td>' : '<td></td>')).join('')
+    const estado = c.estado === 'api' ? `<span class="chip chip-ok">Con API · S${c.sprint}</span>` : `<span class="chip chip-ocre">Ejemplo · S${c.sprint}</span>`
+    return `<tr><td><a href="#${c.ancla}">${escapar(c.nombre)}</a>${c.nota ? `<div class="tenue" style="font-weight:400;font-size:.82rem">${escapar(c.nota)}</div>` : ''}</td>${celdas}<td>${estado}</td></tr>`
+  }).join('') + '</tbody>'
+
+// Resaltado del código (si la biblioteca no carga, el código se ve igual, sin colores)
+if (window.hljs) window.hljs.highlightAll()
+
+// Índice: en celular se abre y se cierra con el botón
+const indice = $('#indice'), botonIndice = $('#boton-indice')
+botonIndice.addEventListener('click', () => {
+  const abierto = indice.classList.toggle('abierto')
+  botonIndice.setAttribute('aria-expanded', String(abierto))
+})
+$$('#indice a').forEach((a) => a.addEventListener('click', () => {
+  indice.classList.remove('abierto')
+  botonIndice.setAttribute('aria-expanded', 'false')
+}))
+
+// Índice: marca la sección que se está leyendo
+const enlaces = new Map($$('#indice a').map((a) => [a.getAttribute('href').slice(1), a]))
+const observador = new IntersectionObserver((entradas) => {
+  entradas.forEach((e) => {
+    if (!e.isIntersecting) return
+    enlaces.forEach((a) => a.classList.remove('activo'))
+    enlaces.get(e.target.id)?.classList.add('activo')
+  })
+}, { rootMargin: '-20% 0px -70% 0px' })
+$$('section.seccion, .cu-bloque').forEach((s) => observador.observe(s))
+
+// Glosario: búsqueda
+$('#buscar-termino').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase()
+  let visibles = 0
+  $$('#terminos .termino').forEach((t) => {
+    const ve = !q || t.textContent.toLowerCase().includes(q)
+    t.hidden = !ve
+    if (ve) visibles++
+  })
+  $('#sin-terminos').hidden = visibles > 0
+})
+
+// Preguntas: filtro por tema
+$$('#filtro-preguntas button').forEach((b) => b.addEventListener('click', () => {
+  $$('#filtro-preguntas button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
+  const tema = b.dataset.tema
+  $$('#preguntas .pregunta').forEach((p) => { p.hidden = tema !== 'todas' && p.dataset.tema !== tema })
+}))
+
+// Recorrido del pedido: marca en el dibujo la parte que trabaja
+function marcarPaso(li) {
+  $$('#viaje li').forEach((x) => x.classList.toggle('activo', x === li))
+  $$('.diagrama .d-caja').forEach((c) => c.classList.toggle('prendida', c.id === li.dataset.nodo))
+}
+$$('#viaje li').forEach((li) => {
+  li.addEventListener('click', () => marcarPaso(li))
+  li.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); marcarPaso(li) } })
+})
+
+// Simulador de práctica: misma fórmula que ConfiguracionEscenario.Calcular()
+const formatoBs = (n) => 'Bs ' + n.toLocaleString('es-BO', { maximumFractionDigits: 2 })
+function simular() {
+  const v = (id) => Number($(id).value) || 0
+  const monto = v('#sim-monto'), rend = v('#sim-rend'), costos = v('#sim-costos'), mort = v('#sim-mort'), variacion = v('#sim-var')
+  ;[['p', rend - variacion], ['e', rend], ['o', rend + variacion]].forEach(([k, r]) => {
+    $(`#sim-${k}`).textContent = formatoBs(Math.round(monto * (1 + (r - costos - mort) / 100) * 100) / 100)
+    $(`#sim-${k}-d`).textContent = `rendimiento ${r.toLocaleString('es-BO')} %`
+  })
+}
+$$('#mini-sim input').forEach((i) => i.addEventListener('input', simular))
+simular()
+
+// Capturas: clic para verlas en grande
+const visor = $('#visor')
+$$('.captura button').forEach((b) => b.addEventListener('click', () => {
+  const img = $('img', b)
+  $('#visor-img').src = img.src
+  $('#visor-img').alt = img.alt
+  $('#visor-texto').textContent = $('figcaption', b.parentElement)?.textContent ?? ''
+  visor.showModal()
+}))
+$('#cerrar-visor').addEventListener('click', () => visor.close())
+visor.addEventListener('click', (e) => { if (e.target === visor) visor.close() })
+</script>
+</body>
+</html>

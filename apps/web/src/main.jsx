@@ -17,13 +17,16 @@ import MisProyectos from './paginas/MisProyectos'
 import Documentos from './paginas/Documentos'
 import Evaluacion from './paginas/Evaluacion'
 import EvaluarProyecto from './paginas/EvaluarProyecto'
-// Desde aquí, pantallas de los sprints 2 y 3 (por ahora con datos de ejemplo, ver datosEjemplo.js)
+// Sprint 2: catálogo, simulador e inversión, conectados a la API
 import Catalogo from './paginas/Catalogo'
 import Simulador from './paginas/Simulador'
 import Inversiones from './paginas/Inversiones'
 import Invertir from './paginas/Invertir'
 import Contrato from './paginas/Contrato'
 import PagoQr from './paginas/PagoQr'
+import Portafolio from './paginas/Portafolio'
+import Constancia from './paginas/Constancia'
+// Desde aquí, pantallas del Sprint 3 (por ahora con datos de ejemplo, ver datosEjemplo.js)
 import Rondas from './paginas/Rondas'
 import Ronda from './paginas/Ronda'
 import Compra from './paginas/Compra'
@@ -40,7 +43,6 @@ import MiLiquidacion from './paginas/MiLiquidacion'
 import Liquidacion from './paginas/Liquidacion'
 import Expedientes from './paginas/Expedientes'
 import Expediente from './paginas/Expediente'
-import Portafolio from './paginas/Portafolio'
 import './estilos.css'
 import { aplicarEstilo, estiloGuardado } from './estilo'
 
@@ -113,7 +115,7 @@ createRoot(document.getElementById('root')).render(
             {CU('catalogo', [<Route key="c" path="/catalogo" element={<Catalogo />} />, <Route key="ci" path="/catalogo/:id" element={<Simulador />} />])}
             {CU('invertir', [
               <Route key="v" path="/inversiones" element={<Inversiones />} />,
-              <Route key="vi" path="/inversiones/:id" element={<Invertir />} />,
+              <Route key="vn" path="/inversiones/nueva/:proyectoId" element={<Invertir />} />,
               <Route key="vc" path="/inversiones/:id/contrato" element={<Contrato />} />,
               <Route key="vp" path="/inversiones/:id/pago" element={<PagoQr />} />,
             ])}
@@ -180,7 +182,10 @@ createRoot(document.getElementById('root')).render(
               <Route key="x" path="/expedientes" element={<Expedientes />} />,
               <Route key="xi" path="/expedientes/:id" element={<Expediente />} />,
             ])}
-            {CU('portafolio', [<Route key="f" path="/portafolio" element={<Portafolio />} />])}
+            {CU('portafolio', [
+              <Route key="f" path="/portafolio" element={<Portafolio />} />,
+              <Route key="fc" path="/portafolio/:id" element={<Constancia />} />,
+            ])}
 
             <Route path="/inicio" element={<IrAlInicio />} />
             <Route path="*" element={<IrAlInicio />} />

@@ -1,6 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using P11.Api.Dominio;
+using P11.Api.Dominio.Inversiones;
 using P11.Api.Dominio.Proyectos;
+using P11.Api.Dominio.Simulacion;
+using P11.Api.Servicios.Inversiones;
 
 namespace P11.Api.Contratos;
 
@@ -65,7 +68,9 @@ public record ProyectoDto(
     Guid Id, LineaProductiva Linea, string Nombre, string Ubicacion, decimal MontoRequeridoBs, decimal MontoMinimoBs,
     int PlazoMeses, EstadoProyecto Estado, DateTimeOffset CreadoEn,
     int? CantidadAnimales, decimal? PesoInicialKg, decimal? PesoMetaKg, decimal? CostosEstimadosBs,
-    int? VacasEnOrdeno, decimal? LitrosPorDia, decimal? PrecioLitroBs, string? Observaciones)
+    int? VacasEnOrdeno, decimal? LitrosPorDia, decimal? PrecioLitroBs, string? Observaciones,
+    NivelRiesgo? NivelRiesgo, string? Riesgos, decimal? RendimientoPct, decimal? CostosPct, decimal? MortalidadPct,
+    decimal? VariacionPct, DateTimeOffset? PublicadoEn, DateTimeOffset? CierreRondaEn)
 {
     public static ProyectoDto Desde(ProyectoGanadero p)
     {
@@ -73,7 +78,8 @@ public record ProyectoDto(
         var lecheria = p as ProyectoLecheria;
         return new(p.Id, p.Linea, p.Nombre, p.Ubicacion, p.MontoRequeridoBs, p.MontoMinimoBs, p.PlazoMeses, p.Estado, p.CreadoEn,
             engorde?.CantidadAnimales, engorde?.PesoInicialKg, engorde?.PesoMetaKg, engorde?.CostosEstimadosBs,
-            lecheria?.VacasEnOrdeno, lecheria?.LitrosPorDia, lecheria?.PrecioLitroBs, p.Observaciones);
+            lecheria?.VacasEnOrdeno, lecheria?.LitrosPorDia, lecheria?.PrecioLitroBs, p.Observaciones,
+            p.NivelRiesgo, p.Riesgos, p.RendimientoPct, p.CostosPct, p.MortalidadPct, p.VariacionPct, p.PublicadoEn, p.CierreRondaEn);
     }
 }
 
@@ -89,13 +95,13 @@ public record ProyectoEntradaDto(
     [Range(0.01, 1_000_000_000, ErrorMessage = "El monto requerido debe ser mayor a 0.")] decimal MontoRequeridoBs,
     [Range(0.01, 1_000_000_000, ErrorMessage = "El monto mínimo debe ser mayor a 0.")] decimal MontoMinimoBs,
     [Range(1, 120, ErrorMessage = "El plazo debe estar entre 1 y 120 meses.")] int PlazoMeses,
-    [Range(1, 100_000)] int? CantidadAnimales = null,
-    [Range(0.01, 2_000)] decimal? PesoInicialKg = null,
-    [Range(0.01, 2_000)] decimal? PesoMetaKg = null,
-    [Range(0.01, 1_000_000_000)] decimal? CostosEstimadosBs = null,
-    [Range(1, 100_000)] int? VacasEnOrdeno = null,
-    [Range(0.01, 1_000_000)] decimal? LitrosPorDia = null,
-    [Range(0.01, 1_000)] decimal? PrecioLitroBs = null,
+    [Range(1, 100_000, ErrorMessage = "Indica la cantidad de animales (entre 1 y 100.000).")] int? CantidadAnimales = null,
+    [Range(0.01, 2_000, ErrorMessage = "Indica el peso inicial promedio (hasta 2.000 kg).")] decimal? PesoInicialKg = null,
+    [Range(0.01, 2_000, ErrorMessage = "Indica el peso meta (hasta 2.000 kg).")] decimal? PesoMetaKg = null,
+    [Range(0.01, 1_000_000_000, ErrorMessage = "Indica los costos estimados.")] decimal? CostosEstimadosBs = null,
+    [Range(1, 100_000, ErrorMessage = "Indica las vacas en ordeño (entre 1 y 100.000).")] int? VacasEnOrdeno = null,
+    [Range(0.01, 1_000_000, ErrorMessage = "Indica los litros por día.")] decimal? LitrosPorDia = null,
+    [Range(0.01, 1_000, ErrorMessage = "Indica el precio del litro (hasta Bs 1.000).")] decimal? PrecioLitroBs = null,
     Guid? ProductorId = null)
 {
     public DatosFicha ADatosFicha() => new(Linea!.Value, Nombre, Ubicacion, MontoRequeridoBs, MontoMinimoBs, PlazoMeses,
@@ -106,8 +112,23 @@ public record ProyectoEntradaDto(
 
 public enum DecisionProyecto { Aprobar, Observar, Rechazar }
 
-/// <summary>Decisión del analista. Observar y rechazar exigen texto; aprobar exige riesgos y tres escenarios (RF-10).</summary>
-public record EvaluacionRequest(DecisionProyecto Decision, string? Observaciones, bool RiesgosCargados = false, bool TresEscenarios = false);
+/// <summary>
+/// Decisión del analista. Observar y rechazar exigen texto. Aprobar exige los riesgos y los supuestos de los
+/// tres escenarios (RF-10): rendimiento, costos y mortalidad del escenario esperado, en % del monto invertido
+/// para todo el plazo, y cuánto sube o baja el rendimiento en el optimista y el pesimista (variación).
+/// </summary>
+public record EvaluacionRequest(
+    DecisionProyecto Decision,
+    string? Observaciones,
+    NivelRiesgo? NivelRiesgo = null,
+    [StringLength(1000)] string? Riesgos = null,
+    decimal? RendimientoPct = null,
+    decimal? CostosPct = null,
+    decimal? MortalidadPct = null,
+    decimal? VariacionPct = null)
+{
+    public DatosPublicacion ADatosPublicacion() => new(NivelRiesgo, Riesgos, RendimientoPct, CostosPct, MortalidadPct, VariacionPct);
+}
 
 public record HistorialProyectoDto(EstadoProyecto EstadoAnterior, EstadoProyecto EstadoNuevo, string Accion, string Responsable, string Motivo, DateTimeOffset Fecha)
 {
@@ -115,3 +136,59 @@ public record HistorialProyectoDto(EstadoProyecto EstadoAnterior, EstadoProyecto
 }
 
 public record ProyectoEvaluacionDto(ProyectoDto Proyecto, string Productor, string CorreoProductor, IReadOnlyList<HistorialProyectoDto> Historial);
+
+// ---- Catálogo y simulador (RF-11, RF-12) ----
+
+/// <summary>Un proyecto publicado tal como lo ve el inversionista, con lo recaudado y el cupo libre.</summary>
+public record ProyectoCatalogoDto(
+    Guid Id, LineaProductiva Linea, string Nombre, string Ubicacion, int PlazoMeses,
+    decimal MetaBs, decimal MinimoBs, decimal RecaudadoBs, decimal ReservadoBs, decimal CupoLibreBs, decimal PorcentajeFinanciado,
+    NivelRiesgo? NivelRiesgo, string? Riesgos, decimal? RendimientoPct, decimal? CostosPct, decimal? MortalidadPct, decimal? VariacionPct,
+    DateTimeOffset? CierreRondaEn)
+{
+    public static ProyectoCatalogoDto Desde(ProyectoGanadero p, CupoProyecto cupo) => new(
+        p.Id, p.Linea, p.Nombre, p.Ubicacion, p.PlazoMeses,
+        p.MontoRequeridoBs, p.MontoMinimoBs, cupo.RecaudadoBs, cupo.ReservadoBs, cupo.LibreBs, cupo.PorcentajeFinanciado,
+        p.NivelRiesgo, p.Riesgos, p.RendimientoPct, p.CostosPct, p.MortalidadPct, p.VariacionPct, p.CierreRondaEn);
+}
+
+public record SimulacionRequest([Range(1, 1_000_000_000, ErrorMessage = "Indica un monto mayor a 0.")] decimal MontoBs);
+
+public record EscenarioDto(TipoEscenario Tipo, decimal RendimientoPct, decimal CostosPct, decimal MortalidadPct, decimal ValorEstimadoBs, decimal ResultadoBs);
+
+/// <summary>RF-12: tres escenarios con sus supuestos y la advertencia de que no son garantizados (RNF-06).</summary>
+public record SimulacionDto(Guid ProyectoId, decimal MontoBs, decimal MinimoBs, IReadOnlyList<EscenarioDto> Escenarios, string Advertencia, string? Riesgos);
+
+// ---- Inversión (RF-13 a RF-16) ----
+
+public record ReservaRequest(
+    [Required(ErrorMessage = "Indica el proyecto.")] Guid? ProyectoId,
+    [Range(0.01, 1_000_000_000, ErrorMessage = "Indica un monto mayor a 0.")] decimal MontoBs);
+
+public record InversionDto(
+    Guid Id, Guid ProyectoId, string Proyecto, LineaProductiva Linea, decimal MontoBs, EstadoInversion Estado,
+    DateTimeOffset CreadaEn, DateTimeOffset ReservadaHasta,
+    string? ContratoVersion, DateTimeOffset? ContratoAceptadoEn, string? ReferenciaPago, DateTimeOffset? PagadaEn,
+    decimal? ParticipacionPct, decimal? ParticipacionKg, string? CodigoConstancia)
+{
+    public static InversionDto Desde(Inversion i, ProyectoGanadero p) => new(
+        i.Id, i.ProyectoId, p.Nombre, p.Linea, i.MontoBs, i.Estado, i.CreadaEn, i.ReservadaHasta,
+        i.ContratoVersion, i.ContratoAceptadoEn, i.ReferenciaPago, i.PagadaEn, i.ParticipacionPct, i.ParticipacionKg, i.CodigoConstancia);
+}
+
+/// <summary>RF-14: el contrato que se acepta, con su versión.</summary>
+public record ContratoDto(Guid InversionId, string Version, string Texto, string? Riesgos, decimal MontoBs, DateTimeOffset ReservadaHasta);
+
+public record FirmaContratoRequest(bool AceptaRiesgos, [Required(ErrorMessage = "Ingresa el código que te enviamos.")] string Codigo);
+
+/// <summary>RF-15: lo que va dentro del QR simulado. Vence junto con la reserva.</summary>
+public record PagoQrDto(string Referencia, decimal MontoBs, string ContenidoQr, DateTimeOffset VenceEn);
+
+/// <summary>Simula el aviso de la pasarela de pago: aprobado o rechazado.</summary>
+public record ConfirmacionPagoRequest(bool Aprobado = true);
+
+/// <summary>RF-16: lo que el inversionista tiene invertido (solo pagos confirmados).</summary>
+public record PortafolioDto(decimal TotalInvertidoBs, IReadOnlyList<InversionDto> Participaciones);
+
+/// <summary>RF-16: constancia de participación.</summary>
+public record ConstanciaDto(string Codigo, string Inversionista, string Ci, InversionDto Inversion, string UbicacionProyecto, int PlazoMeses);
