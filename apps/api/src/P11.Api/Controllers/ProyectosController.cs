@@ -20,6 +20,9 @@ namespace P11.Api.Controllers;
 [ApiController]
 [Route("api/proyectos")]
 [Authorize(Roles = $"{Roles.Productor},{Roles.Administrador}")]
+[Produces("application/json")]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(StatusCodes.Status403Forbidden)]
 public class ProyectosController(
     AppDbContext db, SelectorCreadorProyecto selector, RequisitosEnvio requisitos, GestorCicloProyecto ciclo,
     UserManager<Usuario> usuarios) : ControllerBase
@@ -27,7 +30,17 @@ public class ProyectosController(
     private bool EsAdministrador => User.IsInRole(Roles.Administrador);
 
     /// <summary>Crea la ficha en borrador. Responde 201 con la ruta del proyecto nuevo en <c>Location</c>.</summary>
+    /// <param name="ct">Token de cancelación de la solicitud.</param>
+    /// <param name="entrada">Ficha de Engorde o Lecheria. El administrador debe indicar un ProductorId válido.</param>
+    /// <response code="201">Borrador creado; devuelve la ficha y su URL en la cabecera Location.</response>
+    /// <response code="400">Ficha inválida, campos incompletos o productor inexistente; devuelve errores por campo.</response>
+    /// <response code="401">Falta el token JWT o no es válido.</response>
+    /// <response code="403">El usuario no tiene el rol Productor ni Administrador.</response>
+    /// <response code="415">El cuerpo de la solicitud tiene un tipo de contenido no admitido.</response>
     [HttpPost]
+    [ProducesResponseType<ProyectoDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status415UnsupportedMediaType)]
     public async Task<ActionResult<ProyectoDto>> CrearBorrador(ProyectoEntradaDto entrada, CancellationToken ct)
     {
         var productorId = User.IdUsuario();
@@ -52,7 +65,12 @@ public class ProyectosController(
     }
 
     /// <summary>Lista los proyectos, del más nuevo al más viejo.</summary>
+    /// <param name="ct">Token de cancelación de la solicitud.</param>
+    /// <response code="200">Lista de proyectos visibles: los propios del productor o todos para el administrador. Puede estar vacía.</response>
+    /// <response code="401">Falta el token JWT o no es válido.</response>
+    /// <response code="403">El usuario no tiene el rol Productor ni Administrador.</response>
     [HttpGet]
+    [ProducesResponseType<IReadOnlyList<ProyectoDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ProyectoDto>>> Listar(CancellationToken ct)
     {
         var proyectos = await Visibles()
@@ -62,7 +80,15 @@ public class ProyectosController(
     }
 
     /// <summary>Un proyecto por su id; 404 si no existe o no es del productor.</summary>
+    /// <param name="id">Identificador GUID del proyecto que se quiere consultar.</param>
+    /// <param name="ct">Token de cancelación de la solicitud.</param>
+    /// <response code="200">Ficha del proyecto solicitado.</response>
+    /// <response code="401">Falta el token JWT o no es válido.</response>
+    /// <response code="403">El usuario no tiene el rol Productor ni Administrador.</response>
+    /// <response code="404">El proyecto no existe o no pertenece al productor autenticado.</response>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType<ProyectoDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProyectoDto>> Obtener(Guid id, CancellationToken ct)
     {
         var proyecto = await BuscarAsync(id, ct);
@@ -70,7 +96,22 @@ public class ProyectosController(
     }
 
     /// <summary>Corrige la ficha. Solo en borrador (409 si no); la línea productiva no cambia (400).</summary>
+    /// <param name="id">Identificador GUID del proyecto que se quiere actualizar.</param>
+    /// <param name="ct">Token de cancelación de la solicitud.</param>
+    /// <param name="entrada">Ficha corregida, conservando la línea productiva original.</param>
+    /// <response code="200">Ficha actualizada del proyecto.</response>
+    /// <response code="400">Datos inválidos o intento de cambiar la línea productiva; devuelve errores por campo.</response>
+    /// <response code="401">Falta el token JWT o no es válido.</response>
+    /// <response code="403">El usuario no tiene el rol Productor ni Administrador.</response>
+    /// <response code="404">El proyecto no existe o no pertenece al productor autenticado.</response>
+    /// <response code="409">El proyecto no está en borrador y no permite editar su ficha.</response>
+    /// <response code="415">El cuerpo de la solicitud tiene un tipo de contenido no admitido.</response>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType<ProyectoDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status415UnsupportedMediaType)]
     public async Task<ActionResult<ProyectoDto>> Actualizar(Guid id, ProyectoEntradaDto entrada, CancellationToken ct)
     {
         var proyecto = await BuscarAsync(id, ct);
@@ -92,7 +133,17 @@ public class ProyectosController(
     }
 
     /// <summary>Elimina un borrador (204). Lo que ya pasó por evaluación no se borra (409).</summary>
+    /// <param name="id">Identificador GUID del borrador que se quiere eliminar.</param>
+    /// <param name="ct">Token de cancelación de la solicitud.</param>
+    /// <response code="204">Borrador e historial eliminados. La respuesta no tiene cuerpo.</response>
+    /// <response code="401">Falta el token JWT o no es válido.</response>
+    /// <response code="403">El usuario no tiene el rol Productor ni Administrador.</response>
+    /// <response code="404">El proyecto no existe o no pertenece al productor autenticado.</response>
+    /// <response code="409">El estado del proyecto no permite eliminarlo.</response>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Eliminar(Guid id, CancellationToken ct)
     {
         var proyecto = await BuscarAsync(id, ct);
@@ -115,7 +166,15 @@ public class ProyectosController(
     }
 
     /// <summary>Recurso relacionado: la bitácora de cambios de estado del proyecto (envíos, observaciones, decisiones).</summary>
+    /// <param name="id">Identificador GUID del proyecto cuyo historial se quiere consultar.</param>
+    /// <param name="ct">Token de cancelación de la solicitud.</param>
+    /// <response code="200">Cambios de estado ordenados del más antiguo al más reciente. La lista puede estar vacía.</response>
+    /// <response code="401">Falta el token JWT o no es válido.</response>
+    /// <response code="403">El usuario no tiene el rol Productor ni Administrador.</response>
+    /// <response code="404">El proyecto no existe o no pertenece al productor autenticado.</response>
     [HttpGet("{id:guid}/historial")]
+    [ProducesResponseType<IReadOnlyList<HistorialProyectoDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IReadOnlyList<HistorialProyectoDto>>> Historial(Guid id, CancellationToken ct)
     {
         if (await BuscarAsync(id, ct) is null) return NotFound(new Respuesta("No encontramos el proyecto."));
@@ -131,7 +190,17 @@ public class ProyectosController(
     /// verificado, documentos del predio aprobados: RF-08, RF-04, RF-05); después el comando, y el estado
     /// del proyecto decide si la transición vale («solo un borrador se envía»).
     /// </summary>
+    /// <param name="id">Identificador GUID del borrador que se quiere enviar a revisión.</param>
+    /// <param name="ct">Token de cancelación de la solicitud.</param>
+    /// <response code="200">Proyecto enviado a evaluación técnica con su estado actualizado.</response>
+    /// <response code="401">Falta el token JWT o no es válido.</response>
+    /// <response code="403">El usuario no tiene el rol Productor ni Administrador.</response>
+    /// <response code="404">El proyecto no existe o no pertenece al productor autenticado.</response>
+    /// <response code="409">Faltan requisitos de envío o el estado del proyecto no permite enviarlo a revisión.</response>
     [HttpPost("{id:guid}/enviar-revision")]
+    [ProducesResponseType<ProyectoDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<ProyectoDto>> EnviarARevision(Guid id, CancellationToken ct)
     {
         var proyecto = await BuscarAsync(id, ct);
