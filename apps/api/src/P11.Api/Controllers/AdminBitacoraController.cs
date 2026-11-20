@@ -14,15 +14,25 @@ namespace P11.Api.Controllers;
 [ApiController]
 [Route("api/admin/bitacora")]
 [Authorize(Roles = Roles.Administrador)]
+[Produces("application/json")]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(StatusCodes.Status403Forbidden)]
 public class AdminBitacoraController(AppDbContext db) : ControllerBase
 {
     private const int Maximo = 500;
 
-    /// <param name="desde">Fecha mínima (opcional).</param>
-    /// <param name="hasta">Fecha máxima (opcional).</param>
-    /// <param name="responsable">Parte del correo de quien hizo el cambio (opcional).</param>
-    /// <param name="ct">Cancelación.</param>
+    /// <summary>Consulta hasta 500 eventos de identidad y proyectos, del más reciente al más antiguo.</summary>
+    /// <param name="desde">Fecha mínima inclusiva, opcional, en formato ISO 8601 con zona horaria.</param>
+    /// <param name="hasta">Fecha máxima inclusiva, opcional, en formato ISO 8601 con zona horaria.</param>
+    /// <param name="responsable">Parte del correo de quien hizo el cambio; filtro opcional.</param>
+    /// <param name="ct">Token de cancelación de la solicitud.</param>
+    /// <response code="200">Hasta 500 eventos que coinciden con los filtros. La lista puede estar vacía.</response>
+    /// <response code="400">Desde es posterior a hasta (Respuesta) o una fecha es inválida (ValidationProblemDetails).</response>
+    /// <response code="401">Falta el token JWT o no es válido.</response>
+    /// <response code="403">Solo el administrador puede consultar la bitácora.</response>
     [HttpGet]
+    [ProducesResponseType<IReadOnlyList<EventoBitacoraDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IReadOnlyList<EventoBitacoraDto>>> Listar(
         DateTimeOffset? desde, DateTimeOffset? hasta, string? responsable, CancellationToken ct)
     {
