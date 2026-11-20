@@ -24,11 +24,11 @@ Plan escrito el 18/11/2026 para la sesión siguiente.
 | DTO de entrada y salida (5) | `ProyectoEntradaDto` (entrada, con validaciones), `ProyectoDto` y `HistorialProyectoDto` (salida) | ✓ |
 | Contexto inyectado y operaciones asíncronas (2) | constructor primario + `async`/`CancellationToken` | ✓ |
 | Obligatorios y regla del dominio (5) | `[Required]`/`[Range]` + `Validar()` + State (solo se edita y borra un borrador) | ✓ |
-| Referencias inválidas, 400 y 404 (5) | `productorId` inexistente → 400; id inexistente → 404 | ✓ (pruebas → **Sergio**) |
-| Swagger con rutas, parámetros, esquemas y respuestas (8) | `/swagger` + esquema Bearer | Rutas y esquemas ✓; códigos de respuesta → **Brandon** |
+| Referencias inválidas, 400 y 404 (5) | `productorId` inexistente → 400; id inexistente → 404 | ✓ (pruebas de Sergio en `ProyectosCrudTests.cs`, PR #1) |
+| Swagger con rutas, parámetros, esquemas y respuestas (8) | `/swagger` + esquema Bearer | ✓ (códigos de respuesta de Brandon, PR #2) |
 | Evidencias: éxito, errores y persistencia (7) | PDF (abajo) | **Pendiente** |
 | ZIP limpio (3) + README reproducible (2) | script (abajo) + `apps/api/README.md` | ZIP **pendiente**; README → **Matías** |
-| Commits de cada integrante (15) | ramas `aporte/<nombre>`, guía en [`aportes-equipo.md`](aportes-equipo.md) | Julio ✓; el resto **pendiente** |
+| Commits de cada integrante (15) | ramas `aporte/<nombre>`, guía en [`aportes-equipo.md`](aportes-equipo.md) | Julio, Sergio y Brandon ✓; Matías **pendiente** |
 
 ## Siguiente sesión (miércoles 19/11 a la noche o jueves temprano)
 
