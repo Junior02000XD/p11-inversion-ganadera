@@ -26,8 +26,8 @@ Plan escrito el 18/11/2026 para la sesión siguiente.
 | Obligatorios y regla del dominio (5) | `[Required]`/`[Range]` + `Validar()` + State (solo se edita y borra un borrador) | ✓ |
 | Referencias inválidas, 400 y 404 (5) | `productorId` inexistente → 400; id inexistente → 404 | ✓ (pruebas de Sergio en `ProyectosCrudTests.cs`, PR #1) |
 | Swagger con rutas, parámetros, esquemas y respuestas (8) | `/swagger` + esquema Bearer | ✓ (códigos de respuesta de Brandon, PR #2) |
-| Evidencias: éxito, errores y persistencia (7) | PDF (abajo) | **Pendiente** |
-| ZIP limpio (3) + README reproducible (2) | script (abajo) + `apps/api/README.md` | README ✓ (`apps/api/README.md`, de Matías); ZIP **pendiente** |
+| Evidencias: éxito, errores y persistencia (7) | [`evidencias-api.pdf`](evidencias-api.pdf): 15 evidencias de Swagger UI | ✓ |
+| ZIP limpio (3) + README reproducible (2) | script (abajo) + `apps/api/README.md` | ✓ README (`apps/api/README.md`, de Matías) y ZIP `P11_API_Los-Cesaritos.zip` (se arma con `git archive`, ver abajo) |
 | Commits de cada integrante (15) | ramas `aporte/<nombre>`, guía en [`aportes-equipo.md`](aportes-equipo.md) | ✓ los cuatro (Matías: `e21169d`) |
 
 ## Siguiente sesión (miércoles 19/11 a la noche o jueves temprano)
