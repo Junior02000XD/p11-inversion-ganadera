@@ -1400,16 +1400,18 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
     <tbody>
       <tr><td>Administrador</td><td><code>admin@p11.local</code></td><td><code>Admin.p11-2026</code></td></tr>
       <tr><td>Analista</td><td><code>analista@p11.local</code></td><td><code>Analista.p11-2026</code></td></tr>
-      <tr><td>Productor e Inversionista</td><td colspan="2">Se registran desde la web; el OTP se lee en Mailpit</td></tr>
+      <tr><td>Productor (verificado)</td><td><code>productor@p11.local</code></td><td><code>Productor.p11-2026</code></td></tr>
+      <tr><td>Inversionista</td><td><code>inversionista@p11.local</code></td><td><code>Inversionista.p11-2026</code></td></tr>
     </tbody>
   </table></div>
+  <p class="texto">La semilla (<code>Datos/SemillaDatos.cs</code>, aporte de Matías) crea estas cuentas al arrancar y, si la base no tiene proyectos, dos borradores del productor de prueba: «Engorde Chiquitania 2026» y «Tambo Warnes». Al reiniciar no se duplican. Para invertir, el inversionista de prueba primero verifica su identidad. También se pueden registrar cuentas nuevas desde la web; el OTP se lee en Mailpit.</p>
   <p class="texto">Swagger queda en <code>https://localhost:7080/swagger</code>: <code>POST /api/auth/login</code> con una cuenta, copiar el <code>token</code>, tocar <b>Authorize</b> y pegarlo.</p>
   <div class="capturas una">
     <figure class="captura"><button type="button"><img src="capturas/31-swagger.jpg" alt="Swagger UI" loading="lazy"></button><figcaption><b>31.</b> Swagger UI con los grupos de endpoints, incluidos Catalogo, Inversiones y Portafolio.</figcaption></figure>
   </div>
   <h3>Guion sugerido del Sprint 2 (≈ 8 minutos)</h3>
   <ol class="pasos">
-    <li><b>Productor</b> con identidad verificada y documentos aprobados envía «Engorde Chiquitania 2026» a evaluación. (Si no hay uno, crearlo como en el Sprint 1.)</li>
+    <li><b>Productor</b> (<code>productor@p11.local</code>, ya verificado): sube RUNSA y título, el analista los aprueba y el productor envía «Engorde Chiquitania 2026» a evaluación.</li>
     <li><b>Analista</b>: «Evaluar». Intentar aprobar sin la variación → no publica (409). Completar riesgos y supuestos → publicado. Mostrar el correo al productor en Mailpit.</li>
     <li><b>Inversionista</b>: catálogo, filtrar por Engorde, abrir el proyecto y simular Bs 1.000 → 1.040 / 1.120 / 1.200 con la advertencia.</li>
     <li>«Invertir»: probar Bs 50 → error con el cupo disponible. Reservar Bs 1.000.</li>
@@ -1491,6 +1493,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Fecha</th><th>Cambio</th></tr></thead>
     <tbody>
+      <tr><td class="num">20/11/2026</td><td>Se suma el aporte de Matías: cuentas de prueba y dos proyectos en la semilla.</td></tr>
       <tr><td class="num">20/11/2026</td><td>Se suman los aportes de Sergio (13 pruebas del CRUD) y Brandon (respuestas documentadas en Swagger): 112 pruebas.</td></tr>
       <tr><td class="num">20/11/2026</td><td>Primera versión, al cerrar el Sprint 2: proyecto, tecnologías, arquitectura, repositorio, código, casos de uso de los Sprints 1 y 2 con 33 capturas reales, patrones, pruebas, demo y preguntas.</td></tr>
     </tbody>
