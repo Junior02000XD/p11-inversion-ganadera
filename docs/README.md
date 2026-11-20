@@ -16,6 +16,7 @@ Para ver los diagramas sin instalar nada, usá los PNG de [`diagramas/figuras/`]
 | [`patrones/`](patrones/) | Mapa patrón → código → prueba, informes grupales y guías de las tres familias | [`patrones/README.md`](patrones/README.md) |
 | [`entregas/`](entregas/) | Entregas que no son de un sprint: API Integrador de Programación Web 3 (plan, aportes del equipo, evidencias) | [`entregas/web3-api-integrador/README.md`](entregas/web3-api-integrador/README.md) |
 | [`sprints/`](sprints/) | Planificación (Sprint 0) y alcance, guion de demo y capturas de cada sprint | [`sprints/README.md`](sprints/README.md) |
+| [`guia/`](guia/) | Guía de estudio del proyecto completo: tecnologías, arquitectura, código, casos de uso con capturas y reglas, preguntas para practicar | [`guia/guia-de-estudio.html`](guia/guia-de-estudio.html) |
 | [`cronograma.md`](cronograma.md) | Fechas de entrega de las dos materias | — |
 
 ## Qué se entregó y dónde está
@@ -32,7 +33,7 @@ Para ver los diagramas sin instalar nada, usá los PNG de [`diagramas/figuras/`]
 | 06/11 | Sprint 1 (MV1) | Proyecto de Sistemas 1 | `sprints/sprint-1/` |
 | 18/11 | Corrección: pestañas = casos de uso (D1), Administrador con acceso a todo | Proyecto de Sistemas 1 | `sprints/sprint-2/correccion-pestanas-casos-de-uso.md` |
 | 20/11 (pendiente) | API Integrador: ZIP de la API + README + PDF de evidencias | Programación Web 3 | `entregas/web3-api-integrador/` |
-| 20/11 (pendiente) | Sprint 2 (MV2) | Proyecto de Sistemas 1 | `sprints/sprint-2/` |
+| 20/11 | Sprint 2 (MV2) y guía de estudio | Proyecto de Sistemas 1 | `sprints/sprint-2/`, `guia/` |
 
 ## Reglas para mantenerla
 

@@ -11,6 +11,7 @@ using P11.Api.Dominio.Proyectos;
 using P11.Api.Servicios;
 using P11.Api.Servicios.Avisos;
 using P11.Api.Servicios.Documentos;
+using P11.Api.Servicios.Inversiones;
 using P11.Api.Servicios.Proyectos;
 using Scalar.AspNetCore;
 
@@ -37,7 +38,8 @@ builder.Services.AddIdentityCore<Usuario>()
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddSignInManager()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddErrorDescriber<ErroresIdentity>();
 
 // RF-01, RF-02: correo único y confirmado, bloqueo tras N intentos fallidos.
 builder.Services.AddOptions<IdentityOptions>()
@@ -103,6 +105,12 @@ builder.Services.AddScoped<RequisitosEnvio>();
 builder.Services.AddScoped<GestorCicloProyecto>();
 builder.Services.AddScoped<IObservadorProyecto, AvisarAlProductor>();
 builder.Services.AddScoped<IObservadorProyecto, AvisarALosAnalistas>();
+
+// Sprint 2: cupo, reservas y avisos de la inversión (RF-13 a RF-16). El servicio de fondo libera cada
+// minuto las reservas vencidas; en las pruebas no corre, porque ahí el reloj lo controla cada prueba.
+builder.Services.AddScoped<GestorInversiones>();
+if (!builder.Environment.IsEnvironment("Testing"))
+    builder.Services.AddHostedService<VencimientoReservas>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));

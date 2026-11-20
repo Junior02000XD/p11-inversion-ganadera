@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using P11.Api.Dominio;
+using P11.Api.Dominio.Proyectos;
 
 namespace P11.Api.Datos;
 
@@ -42,5 +44,30 @@ public static class SemillaDatos
                 throw new InvalidOperationException($"Semilla {s.Correo}: {string.Join("; ", r.Errors.Select(e => e.Description))}");
             await usuarios.AddToRoleAsync(u, s.Rol);
         }
+
+        // Los proyectos de demostración se crean una sola vez y solo si existe el productor semilla.
+        var productor = await usuarios.FindByEmailAsync("productor@p11.local");
+        if (productor is null) return;
+
+        var db = sp.GetRequiredService<AppDbContext>();
+        if (await db.Proyectos.AnyAsync()) return;
+
+        var selector = sp.GetRequiredService<SelectorCreadorProyecto>();
+        var fichas = new[]
+        {
+            new DatosFicha(LineaProductiva.Engorde, "Engorde Chiquitania 2026", "San Ignacio de Velasco",
+                500_000m, 1_000m, 12, 100, 180m, 350m, 400_000m, null, null, null),
+            new DatosFicha(LineaProductiva.Lecheria, "Tambo Warnes", "Warnes",
+                300_000m, 1_000m, 18, null, null, null, null, 40, 500m, 3m),
+        };
+
+        foreach (var ficha in fichas)
+        {
+            var resultado = selector.Para(ficha.Linea).CrearBorrador(productor.Id, ficha);
+            if (!resultado.Exitoso)
+                throw new InvalidOperationException($"Proyecto semilla {ficha.Nombre}: {string.Join("; ", resultado.Errores.Select(e => e.Mensaje))}");
+            db.Proyectos.Add(resultado.Proyecto!);
+        }
+        await db.SaveChangesAsync();
     }
 }

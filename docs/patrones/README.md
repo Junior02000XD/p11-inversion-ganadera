@@ -25,7 +25,7 @@ Implementación de los patrones creacionales elegidos en el análisis grupal (§
 |---|---|---|---|---|---|
 | Factory Method | Media | `src/P11.Api/Dominio/Proyectos/CreadorProyecto.cs` (creador), `ProyectoGanadero.cs` (productos), `SelectorCreadorProyecto`, registro en `Program.cs` | RF-07 | `tests/P11.Tests/Patrones/FactoryMethodTests.cs`, `Integracion/ProyectosTests.cs` | En uso (`POST /api/proyectos`) |
 | Builder | Alta | `src/P11.Api/Dominio/Expediente/ConstructorExpediente.cs` | RF-22 | `tests/P11.Tests/Patrones/BuilderTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
-| Prototype | Alta | `src/P11.Api/Dominio/Simulacion/ConfiguracionEscenario.cs` | RF-12 | `tests/P11.Tests/Patrones/PrototypeTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 2 |
+| Prototype | Alta | `src/P11.Api/Dominio/Simulacion/ConfiguracionEscenario.cs`, usado por `Servicios/Simulacion/SimuladorEscenarios.cs` | RF-12 | `tests/P11.Tests/Patrones/PrototypeTests.cs`, `Integracion/CatalogoTests.cs` | En uso (`POST /api/catalogo/{id}/simulacion`) |
 | Configuración inyectada (en lugar de Singleton) | Baja | `src/P11.Api/Configuracion/Opciones.cs` + `AddOptions<…>().ValidateOnStart()` en `Program.cs` | RF-02, RNF-01, RNF-02 | `tests/P11.Tests/Patrones/ConfiguracionInyectadaTests.cs` | En uso |
 | Abstract Factory | Baja (opcional) | — | RF-18/19 | — | No se implementa hasta validar que las familias de validadores varían juntas (§8.2) |
 

@@ -1,75 +1,88 @@
-# API — ASP.NET Core Web API (.NET 10)
+# P11 — Plataforma de Inversión Ganadera
 
-Materia: Programación Web 3. Usa EF Core con PostgreSQL, ASP.NET Core Identity (roles y bloqueo) y JWT.
+API REST para el Proyecto 11, desarrollada con ASP.NET Core y .NET 10, Entity Framework Core, SQL Server, ASP.NET Core Identity y JWT.
+
+Repositorio: [github.com/Junior02000XD/p11-inversion-ganadera](https://github.com/Junior02000XD/p11-inversion-ganadera)
+
+## Integrantes
+
+| Integrante | Usuario de GitHub |
+|---|---|
+| Julio César Cruz Kübber | `Junior02000XD` |
+| Sergio Ricardo Aguilera Pantoja | `sergioagulerapantoja-ctrl` |
+| Jael Brandon Quiroga Vedia | `brandonquiroga908-netizen` |
+| Matías Raldes León | `RLM31` |
 
 ## Requisitos
-- [.NET SDK 10](https://dotnet.microsoft.com/download). `global.json` acepta cualquier 10.0.x.
-- Docker (Docker Desktop en Windows y macOS).
 
-## Levantar en local
-Desde la raíz del repo:
+- .NET SDK 10.0.x (el `global.json` del repositorio selecciona la versión compatible).
+- SQL Server 2022 Express o Developer en `localhost:1433`.
+- Docker y Docker Compose para Mailpit, que recibe los correos de desarrollo.
+
+## Configurar y ejecutar
+
+Desde la raíz del repositorio, iniciar Mailpit:
 
 ```bash
-docker compose up -d                    # PostgreSQL + Mailpit
-dotnet dev-certs https --trust          # una sola vez por máquina (certificado HTTPS de desarrollo)
+docker compose up -d
+```
+
+Configurar la cadena de conexión local sin guardar contraseñas en archivos versionados. En Windows, con autenticación integrada:
+
+```powershell
 cd apps/api/src/P11.Api
+dotnet user-secrets set "ConnectionStrings:Principal" "Server=localhost;Database=P11;Trusted_Connection=True;TrustServerCertificate=True"
+```
+
+Con SQL Server configurado para autenticación SQL, usar una contraseña propia:
+
+```powershell
+dotnet user-secrets set "ConnectionStrings:Principal" "Server=localhost,1433;Database=P11;User Id=sa;Password=<tu_clave>;TrustServerCertificate=True"
+```
+
+Con `user-secrets` no se agrega la cadena ni la contraseña al repositorio. La aplicación también acepta la variable de entorno `ConnectionStrings__Principal`.
+
+Restaurar la herramienta local desde la raíz y aplicar las migraciones (opcional si se inicia la API, porque las aplica automáticamente al arrancar):
+
+```powershell
+dotnet tool restore
+cd apps/api/src/P11.Api
+dotnet ef database update
+```
+
+Confiar en el certificado HTTPS de desarrollo una vez por máquina y ejecutar la API:
+
+```powershell
+dotnet dev-certs https --trust
 dotnet run --launch-profile https
 ```
 
-No hace falta configurar nada más. Al arrancar en desarrollo, la API:
-- aplica las migraciones a la base del `docker-compose.yml`;
-- crea los roles y dos usuarios internos (`admin@p11.local` / `Admin.p11-2026` y `analista@p11.local` / `Analista.p11-2026`);
-- la primera vez, genera sus claves de cifrado y de firma en `App_Data/claves-desarrollo.json`. Ese archivo está ignorado por git y cada máquina tiene las suyas.
+- API: <https://localhost:7080>
+- Swagger UI: <https://localhost:7080/swagger>
+- Mailpit: <http://localhost:8025>
 
-Direcciones:
-- API: https://localhost:7080; documentación interactiva en https://localhost:7080/scalar.
-- Correos enviados (OTP y avisos): http://localhost:8025.
+## Datos de prueba
 
-## Cambiar la configuración en tu máquina
-`appsettings.Development.json` trae valores para el entorno del `docker-compose.yml` y no tiene secretos. Para cambiar algo solo en tu máquina, sin tocar archivos versionados, usa una de estas dos formas:
+En entorno Development, la semilla crea los roles y estas cuentas. Son credenciales solo para desarrollo local; cámbialas si las usas fuera de un entorno de prueba.
 
-```bash
-# user-secrets (se guarda fuera del repo)
-dotnet user-secrets set "ConnectionStrings:Principal" "Host=localhost;Port=5434;Database=p11;Username=p11;Password=p11_local_dev"
+| Rol | Correo | Contraseña |
+|---|---|---|
+| Administrador | `admin@p11.local` | `Admin.p11-2026` |
+| Analista | `analista@p11.local` | `Analista.p11-2026` |
+| Productor | `productor@p11.local` | `Productor.p11-2026` |
+| Inversionista | `inversionista@p11.local` | `Inversionista.p11-2026` |
 
-# o variables de entorno (doble guion bajo en lugar de «:»)
-export ConnectionStrings__Principal="Host=localhost;Port=5434;..."
-```
+El productor de prueba queda con identidad verificada. Si la tabla de proyectos está vacía, se crean «Engorde Chiquitania 2026» (Engorde, San Ignacio de Velasco) y «Tambo Warnes» (Lechería, Warnes). La semilla no los duplica al reiniciar la API.
 
-Casos típicos:
-- **Puerto 5433 ocupado**: crea un `.env` en la raíz con `P11_PUERTO_POSTGRES=5434`, vuelve a correr `docker compose up -d` y cambia `ConnectionStrings:Principal` como arriba.
-- **Enviar correos reales** en lugar de Mailpit: configura `Correo:Host`, `Correo:Puerto`, `Correo:UsarSsl`, `Correo:Usuario` y `Correo:Contrasena`. Por ejemplo, Gmail con contraseña de aplicación: `smtp.gmail.com`, puerto 587, SSL activado.
-
-Fuera de desarrollo (por ejemplo, un servidor de demo), la API **no** genera claves: hay que definir `Archivos__ClaveBase64` (32 bytes en base64), `Jwt__ClaveFirma` (32 caracteres o más) y `ConnectionStrings__Principal`. Si falta alguna, no arranca y dice cuál.
+Para autenticar una solicitud en Swagger, ejecutar `POST /api/auth/login` con el correo y contraseña de una cuenta, copiar el `token` de la respuesta, pulsar **Authorize** y pegar el token. La API ya configura el esquema Bearer.
 
 ## Pruebas
-```bash
+
+Desde la raíz:
+
+```powershell
 cd apps/api
 dotnet test
 ```
-Son 44 pruebas y no necesitan Docker:
-- unitarias de los patrones;
-- de integración que levantan la API completa con base en memoria y correo simulado.
 
-## Estructura
-```
-src/P11.Api/
-  Dominio/            Entidades. Patrones: Proyectos/ (Factory Method), Expediente/ (Builder), Simulacion/ (Prototype)
-  Configuracion/      Opciones validadas al arrancar (configuración inyectada en lugar de Singleton) y claves de desarrollo
-  Datos/              AppDbContext (Identity + EF Core), migraciones, semilla
-  Servicios/          OTP, correo SMTP, almacenamiento cifrado AES-GCM, verificador de identidad simulado, JWT
-  Controllers/        Auth, Verificacion, DocumentosProductor, Proyectos, Analista, AdminUsuarios
-  Contratos/          DTO de entrada y salida
-tests/P11.Tests/
-  Patrones/           Factory Method, Builder, Prototype, configuración inyectada
-  Integracion/        RF-01…RF-07, RNF-01, RNF-02, RNF-07
-```
-
-## Migraciones
-`dotnet-ef` viene como herramienta local del repo:
-
-```bash
-dotnet tool restore                                  # una vez, desde la raíz
-cd apps/api/src/P11.Api
-dotnet ef migrations add NombreDelCambio -o Datos/Migraciones
-```
+Las pruebas de integración usan una base de datos en memoria y no requieren SQL Server.

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ESTILOS, aplicarEstilo, estiloGuardado } from './estilo'
 import { Link, Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { casosDe, rutaInicial } from './casosDeUso'
@@ -222,6 +222,38 @@ export function Marco() {
           <Outlet />
         </main>
       </div>
+    </div>
+  )
+}
+
+/**
+ * Cuenta regresiva hasta `hasta` (fecha ISO): muestra mm:ss y una barra. Avisa con `alVencer()` al llegar a cero.
+ * La usan el contrato y el pago, porque la reserva del cupo dura 30 minutos (RF-13).
+ */
+export function CuentaRegresiva({ hasta, totalMinutos = 30, alVencer }) {
+  const restantes = () => Math.max(0, Math.floor((new Date(hasta) - Date.now()) / 1000))
+  const [segundos, setSegundos] = useState(restantes)
+
+  // Un tic por segundo; se reinicia si cambia la hora límite.
+  useEffect(() => {
+    const reloj = setInterval(() => setSegundos(restantes()), 1000)
+    return () => clearInterval(reloj)
+  }, [hasta])
+
+  // Avisa una sola vez, cuando llega a cero.
+  const vencida = segundos === 0
+  useEffect(() => {
+    if (vencida) alVencer?.()
+  }, [vencida])
+
+  const mm = String(Math.floor(segundos / 60)).padStart(2, '0')
+  const ss = String(segundos % 60).padStart(2, '0')
+  return (
+    <div>
+      <span className="tenue">
+        Tiempo restante de la reserva: <strong>{mm}:{ss}</strong>
+      </span>
+      <Progreso porcentaje={(segundos / (totalMinutos * 60)) * 100} />
     </div>
   )
 }

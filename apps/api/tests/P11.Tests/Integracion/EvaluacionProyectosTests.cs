@@ -47,13 +47,17 @@ public class EvaluacionProyectosTests(ApiFactory f) : IClassFixture<ApiFactory>
         var (_, _, id) = await ProyectoEnRevision("Tambo Cotoca");
         var analista = await Pasos.Autenticado(f, ApiFactory.Analista, ApiFactory.ClaveInterna);
 
+        // RF-10: con riesgos pero sin los supuestos de los escenarios, no se publica.
         var incompleto = await analista.PostAsJsonAsync($"/api/analista/proyectos/{id}/decision",
-            new { decision = "Aprobar", riesgosCargados = true, tresEscenarios = false });
+            new { decision = "Aprobar", nivelRiesgo = "Medio", riesgos = "Mortalidad y precio de venta." });
         Assert.Equal(HttpStatusCode.Conflict, incompleto.StatusCode);
+        Assert.Contains("tres escenarios", (await incompleto.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("mensaje").GetString());
 
-        var ok = await analista.PostAsJsonAsync($"/api/analista/proyectos/{id}/decision",
-            new { decision = "Aprobar", riesgosCargados = true, tresEscenarios = true });
-        Assert.Equal("EnFinanciamiento", (await ok.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("estado").GetString());
+        var ok = await analista.PostAsJsonAsync($"/api/analista/proyectos/{id}/decision", PasosInversion.Publicacion);
+        var publicado = await ok.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("EnFinanciamiento", publicado.GetProperty("estado").GetString());
+        Assert.Equal("Medio", publicado.GetProperty("nivelRiesgo").GetString());
+        Assert.True(publicado.GetProperty("cierreRondaEn").GetDateTimeOffset() > DateTimeOffset.UtcNow.AddDays(29));
 
         // State: un proyecto publicado ya no admite «rechazar».
         var otraVez = await analista.PostAsJsonAsync($"/api/analista/proyectos/{id}/decision",

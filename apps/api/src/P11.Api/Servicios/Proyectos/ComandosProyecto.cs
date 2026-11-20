@@ -1,5 +1,4 @@
 using P11.Api.Dominio.Proyectos;
-using P11.Api.Dominio.Proyectos.Estados;
 
 namespace P11.Api.Servicios.Proyectos;
 
@@ -39,19 +38,12 @@ public record RechazarProyecto(Guid ProyectoId, string Responsable, string Motiv
 }
 
 /// <summary>
-/// Analista (RF-10): no se publica un proyecto sin riesgos y tres escenarios cargados. Los riesgos y los
-/// escenarios todavía no están en el modelo (llegan con el simulador, Sprint 2), así que por ahora vale la
-/// casilla que marca el analista en su checklist.
+/// Analista (RF-10): aprueba y publica con los riesgos y los supuestos de los tres escenarios.
+/// Si falta alguno, el proyecto no cambia (lo valida el propio proyecto).
 /// </summary>
-public record AprobarYPublicarProyecto(Guid ProyectoId, string Responsable, string Motivo, bool RiesgosCargados, bool TresEscenarios)
+public record AprobarYPublicarProyecto(Guid ProyectoId, string Responsable, string Motivo, DatosPublicacion Datos, DateTimeOffset Ahora)
     : ComandoProyecto(ProyectoId, Responsable, Motivo)
 {
     public override string Accion => "Aprobar y publicar";
-
-    public override void Ejecutar(ProyectoGanadero proyecto)
-    {
-        if (!RiesgosCargados || !TresEscenarios)
-            throw new TransicionInvalidaException("No se publica un proyecto sin riesgos y tres escenarios cargados.");
-        proyecto.AprobarYPublicar();
-    }
+    public override void Ejecutar(ProyectoGanadero proyecto) => proyecto.AprobarYPublicar(Datos, Ahora);
 }
