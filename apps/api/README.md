@@ -16,7 +16,11 @@ Repositorio: [github.com/Junior02000XD/p11-inversion-ganadera](https://github.co
 ## Requisitos
 
 - .NET SDK 10.0.x (el `global.json` del repositorio selecciona la versión compatible).
-- SQL Server 2022 Express o Developer en `localhost:1433`.
+- SQL Server 2022 Express o Developer en `localhost:1433`. En Linux o macOS se puede usar el contenedor oficial (la clave la elige cada uno y no se sube al repositorio):
+
+  ```bash
+  docker run -d --name p11-sql -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='<una clave fuerte>' -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+  ```
 - Docker y Docker Compose para Mailpit, que recibe los correos de desarrollo.
 
 ## Configurar y ejecutar
@@ -86,3 +90,7 @@ dotnet test
 ```
 
 Las pruebas de integración usan una base de datos en memoria y no requieren SQL Server.
+
+## Evidencias
+
+Las pruebas de la API hechas desde Swagger UI (200, 201, 204, 400, 404, 409 y la consulta después de reiniciar) están en [`../../docs/entregas/web3-api-integrador/evidencias-api.pdf`](../../docs/entregas/web3-api-integrador/evidencias-api.pdf).
