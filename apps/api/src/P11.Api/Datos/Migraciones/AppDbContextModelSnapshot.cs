@@ -277,6 +277,72 @@ namespace P11.Api.Datos.Migraciones
                     b.ToTable("HistorialVerificaciones");
                 });
 
+            modelBuilder.Entity("P11.Api.Dominio.Inversiones.Inversion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CodigoConstancia")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTimeOffset?>("ContratoAceptadoEn")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ContratoAceptadoPor")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ContratoVersion")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTimeOffset>("CreadaEn")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<Guid>("InversionistaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("MontoBs")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset?>("PagadaEn")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal?>("ParticipacionKg")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("ParticipacionPct")
+                        .HasPrecision(9, 4)
+                        .HasColumnType("decimal(9,4)");
+
+                    b.Property<Guid>("ProyectoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReferenciaPago")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTimeOffset>("ReservadaHasta")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InversionistaId");
+
+                    b.HasIndex("ProyectoId");
+
+                    b.ToTable("Inversiones", (string)null);
+                });
+
             modelBuilder.Entity("P11.Api.Dominio.Proyectos.HistorialProyecto", b =>
                 {
                     b.Property<Guid>("Id")
@@ -327,6 +393,13 @@ namespace P11.Api.Datos.Migraciones
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("CierreRondaEn")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal?>("CostosPct")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTimeOffset>("CreadoEn")
                         .HasColumnType("datetimeoffset");
 
@@ -348,6 +421,14 @@ namespace P11.Api.Datos.Migraciones
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal?>("MortalidadPct")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("NivelRiesgo")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -363,10 +444,25 @@ namespace P11.Api.Datos.Migraciones
                     b.Property<Guid>("ProductorId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("PublicadoEn")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal?>("RendimientoPct")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Riesgos")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<string>("Ubicacion")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal?>("VariacionPct")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -584,6 +680,21 @@ namespace P11.Api.Datos.Migraciones
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("P11.Api.Dominio.Inversiones.Inversion", b =>
+                {
+                    b.HasOne("P11.Api.Dominio.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("InversionistaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("P11.Api.Dominio.Proyectos.ProyectoGanadero", null)
+                        .WithMany()
+                        .HasForeignKey("ProyectoId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

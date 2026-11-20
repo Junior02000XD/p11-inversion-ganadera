@@ -1,44 +1,65 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router'
-import { formatoBs } from '../api'
-import { Aviso, Progreso, Tarjeta } from '../componentes'
-import { buscarProyecto } from '../datosEjemplo'
+import { Link, useNavigate, useParams } from 'react-router'
+import { api, formatoBs, mensajeDe } from '../api'
+import { Aviso, CuentaRegresiva, Tarjeta } from '../componentes'
 
-const RESERVA_SEGUNDOS = 30 * 60
+// POST /inversiones/:id/pago            → { referencia, montoBs, contenidoQr, venceEn } (409 sin contrato firmado)
+// POST /inversiones/:id/pago/confirmar  { aprobado } → simula el aviso de la pasarela de pago
 
-/** RF-15: pago por QR mientras dura la reserva del cupo; si vence, el cupo se libera (mockup 06c). */
+/** RF-15: pago por QR (simulado) mientras dura la reserva; si se rechaza o vence, el cupo se libera (mockup 06c). */
 export default function PagoQr() {
-  const proyecto = buscarProyecto(useParams().id)
-  const monto = useLocation().state?.monto ?? 1000
+  const { id } = useParams()
   const navegar = useNavigate()
-  const [restantes, setRestantes] = useState(RESERVA_SEGUNDOS)
+  const [pago, setPago] = useState(null)
+  const [vencida, setVencida] = useState(false)
+  const [rechazado, setRechazado] = useState(false)
+  const [error, setError] = useState('')
 
-  // Cuenta regresiva de la reserva, un segundo a la vez.
   useEffect(() => {
-    const reloj = setInterval(() => setRestantes((s) => Math.max(s - 1, 0)), 1000)
-    return () => clearInterval(reloj)
-  }, [])
+    api(`/inversiones/${id}/pago`, { metodo: 'POST' })
+      .then(setPago)
+      .catch((err) => setError(mensajeDe(err)))
+  }, [id])
 
-  const minutos = String(Math.floor(restantes / 60)).padStart(2, '0')
-  const segundos = String(restantes % 60).padStart(2, '0')
-  const vencida = restantes === 0
+  async function confirmar(aprobado) {
+    setError('')
+    try {
+      await api(`/inversiones/${id}/pago/confirmar`, { cuerpo: { aprobado } })
+      if (aprobado) navegar(`/portafolio/${id}`, { state: { recien: true } })
+      else setRechazado(true)
+    } catch (err) {
+      setError(mensajeDe(err))
+    }
+  }
 
+  if (!pago) return <Tarjeta titulo="Pagar con QR">{error ? <Aviso>{error}</Aviso> : <p className="tenue">Cargando…</p>}</Tarjeta>
+
+  const cerrado = vencida || rechazado
   return (
-    <Tarjeta titulo="Pagar con QR" subtitulo={`${proyecto.nombre} · Monto: ${formatoBs(monto)}`}>
+    <Tarjeta titulo="Pagar con QR" subtitulo={`Monto: ${formatoBs(pago.montoBs)} · Referencia ${pago.referencia}`}>
       <div className="formulario">
-        <div className="qr" role="img" aria-label="Código QR de pago" />
-        <span className="tenue">
-          Escanéalo desde la app de tu banco. Tiempo restante de la reserva: {minutos}:{segundos}
-        </span>
-        <Progreso porcentaje={(restantes / RESERVA_SEGUNDOS) * 100} />
-        {vencida ? (
-          <Aviso>Pago rechazado o vencido: se libera tu cupo.</Aviso>
-        ) : (
-          <button className="boton" onClick={() => navegar(`/rondas/${proyecto.id}`, { state: { monto } })}>
-            Ya pagué, verificar
-          </button>
+        <div className="qr" role="img" aria-label={`Código QR de pago ${pago.referencia}`} title={pago.contenidoQr} />
+        <span className="tenue">Escanéalo desde la app de tu banco (pago simulado).</span>
+        <CuentaRegresiva hasta={pago.venceEn} alVencer={() => setVencida(true)} />
+        {vencida && <Aviso>La reserva venció: se liberó tu cupo y no se cobró nada.</Aviso>}
+        {rechazado && <Aviso>El banco rechazó el pago: se liberó tu cupo. Te avisamos por correo.</Aviso>}
+        {!cerrado && (
+          <>
+            <button className="boton" onClick={() => confirmar(true)}>
+              Ya pagué, verificar
+            </button>
+            <button className="boton boton-secundario" onClick={() => confirmar(false)}>
+              Simular pago rechazado
+            </button>
+          </>
         )}
-        <p className="nota">Con el pago confirmado se emite tu constancia de participación.</p>
+        {cerrado && (
+          <Link className="boton boton-secundario" to="/catalogo">
+            Volver al catálogo
+          </Link>
+        )}
+        <Aviso>{error}</Aviso>
+        <p className="nota">Con el pago confirmado se asigna tu participación y se emite tu constancia.</p>
       </div>
     </Tarjeta>
   )

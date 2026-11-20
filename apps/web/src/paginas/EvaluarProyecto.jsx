@@ -1,26 +1,38 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { api, formatoBs, formatoFecha, mensajeDe, textoEstadoProyecto } from '../api'
+import { api, formatoBs, formatoFecha, mensajeDe, textoEstadoProyecto, textoLinea } from '../api'
 import { Aviso, Campo, Datos, Tarjeta } from '../componentes'
 
 // GET /analista/proyectos/:id → { proyecto, productor, correoProductor, historial: [{ estadoAnterior, estadoNuevo, accion, responsable, motivo, fecha }] }
-// POST /analista/proyectos/:id/decision { decision: 'Aprobar' | 'Observar' | 'Rechazar', observaciones, riesgosCargados, tresEscenarios }
-// Si el estado del proyecto no admite la decisión, la API responde 409 con el motivo.
+// POST /analista/proyectos/:id/decision { decision: 'Aprobar' | 'Observar' | 'Rechazar', observaciones,
+//   y para aprobar: nivelRiesgo, riesgos, rendimientoPct, costosPct, mortalidadPct, variacionPct }
+// Si el estado del proyecto no admite la decisión, o falta algún dato para publicar, la API responde 409.
 
-const RIESGOS = 'Riesgos identificados'
-const ESCENARIOS = 'Tres escenarios completos'
-// Los tres primeros puntos son la guía del analista; los dos últimos los exige la API para publicar (RF-10).
-const puntos = ['Documentos del predio verificados', 'Registro RUNSA vigente', 'Plan productivo coherente', RIESGOS, ESCENARIOS]
+// Guía del analista: no se envía a la API, solo ordena la revisión.
+const puntos = ['Documentos del predio verificados', 'Registro RUNSA vigente', 'Plan productivo coherente']
+
+// RF-10: supuestos del escenario esperado. El simulador (RF-12) arma con ellos los tres escenarios.
+const supuestos = [
+  { clave: 'rendimientoPct', etiqueta: 'Rendimiento esperado (%)', ayuda: 'Ganancia bruta sobre lo invertido, en todo el plazo.', placeholder: '22' },
+  { clave: 'costosPct', etiqueta: 'Costos y comisión (%)', placeholder: '8' },
+  { clave: 'mortalidadPct', etiqueta: 'Pérdida por mortalidad (%)', placeholder: '2' },
+  { clave: 'variacionPct', etiqueta: 'Variación entre escenarios (%)', ayuda: 'Cuánto baja (pesimista) o sube (optimista) el rendimiento.', placeholder: '8' },
+]
 
 const textoDecision = { Aprobar: 'quedó publicado', Observar: 'volvió al productor con observaciones', Rechazar: 'quedó rechazado' }
 
-/** RF-08, RF-09 y RF-10: checklist técnico y decisión; sin riesgos ni escenarios no se publica (mockup 04b). */
+const numero = (texto) => (texto === '' ? null : Number(texto))
+
+/** RF-08, RF-09 y RF-10: checklist técnico y decisión; sin riesgos ni supuestos de los escenarios no se publica (mockup 04b). */
 export default function EvaluarProyecto() {
   const { id } = useParams()
   const navegar = useNavigate()
   const [datos, setDatos] = useState(null)
   const [marcados, setMarcados] = useState([])
   const [observaciones, setObservaciones] = useState('')
+  const [nivelRiesgo, setNivelRiesgo] = useState('')
+  const [riesgos, setRiesgos] = useState('')
+  const [valores, setValores] = useState({ rendimientoPct: '', costosPct: '', mortalidadPct: '', variacionPct: '' })
   const [error, setError] = useState('')
   const [enviando, setEnviando] = useState(false)
 
@@ -41,8 +53,12 @@ export default function EvaluarProyecto() {
         cuerpo: {
           decision,
           observaciones,
-          riesgosCargados: marcados.includes(RIESGOS),
-          tresEscenarios: marcados.includes(ESCENARIOS),
+          nivelRiesgo: nivelRiesgo || null,
+          riesgos,
+          rendimientoPct: numero(valores.rendimientoPct),
+          costosPct: numero(valores.costosPct),
+          mortalidadPct: numero(valores.mortalidadPct),
+          variacionPct: numero(valores.variacionPct),
         },
       })
       navegar('/evaluacion', { state: { decision: `«${datos.proyecto.nombre}» ${textoDecision[decision]}.` } })
@@ -58,7 +74,7 @@ export default function EvaluarProyecto() {
   const p = datos.proyecto
   const filas = [
     ['Estado', textoEstadoProyecto[p.estado]],
-    ['Línea', p.linea === 'Lecheria' ? 'Lechería' : 'Engorde'],
+    ['Línea', textoLinea(p.linea)],
     ['Ubicación', p.ubicacion],
     ['Monto requerido', formatoBs(p.montoRequeridoBs)],
     ['Inversión mínima', formatoBs(p.montoMinimoBs)],
@@ -86,6 +102,31 @@ export default function EvaluarProyecto() {
             {punto}
           </label>
         ))}
+        <h2>Para publicar: riesgos y escenarios</h2>
+        <Campo etiqueta="Nivel de riesgo">
+          <select value={nivelRiesgo} onChange={(e) => setNivelRiesgo(e.target.value)}>
+            <option value="">Elegir…</option>
+            <option value="Bajo">Bajo</option>
+            <option value="Medio">Medio</option>
+            <option value="Alto">Alto</option>
+          </select>
+        </Campo>
+        <Campo etiqueta="Riesgos del proyecto" ayuda="Los lee el inversionista antes de invertir y van en el contrato.">
+          <textarea placeholder="Mortalidad, enfermedades o caída del precio de venta." value={riesgos} onChange={(e) => setRiesgos(e.target.value)} />
+        </Campo>
+        <div className="filtros">
+          {supuestos.map((s) => (
+            <Campo key={s.clave} etiqueta={s.etiqueta} ayuda={s.ayuda}>
+              <input
+                type="number"
+                step="0.1"
+                placeholder={s.placeholder}
+                value={valores[s.clave]}
+                onChange={(e) => setValores({ ...valores, [s.clave]: e.target.value })}
+              />
+            </Campo>
+          ))}
+        </div>
         <Campo etiqueta="Observaciones" ayuda="Obligatorias para observar o rechazar; le llegan al productor por correo.">
           <textarea placeholder="Falta detallar la alimentación" value={observaciones} onChange={(e) => setObservaciones(e.target.value)} />
         </Campo>

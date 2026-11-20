@@ -15,7 +15,7 @@ Plan escrito el 18/11/2026 para la sesión siguiente.
 |---|---|---|
 | Entidades, claves y relación (8) | `Datos/AppDbContext.cs`. `ProyectoGanadero` (TPH engorde/lechería) → `Usuario`; `HistorialProyecto` → `ProyectoGanadero` | ✓ |
 | Configuración de EF Core y migración aplicable (8) | SQL Server, `Datos/Migraciones/*_Inicial.cs` | ✓ |
-| Datos de prueba y persistencia tras reiniciar (4) | `Datos/SemillaDatos.cs` | Usuarios ✓; proyectos → **Matías** |
+| Datos de prueba y persistencia tras reiniciar (4) | `Datos/SemillaDatos.cs` | ✓ (productor, inversionista y dos proyectos de Matías) |
 | Listado y consulta por ID (6) | `GET /api/proyectos`, `GET /api/proyectos/{id}` | ✓ |
 | POST con 201 y `Location` (6) | `POST /api/proyectos` | ✓ |
 | PUT y DELETE (9) | `PUT` y `DELETE /api/proyectos/{id}` | ✓ |
@@ -24,11 +24,11 @@ Plan escrito el 18/11/2026 para la sesión siguiente.
 | DTO de entrada y salida (5) | `ProyectoEntradaDto` (entrada, con validaciones), `ProyectoDto` y `HistorialProyectoDto` (salida) | ✓ |
 | Contexto inyectado y operaciones asíncronas (2) | constructor primario + `async`/`CancellationToken` | ✓ |
 | Obligatorios y regla del dominio (5) | `[Required]`/`[Range]` + `Validar()` + State (solo se edita y borra un borrador) | ✓ |
-| Referencias inválidas, 400 y 404 (5) | `productorId` inexistente → 400; id inexistente → 404 | ✓ (pruebas → **Sergio**) |
-| Swagger con rutas, parámetros, esquemas y respuestas (8) | `/swagger` + esquema Bearer | Rutas y esquemas ✓; códigos de respuesta → **Brandon** |
+| Referencias inválidas, 400 y 404 (5) | `productorId` inexistente → 400; id inexistente → 404 | ✓ (pruebas de Sergio en `ProyectosCrudTests.cs`, PR #1) |
+| Swagger con rutas, parámetros, esquemas y respuestas (8) | `/swagger` + esquema Bearer | ✓ (códigos de respuesta de Brandon, PR #2) |
 | Evidencias: éxito, errores y persistencia (7) | PDF (abajo) | **Pendiente** |
-| ZIP limpio (3) + README reproducible (2) | script (abajo) + `apps/api/README.md` | ZIP **pendiente**; README → **Matías** |
-| Commits de cada integrante (15) | ramas `aporte/<nombre>`, guía en [`aportes-equipo.md`](aportes-equipo.md) | Julio ✓; el resto **pendiente** |
+| ZIP limpio (3) + README reproducible (2) | script (abajo) + `apps/api/README.md` | README ✓ (`apps/api/README.md`, de Matías); ZIP **pendiente** |
+| Commits de cada integrante (15) | ramas `aporte/<nombre>`, guía en [`aportes-equipo.md`](aportes-equipo.md) | ✓ los cuatro (Matías: `e21169d`) |
 
 ## Siguiente sesión (miércoles 19/11 a la noche o jueves temprano)
 

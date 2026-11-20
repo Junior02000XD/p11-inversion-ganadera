@@ -112,3 +112,16 @@ export const textoEstadoProyecto = {
 export const formatoBs = (n) => `Bs ${n.toLocaleString('es-BO', { maximumFractionDigits: 2 })}`
 export const formatoFecha = (iso) => new Date(iso).toLocaleString('es-BO', { dateStyle: 'short', timeStyle: 'short' })
 export const formatoHora = (iso) => new Date(iso).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', hour12: false })
+
+export const textoLinea = (linea) => (linea === 'Lecheria' ? 'Lechería' : 'Engorde')
+
+// Estados de una inversión (RF-13 a RF-16): 'Reservada' | 'Firmada' | 'Pagada' | 'Vencida' | 'Rechazada'
+export const textoEstadoInversion = {
+  Reservada: 'Cupo reservado',
+  Firmada: 'Contrato firmado',
+  Pagada: 'Pagada',
+  Vencida: 'Reserva vencida',
+  Rechazada: 'Pago rechazado',
+}
+
+export const formatoPct = (n) => `${Number(n).toLocaleString('es-BO', { maximumFractionDigits: 2 })} %`

@@ -234,6 +234,13 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 .chip-Aprobado, .chip-EnRevision, .chip-EnFinanciamiento { background: var(--ok-suave); color: var(--ok); border-color: transparent; }
 .chip-Pendiente, .chip-Borrador { background: var(--ocre-suave); color: var(--ocre); border-color: transparent; }
 .chip-Rechazado, .chip-Falta { background: var(--peligro-suave); color: var(--peligro); border-color: transparent; }
+/* Inversión (Sprint 2): en curso en ocre, pagada en verde, vencida o rechazada en rojo. */
+.chip-Reservada, .chip-Firmada, .chip-Medio { background: var(--ocre-suave); color: var(--ocre); border-color: transparent; }
+.chip-Pagada, .chip-Bajo { background: var(--ok-suave); color: var(--ok); border-color: transparent; }
+.chip-Vencida, .chip-Rechazada, .chip-Alto { background: var(--peligro-suave); color: var(--peligro); border-color: transparent; }
+.contrato { white-space: pre-wrap; font-size: 0.9rem; max-height: 260px; overflow: auto; padding: 12px; border: 1px solid var(--borde); border-radius: 8px; background: var(--superficie); }
+.filtros { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0 12px; }
+@media print { .barra, .menu-lateral, .no-imprimir { display: none !important; } }
 
 /* Listas y tablas */
 .lista { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 12px; }
