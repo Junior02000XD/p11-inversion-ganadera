@@ -17,7 +17,7 @@ La explicación completa, con capturas, flujo y reglas de cada casilla, está en
 | RF-15 | Confirmado: sigue la asignación. Rechazado o vencido: cupo liberado y aviso enviado. | `POST /api/inversiones/{id}/pago`, `POST …/pago/confirmar`; servicio `VencimientoReservas` | `/inversiones/:id/pago` | `InversionesTests` |
 | RF-16 | Tras un pago confirmado la participación aparece en el portafolio con su constancia. | `GET /api/portafolio`, `GET /api/portafolio/{id}/constancia` | `/portafolio`, `/portafolio/:id` | `InversionesTests` |
 
-Resultado: `dotnet test` → **99 pruebas, 0 fallas** (87 antes del sprint). `npm run build` sin errores.
+Resultado: `dotnet test` → **112 pruebas, 0 fallas**: 87 antes del sprint, 13 del CRUD (Sergio, Web 3) y 12 del Sprint 2. `npm run build` sin errores.
 
 ## Decisiones tomadas en el sprint
 

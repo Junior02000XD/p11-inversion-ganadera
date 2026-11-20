@@ -430,7 +430,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
     <div class="tarjeta termino"><h4>Ruta</h4><p>La dirección de una pantalla en la web: <code>/catalogo</code>, <code>/inversiones/:id/contrato</code>. Las define <code>main.jsx</code>.</p><p class="analogia">El número de oficina dentro del edificio.</p></div>
     <div class="tarjeta termino"><h4>Proxy de Vite</h4><p>En desarrollo, la web corre en el puerto 5173 y la API en el 7080. Vite reenvía todo lo que empieza con <code>/api</code> a la API, así el navegador cree que es un solo sitio.</p><p class="analogia">La recepcionista que pasa la llamada al interno correcto.</p></div>
     <div class="tarjeta termino"><h4>Swagger / OpenAPI</h4><p>Página que lista todos los endpoints de la API y permite probarlos («Try it out»). En <code>/swagger</code>.</p><p class="analogia">El menú del restaurante, con la opción de pedir una probadita.</p></div>
-    <div class="tarjeta termino"><h4>Prueba automática</h4><p>Código que usa el sistema y verifica el resultado. <b>Unitaria</b>: prueba una clase sola. <b>De integración</b>: levanta la API entera y le hace pedidos reales. En P11 hay 99.</p><p class="analogia">El control de calidad que revisa cada lote antes de salir.</p></div>
+    <div class="tarjeta termino"><h4>Prueba automática</h4><p>Código que usa el sistema y verifica el resultado. <b>Unitaria</b>: prueba una clase sola. <b>De integración</b>: levanta la API entera y le hace pedidos reales. En P11 hay 112.</p><p class="analogia">El control de calidad que revisa cada lote antes de salir.</p></div>
     <div class="tarjeta termino"><h4>Patrón de diseño</h4><p>Solución conocida y con nombre a un problema que se repite al programar (State, Command, Prototype…). Ver la sección 9.</p><p class="analogia">Una receta clásica: no la inventas, la adaptas.</p></div>
     <div class="tarjeta termino"><h4>Docker / contenedor</h4><p>Forma de correr programas (SQL Server, Mailpit) ya configurados, sin instalarlos a mano.</p><p class="analogia">Un contenedor de barco: llega cerrado y funciona igual en cualquier puerto.</p></div>
     <div class="tarjeta termino"><h4>Mailpit</h4><p>Buzón falso para desarrollo: atrapa todos los correos de la API (OTP, avisos) y los muestra en <code>http://localhost:8025</code>. No envía nada de verdad.</p><p class="analogia">Un buzón de práctica.</p></div>
@@ -499,7 +499,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
     <div class="tarjeta"><span class="etiqueta">Seguridad</span><h4>OTP por correo</h4>
       <p><b>Por qué correo:</b> la ERS v2.0 lo pide (RNF-01) y es gratis. <b>En vez de:</b> SMS, que cuesta por mensaje y necesita un proveedor.</p></div>
     <div class="tarjeta"><span class="etiqueta">Documentación</span><h4>Swagger UI</h4>
-      <p>Página que lista cada endpoint con sus parámetros, sus respuestas (200, 400, 404, 409) y un botón para probarlo con el token. La rúbrica de Programación Web 3 lo pide y sirve para mostrar la API sin la web.</p></div>
+      <p>Página que lista cada endpoint con sus parámetros, sus respuestas (200, 400, 404, 409, documentadas con <code>[ProducesResponseType]</code>) y un botón para probarlo con el token. La rúbrica de Programación Web 3 lo pide y sirve para mostrar la API sin la web.</p></div>
     <div class="tarjeta"><span class="etiqueta">Pruebas</span><h4>xUnit + WebApplicationFactory</h4>
       <p>Levantan la API real en memoria y le hacen pedidos HTTP de verdad, con una base de datos en memoria y un buzón de correo falso. <b>FakeTimeProvider</b> deja adelantar el reloj para probar vencimientos (OTP a los 10 min, reserva a los 30 min) sin esperar.</p></div>
     <div class="tarjeta"><span class="etiqueta">Herramientas</span><h4>Docker y Mailpit</h4>
@@ -657,7 +657,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
           </details>
           <details><summary><b>Configuracion/</b> <span class="desc">opciones validadas al arrancar, documento de Swagger, claves de desarrollo</span></summary></details>
         </details>
-        <details><summary><b>tests/P11.Tests/</b> <span class="desc">99 pruebas automáticas</span></summary>
+        <details><summary><b>tests/P11.Tests/</b> <span class="desc">112 pruebas automáticas</span></summary>
           <div class="hoja">Integracion/ <span class="desc">levantan la API entera: AutenticacionTests, VerificacionTests, ProyectosTests, EvaluacionProyectosTests, CatalogoTests <span class="chip chip-ok">Sprint 2</span>, InversionesTests <span class="chip chip-ok">Sprint 2</span>…</span></div>
           <div class="hoja">Patrones/ <span class="desc">una prueba por patrón de diseño</span></div>
         </details>
@@ -1358,7 +1358,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
   <p class="eyebrow">Sección 10</p>
   <h2>Pruebas automáticas</h2>
   <div class="breve"><strong>En breve</strong><p>Una prueba automática es código que usa el sistema y comprueba el resultado. Las <b>de integración</b> levantan la API completa en memoria y le hacen pedidos HTTP reales, con una base de datos en memoria y un correo falso; no necesitan SQL Server. Las <b>de patrones</b> prueban una clase sola.</p></div>
-  <p class="texto">Se corren con <code>cd apps/api &amp;&amp; dotnet test</code>. Resultado actual: <b>99 pruebas, 0 fallas</b> (44 al cerrar el Sprint 1, 87 antes del Sprint 2).</p>
+  <p class="texto">Se corren con <code>cd apps/api &amp;&amp; dotnet test</code>. Resultado actual: <b>112 pruebas, 0 fallas</b> (44 al cerrar el Sprint 1, 87 antes del Sprint 2, 13 más de Sergio para Programación Web 3 y 12 del Sprint 2).</p>
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Archivo</th><th class="num">Pruebas</th><th>Qué demuestra</th></tr></thead>
     <tbody>
@@ -1367,6 +1367,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
       <tr><td>VerificacionTests</td><td class="num">5</td><td>Consentimiento, imágenes ilegibles, revisión manual, archivos cifrados</td></tr>
       <tr><td>RolesTests</td><td class="num">5</td><td>Cada rol entra solo a lo suyo; el Administrador a todo</td></tr>
       <tr><td>ProyectosTests</td><td class="num">4</td><td>Ficha por línea, requisitos para enviar a evaluación</td></tr>
+      <tr><td>ProyectosCrudTests</td><td class="num">13</td><td>CRUD de la ficha: 201 con <code>Location</code>, 400, 404, edición y borrado solo en borrador, historial, administración de usuarios (aporte de Sergio)</td></tr>
       <tr><td>EvaluacionProyectosTests</td><td class="num">3</td><td>Observar, publicar solo con riesgos y supuestos, roles</td></tr>
       <tr><td>CatalogoTests <span class="chip chip-ok">Sprint 2</span></td><td class="num">5</td><td>Filtros, borrador oculto, tres escenarios con advertencia</td></tr>
       <tr><td>InversionesTests <span class="chip chip-ok">Sprint 2</span></td><td class="num">7</td><td>Flujo completo, mínimo (400), cupo (409), vencimiento, rechazo, sin verificar, privacidad</td></tr>
@@ -1415,7 +1416,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
     <li>Contrato: pedir el código, leerlo en Mailpit, firmar.</li>
     <li>Pago QR: «Ya pagué, verificar» → constancia (1 %, 216 kg). Mostrar el portafolio y el correo con la constancia.</li>
     <li><b>Administrador</b>: entrar a «Invertir en un proyecto» o «Liquidar proyecto» y mostrar «Ver como»; abrir la bitácora.</li>
-    <li>Cerrar con <code>dotnet test</code>: 99 pruebas en verde.</li>
+    <li>Cerrar con <code>dotnet test</code>: 112 pruebas en verde.</li>
   </ol>
   <h3>Si algo falla</h3>
   <div class="tabla-scroll"><table class="tabla">
@@ -1478,7 +1479,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
     <details class="pregunta" data-tema="patrones"><summary><span class="chip">Patrones</span>¿Cómo trabajan juntos State, Command y Observer al evaluar?</summary><div class="respuesta"><p>La decisión del analista se convierte en un <b>Command</b>. El gestor lo ejecuta: el <b>State</b> del proyecto decide si la transición vale (si no, 409), se guarda una fila en la bitácora y los <b>Observers</b> avisan al productor y a los analistas.</p></div></details>
     <details class="pregunta" data-tema="patrones"><summary><span class="chip">Patrones</span>¿Por qué no usaron Mediator en el flujo de inversión?</summary><div class="respuesta"><p>Porque reservar, firmar, pagar y asignar son pasos en secuencia de una sola entidad, no objetos que conversan entre sí. Alcanza con la entidad <code>Inversion</code> y un servicio; Mediator sumaría una capa sin resolver nada.</p></div></details>
     <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cómo prueban que una reserva vence sin esperar 30 minutos?</summary><div class="respuesta"><p>Con <code>FakeTimeProvider</code>: un reloj falso que la prueba adelanta 31 minutos. Como la API pide la hora a ese reloj, cree que pasó el tiempo. Lo usa <code>InversionesTests</code>.</p></div></details>
-    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cuántas pruebas hay y cómo se corren?</summary><div class="respuesta"><p>99, todas en verde. Se corren con <code>dotnet test</code> desde <code>apps/api</code>. No necesitan SQL Server: usan una base en memoria.</p></div></details>
+    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cuántas pruebas hay y cómo se corren?</summary><div class="respuesta"><p>112, todas en verde. Se corren con <code>dotnet test</code> desde <code>apps/api</code>. No necesitan SQL Server: usan una base en memoria.</p></div></details>
   </div>
 </section>
 
@@ -1490,6 +1491,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Fecha</th><th>Cambio</th></tr></thead>
     <tbody>
+      <tr><td class="num">20/11/2026</td><td>Se suman los aportes de Sergio (13 pruebas del CRUD) y Brandon (respuestas documentadas en Swagger): 112 pruebas.</td></tr>
       <tr><td class="num">20/11/2026</td><td>Primera versión, al cerrar el Sprint 2: proyecto, tecnologías, arquitectura, repositorio, código, casos de uso de los Sprints 1 y 2 con 33 capturas reales, patrones, pruebas, demo y preguntas.</td></tr>
     </tbody>
   </table></div>
