@@ -74,7 +74,3 @@ El OTP se usa en CU-01, CU-06 y CU-12. El inicio de sesión (CU-02) no lo usa: R
 - **Regla del docente:** cada acción del usuario lleva a una acción del sistema que valida, y esa acción a una compuerta que decide. Hay que incluir los caminos de falla.
 - IDs `RF-xx` / `RNF-xx` tal como están en la ERS. Las etiquetas de trazabilidad van solo en las versiones de [`trazabilidad/`](trazabilidad/).
 - Herramienta: StarUML (`.mdj`). Idioma: español.
-
-## Prompt base para tu IA
-
-> Actúa como analista de modelado UML. Lee `docs/diagramas/convenciones.md` (los 12 casos de uso, actores, vocabulario), la ERS en `docs/requisitos/` y los BPMN de `docs/procesos/`. Para todo lo que ya está programado, el código de `apps/api/src/P11.Api/` manda. Genera el **diagrama de [TIPO]** del Proyecto 11 para [CU / alcance], usando solo los RF/RNF que existen y los supuestos declarados (no inventes requerimientos). Representa al Sistema según la tabla de `convenciones.md` y modela los caminos de falla. Entrégalo como `.mdj` de StarUML y lista qué RF cubre cada elemento. Señala cualquier ambigüedad en vez de asumirla.
