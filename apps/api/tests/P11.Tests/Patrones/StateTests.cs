@@ -1,4 +1,5 @@
 using P11.Api.Dominio;
+using P11.Api.Dominio.Proyectos;
 using P11.Api.Dominio.Proyectos.Estados;
 
 namespace P11.Tests.Patrones;
@@ -37,8 +38,9 @@ public class StateTests
     public void Aprobar_publica_el_proyecto()
     {
         var p = Fichas.EnRevision();
-        p.AprobarYPublicar();
+        p.AprobarYPublicar(Fichas.Publicacion, Fichas.Ahora);
         Assert.Equal(EstadoProyecto.EnFinanciamiento, p.Estado);
+        Assert.Equal(Fichas.Ahora.AddDays(DatosPublicacion.DiasRonda), p.CierreRondaEn);
     }
 
     [Fact]
@@ -46,7 +48,7 @@ public class StateTests
     {
         var p = Fichas.Engorde();
 
-        var ex = Assert.Throws<TransicionInvalidaException>(p.AprobarYPublicar);
+        var ex = Assert.Throws<TransicionInvalidaException>(() => p.AprobarYPublicar(Fichas.Publicacion, Fichas.Ahora));
         Assert.Equal("Un proyecto en borrador no se puede aprobar ni publicar.", ex.Message);
         Assert.Throws<TransicionInvalidaException>(() => p.Observar("x"));
         Assert.Equal(EstadoProyecto.Borrador, p.Estado);
@@ -61,7 +63,7 @@ public class StateTests
         Assert.Equal(EstadoProyecto.Rechazado, p.Estado);
         Assert.Equal("El predio no tiene agua todo el año.", p.Observaciones);
         Assert.Throws<TransicionInvalidaException>(p.EnviarARevision);
-        Assert.Throws<TransicionInvalidaException>(p.AprobarYPublicar);
+        Assert.Throws<TransicionInvalidaException>(() => p.AprobarYPublicar(Fichas.Publicacion, Fichas.Ahora));
     }
 
     [Fact]

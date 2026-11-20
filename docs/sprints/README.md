@@ -22,4 +22,4 @@ Roles: Sergio (Scrum Master), Matías (Product Owner), Julio y Brandon (Desarrol
 
 ## Evidencia de cada sprint
 
-Las capturas van en `sprint-N/capturas/`, numeradas en el orden del guion de la demo (`01-registro-formulario.png`, `02-otp-pantalla.png`…), así se leen en el mismo orden en que se presentan.
+Las capturas van en `sprint-N/capturas/` (las del recorrido completo de los Sprints 1 y 2 están en [`../guia/capturas/`](../guia/capturas/)), numeradas en el orden del guion de la demo (`01-registro-formulario.png`, `02-otp-pantalla.png`…), así se leen en el mismo orden en que se presentan.

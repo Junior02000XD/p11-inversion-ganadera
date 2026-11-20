@@ -28,6 +28,7 @@ docs/diagramas/     Diagramas UML (.mdj de StarUML), sus figuras PNG y los mocku
 docs/diseno/        Documento de Diseño entregado
 docs/patrones/      Mapa patrón de diseño → clase/archivo → requerimiento, informes y guías
 docs/sprints/       Planificación, alcance y evidencia de cada sprint
+docs/guia/          Guía de estudio del proyecto, con capturas
 docker-compose.yml  Correo de prueba (Mailpit) para desarrollo
 ```
 
@@ -54,7 +55,7 @@ cd apps/web && npm install && npm run dev                      # web en http://l
 
 Fuera de la cadena de conexión no hay que crear archivos de configuración: en desarrollo la API genera sus claves y crea los usuarios internos. Swagger UI queda en https://localhost:7080/swagger. La primera vez en cada máquina, corre `dotnet dev-certs https --trust`. Detalles, puertos ocupados y correo real: [`apps/api/README.md`](apps/api/README.md). Las pruebas se corren con `cd apps/api && dotnet test`.
 
-Estado y guion de la demo del Sprint 1: [`docs/sprints/sprint-1/`](docs/sprints/sprint-1/README.md); plan del Sprint 2: [`docs/sprints/sprint-2/`](docs/sprints/sprint-2/README.md). El menú de la web tiene una pestaña por caso de uso: [`apps/web/src/casosDeUso.js`](apps/web/src/casosDeUso.js). Patrones de diseño: [`docs/patrones/README.md`](docs/patrones/README.md). Diagramas: [`docs/diagramas/README.md`](docs/diagramas/README.md).
+Para estudiar el proyecto completo: [guía de estudio](docs/guia/guia-de-estudio.html). Estado y guion de la demo: [Sprint 1](docs/sprints/sprint-1/README.md) y [Sprint 2](docs/sprints/sprint-2/README.md). El menú de la web tiene una pestaña por caso de uso: [`apps/web/src/casosDeUso.js`](apps/web/src/casosDeUso.js). Patrones de diseño: [`docs/patrones/README.md`](docs/patrones/README.md). Diagramas: [`docs/diagramas/README.md`](docs/diagramas/README.md).
 
 ## Convenciones
 

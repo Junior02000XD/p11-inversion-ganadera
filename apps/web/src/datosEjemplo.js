@@ -1,5 +1,5 @@
-// Datos de ejemplo para las pantallas de los sprints 2 y 3.
-// Esas pantallas todavía no tienen endpoints en la API: leen de acá.
+// Datos de ejemplo para las pantallas del Sprint 3 (rondas, compra, avance, incidencias, expediente, liquidación).
+// Esas pantallas todavía no tienen endpoints en la API: leen de acá. Las del Sprint 2 ya usan la API.
 // Cuando el endpoint exista, la pantalla cambia este import por una llamada a `api(...)`, como en el Sprint 1.
 
 export const proyectos = [

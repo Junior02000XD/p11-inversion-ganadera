@@ -58,11 +58,12 @@ public class CommandTests
         await gestor.EjecutarAsync(new EnviarARevision(p.Id, "productor@test.bo"));
 
         var ex = await Assert.ThrowsAsync<TransicionInvalidaException>(() =>
-            gestor.EjecutarAsync(new AprobarYPublicarProyecto(p.Id, "analista@test.bo", "ok", RiesgosCargados: true, TresEscenarios: false)));
+            gestor.EjecutarAsync(new AprobarYPublicarProyecto(p.Id, "analista@test.bo", "ok",
+                Fichas.Publicacion with { VariacionPct = null }, Fichas.Ahora)));
         Assert.Contains("tres escenarios", ex.Message);
         Assert.Equal(EstadoProyecto.EnRevision, p.Estado);
 
-        await gestor.EjecutarAsync(new AprobarYPublicarProyecto(p.Id, "analista@test.bo", "ok", true, true));
+        await gestor.EjecutarAsync(new AprobarYPublicarProyecto(p.Id, "analista@test.bo", "ok", Fichas.Publicacion, Fichas.Ahora));
         Assert.Equal(EstadoProyecto.EnFinanciamiento, p.Estado);
     }
 

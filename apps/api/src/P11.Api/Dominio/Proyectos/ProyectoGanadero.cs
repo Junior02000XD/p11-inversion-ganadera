@@ -24,6 +24,19 @@ public abstract class ProyectoGanadero
     public string? Observaciones { get; private set; }
     public DateTimeOffset CreadoEn { get; set; } = DateTimeOffset.UtcNow;
 
+    // ---- Publicación (RF-10). Se llenan cuando el analista aprueba; antes son null. ----
+    public NivelRiesgo? NivelRiesgo { get; private set; }
+    /// <summary>Riesgos que lee el inversionista antes de invertir y en el contrato (RF-14, RNF-06).</summary>
+    public string? Riesgos { get; private set; }
+    /// <summary>Supuestos del escenario esperado y cuánto se mueven en el pesimista y el optimista (RF-12).</summary>
+    public decimal? RendimientoPct { get; private set; }
+    public decimal? CostosPct { get; private set; }
+    public decimal? MortalidadPct { get; private set; }
+    public decimal? VariacionPct { get; private set; }
+    public DateTimeOffset? PublicadoEn { get; private set; }
+    /// <summary>Hasta cuándo recibe inversiones. El cierre de la ronda (RF-17) es del Sprint 3.</summary>
+    public DateTimeOffset? CierreRondaEn { get; private set; }
+
     public abstract LineaProductiva Linea { get; }
 
     /// <summary>Objeto estado del patrón State; decide qué operación se permite.</summary>
@@ -43,7 +56,25 @@ public abstract class ProyectoGanadero
         Observaciones = motivo;
     }
 
-    public void AprobarYPublicar() => Estado = EstadoActual.AprobarYPublicar().Valor;
+    /// <summary>
+    /// RF-10: el estado decide si se puede publicar (solo desde revisión técnica) y después se exigen
+    /// los riesgos y los supuestos de los tres escenarios. Si falta algo, no cambia nada.
+    /// </summary>
+    public void AprobarYPublicar(DatosPublicacion datos, DateTimeOffset ahora)
+    {
+        var siguiente = EstadoActual.AprobarYPublicar();
+        if (datos.Incumplido() is { } motivo) throw new TransicionInvalidaException(motivo);
+
+        Estado = siguiente.Valor;
+        NivelRiesgo = datos.NivelRiesgo;
+        Riesgos = datos.Riesgos!.Trim();
+        RendimientoPct = datos.RendimientoPct;
+        CostosPct = datos.CostosPct;
+        MortalidadPct = datos.MortalidadPct;
+        VariacionPct = datos.VariacionPct;
+        PublicadoEn = ahora;
+        CierreRondaEn = ahora.AddDays(DatosPublicacion.DiasRonda);
+    }
 
     /// <summary>
     /// Corrige la ficha con datos nuevos (PUT). El estado decide si se puede (State) y después se
