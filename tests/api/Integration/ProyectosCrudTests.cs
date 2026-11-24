@@ -59,7 +59,8 @@ public class ProyectosCrudTests(ApiFactory f) : IClassFixture<ApiFactory>
     public async Task POST_del_administrador_con_productor_inexistente_devuelve_400()
     {
         using var admin = await Pasos.Autenticado(f, ApiFactory.Admin, ApiFactory.ClaveInterna);
-        var ficha = FichaEngorde() with { ProductorId = Guid.NewGuid() };
+        var ficha = FichaEngorde();
+        ficha.ProductorId = Guid.NewGuid();
         using var r = await admin.PostAsJsonAsync("/api/proyectos", ficha, Pasos.Json);
 
         Assert.Equal(HttpStatusCode.BadRequest, r.StatusCode);
@@ -81,7 +82,8 @@ public class ProyectosCrudTests(ApiFactory f) : IClassFixture<ApiFactory>
     {
         using var prod = await Pasos.UsuarioConfirmado(f, Roles.Productor);
         var id = await CrearBorrador(prod);
-        var ficha = FichaEngorde() with { Nombre = "Engorde Pailón actualizado" };
+        var ficha = FichaEngorde();
+        ficha.Nombre = "Engorde Pailón actualizado";
         using var r = await prod.PutAsJsonAsync($"/api/proyectos/{id}", ficha, Pasos.Json);
 
         Assert.Equal(HttpStatusCode.OK, r.StatusCode);
@@ -101,17 +103,15 @@ public class ProyectosCrudTests(ApiFactory f) : IClassFixture<ApiFactory>
     {
         using var prod = await Pasos.UsuarioConfirmado(f, Roles.Productor);
         var id = await CrearBorrador(prod);
-        var ficha = FichaEngorde() with
-        {
-            Linea = LineaProductiva.Lecheria,
-            CantidadAnimales = null,
-            PesoInicialKg = null,
-            PesoMetaKg = null,
-            CostosEstimadosBs = null,
-            VacasEnOrdeno = 30,
-            LitrosPorDia = 450,
-            PrecioLitroBs = 4.2m,
-        };
+        var ficha = FichaEngorde();
+        ficha.Linea = LineaProductiva.Lecheria;
+        ficha.CantidadAnimales = null;
+        ficha.PesoInicialKg = null;
+        ficha.PesoMetaKg = null;
+        ficha.CostosEstimadosBs = null;
+        ficha.VacasEnOrdeno = 30;
+        ficha.LitrosPorDia = 450;
+        ficha.PrecioLitroBs = 4.2m;
         using var r = await prod.PutAsJsonAsync($"/api/proyectos/{id}", ficha, Pasos.Json);
 
         Assert.Equal(HttpStatusCode.BadRequest, r.StatusCode);
@@ -218,9 +218,19 @@ public class ProyectosCrudTests(ApiFactory f) : IClassFixture<ApiFactory>
         Assert.Equal(id, (await consulta.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid());
     }
 
-    private static ProyectoEntradaDto FichaEngorde() => new(
-        LineaProductiva.Engorde, "Engorde Pailón", "Pailón", 60000, 100, 8,
-        CantidadAnimales: 30, PesoInicialKg: 170, PesoMetaKg: 400, CostosEstimadosBs: 20000);
+    private static ProyectoEntradaDto FichaEngorde() => new()
+    {
+        Linea = LineaProductiva.Engorde,
+        Nombre = "Engorde Pailón",
+        Ubicacion = "Pailón",
+        MontoRequeridoBs = 60000,
+        MontoMinimoBs = 100,
+        PlazoMeses = 8,
+        CantidadAnimales = 30,
+        PesoInicialKg = 170,
+        PesoMetaKg = 400,
+        CostosEstimadosBs = 20000,
+    };
 
     private static async Task<Guid> CrearBorrador(HttpClient prod)
     {

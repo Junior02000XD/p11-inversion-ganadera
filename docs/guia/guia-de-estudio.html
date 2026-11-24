@@ -628,7 +628,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
             <div class="hoja">PortafolioController.cs <span class="chip chip-ok">Sprint 2</span> <span class="desc">participaciones pagadas y constancia (RF-16)</span></div>
             <div class="hoja">AdminUsuariosController.cs, AdminBitacoraController.cs <span class="desc">usuarios, roles, bloqueo y bitácora (RF-06, RNF-03)</span></div>
           </details>
-          <details><summary><b>Dtos/Dtos.cs</b> <span class="desc">todos los DTO: lo que entra (con sus validaciones) y lo que sale</span></summary></details>
+          <details><summary><b>Dtos/</b> <span class="desc">un archivo por tema (AutenticacionDtos.cs, ProyectosDtos.cs…): lo que entra es una class con sus validaciones; lo que sale, un record</span></summary></details>
           <details><summary><b>Models/</b> <span class="desc">las reglas del negocio, sin saber nada de HTTP</span></summary>
             <div class="hoja">Usuario.cs, Roles.cs, Enums.cs, CodigoOtp.cs, DocumentoArchivo.cs</div>
             <div class="hoja">Projects/ <span class="desc">ProyectoGanadero (engorde y lechería), CreadorProyecto (Factory Method), States/EstadoFicha (State), DatosPublicacion <span class="chip chip-ok">Sprint 2</span></span></div>
@@ -691,7 +691,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
       <tr><td>¿Dónde se bloquea la cuenta al 5.º intento?</td><td><code>Program.cs</code> (opciones de Identity) con los valores de <code>appsettings.json</code> → <code>ReglasSeguridad</code>; el aviso, en <code>AuthController.Login</code></td></tr>
       <tr><td>¿Dónde se genera y valida el OTP?</td><td><code>Services/Auth/OtpService.cs</code></td></tr>
       <tr><td>¿Dónde se cifran los archivos?</td><td><code>Services/Files/AlmacenCifrado.cs</code></td></tr>
-      <tr><td>¿Dónde se valida la ficha del proyecto?</td><td>Dos capas: atributos en <code>Dtos/Dtos.cs</code> (<code>ProyectoEntradaDto</code>) y reglas en <code>ProyectoGanadero.Validar()</code></td></tr>
+      <tr><td>¿Dónde se valida la ficha del proyecto?</td><td>Dos capas: atributos en <code>Dtos/ProyectosDtos.cs</code> (<code>ProyectoEntradaDto</code>) y reglas en <code>ProyectoGanadero.Validar()</code></td></tr>
       <tr><td>¿Qué impide enviar a evaluación sin documentos?</td><td><code>Services/Projects/RequisitosEnvio.cs</code> (cadena de requisitos)</td></tr>
       <tr><td>¿Dónde están los estados del proyecto?</td><td><code>Models/Projects/States/EstadoFicha.cs</code></td></tr>
       <tr><td>¿Qué se exige para publicar?</td><td><code>Models/Projects/DatosPublicacion.cs</code> → <code>Incumplido()</code></td></tr>
@@ -1098,7 +1098,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
         <tr><td>Archivo</td><td>PDF, JPG o PNG reales, hasta 5 MB; se guarda cifrado</td><td>400 «Formato no admitido…» o «…de hasta 5 MB.»</td></tr>
       </tbody>
     </table></div>
-    <p class="nota">Las reglas se revisan en <b>dos capas</b>: primero los atributos del DTO (obligatorios y rangos, en <code>Dtos/Dtos.cs</code>) y, si pasan, las reglas del dominio (por ejemplo «peso meta mayor al inicial», en <code>ProyectoEngorde.ValidarLinea()</code>). Por eso, en la captura 9, el error del peso meta aparece recién cuando los demás campos están bien.</p>
+    <p class="nota">Las reglas se revisan en <b>dos capas</b>: primero los atributos del DTO (obligatorios y rangos, en <code>Dtos/ProyectosDtos.cs</code>) y, si pasan, las reglas del dominio (por ejemplo «peso meta mayor al inicial», en <code>ProyectoEngorde.ValidarLinea()</code>). Por eso, en la captura 9, el error del peso meta aparece recién cuando los demás campos están bien.</p>
     <h4>Para enviar a evaluación (en este orden)</h4>
     <ol class="pasos">
       <li>Ficha completa y válida. <span class="donde">409 «La ficha tiene campos con error: …»</span></li>
