@@ -48,7 +48,7 @@ public class GestorInversiones(AppDbContext db, ICanalAviso canal, TimeProvider 
         if (!inversion.Vencio(Ahora)) return false;
         inversion.Vencer();
         await db.SaveChangesAsync(ct);
-        await AvisarLiberacionAsync(inversion, "pasaron los 30 minutos de la reserva sin que se confirmara el pago.", ct);
+        await AvisarLiberacionAsync(inversion, $"pasaron los {Inversion.MinutosReserva} minutos de la reserva sin que se confirmara el pago.", ct);
         return true;
     }
 

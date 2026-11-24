@@ -38,14 +38,14 @@ public class AdminBitacoraController(AppDbContext db) : ControllerBase
     {
         if (desde > hasta) return BadRequest(new Respuesta("La fecha «desde» no puede ser posterior a «hasta»."));
 
+        // Una cuenta con historial no se puede eliminar, así que cada fila tiene su usuario.
         var identidad = await (
             from h in db.HistorialVerificaciones
-            join u in db.Users on h.UsuarioId equals u.Id into usuario
-            from u in usuario.DefaultIfEmpty()
+            join u in db.Users on h.UsuarioId equals u.Id
             where (desde == null || h.Fecha >= desde) && (hasta == null || h.Fecha <= hasta)
                 && (responsable == null || h.Responsable.Contains(responsable))
             orderby h.Fecha descending
-            select new { h, Nombre = u != null ? u.NombreCompleto : "(cuenta eliminada)" })
+            select new { h, Nombre = u.NombreCompleto })
             .Take(Maximo).ToListAsync(ct);
 
         var proyectos = await (

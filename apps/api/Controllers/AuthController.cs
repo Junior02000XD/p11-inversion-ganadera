@@ -94,16 +94,7 @@ public class AuthController(
         if (usuario.EmailConfirmed) return Ok(new Respuesta("La cuenta ya estaba confirmada."));
 
         var resultado = await otp.ValidarAsync(usuario.Id, PropositoOtp.ConfirmarRegistro, req.Codigo, ct);
-        if (resultado != ResultadoOtp.Valido)
-        {
-            return BadRequest(new Respuesta(resultado switch
-            {
-                ResultadoOtp.Vencido => "El código venció. Pide uno nuevo.",
-                ResultadoOtp.SinIntentos => "Se agotaron los intentos para este código. Pide uno nuevo.",
-                ResultadoOtp.Inexistente => "No tienes un código vigente. Pide uno nuevo.",
-                _ => "El código es incorrecto.",
-            }));
-        }
+        if (resultado != ResultadoOtp.Valido) return BadRequest(new Respuesta(OtpService.Mensaje(resultado)));
 
         usuario.EmailConfirmed = true;
         await usuarios.UpdateAsync(usuario);

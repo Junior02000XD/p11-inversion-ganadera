@@ -19,10 +19,12 @@ public class RegistroRequest
     public string Correo { get; set; } = "";
 
     [Required]
+    // Solo dígitos, de 7 a 15, con «+» opcional al inicio (ej. 70012345 o +59170012345).
     [RegularExpression(@"^\+?[0-9]{7,15}$", ErrorMessage = "El celular no es válido.")]
     public string Celular { get; set; } = "";
 
     [Required]
+    // De 5 a 12 dígitos y, opcional, el complemento del CI boliviano después de un guion (ej. 1234567-1B).
     [RegularExpression(@"^[0-9]{5,12}(-[0-9A-Za-z]{1,3})?$", ErrorMessage = "El CI no es válido.")]
     public string Ci { get; set; } = "";
 

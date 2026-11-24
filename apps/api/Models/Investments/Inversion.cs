@@ -120,4 +120,7 @@ public class Inversion
 }
 
 /// <summary>La reserva ya venció: quien llama la marca como vencida, libera el cupo y avisa (RF-15).</summary>
-public class ReservaVencidaException() : ReglaInversionException("Tu reserva venció y el cupo se liberó. Puedes volver a reservar si todavía hay cupo.");
+public class ReservaVencidaException() : ReglaInversionException(ReservaVencidaException.Mensaje)
+{
+    public const string Mensaje = "Tu reserva venció y el cupo se liberó. Puedes volver a reservar si todavía hay cupo.";
+}

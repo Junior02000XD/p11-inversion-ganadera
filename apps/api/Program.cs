@@ -25,6 +25,12 @@ if (builder.Environment.IsDevelopment())
 
 // Configuración inyectada (en lugar de Singleton): cada sección se valida al arrancar
 // y llega a los servicios como IOptions<T>.
+OptionsBuilder<T> AgregarOpciones<T>(string seccion) where T : class =>
+    builder.Services.AddOptions<T>()
+        .Bind(builder.Configuration.GetSection(seccion))
+        .ValidateDataAnnotations()
+        .ValidateOnStart();
+
 AgregarOpciones<ReglasSeguridadOptions>(ReglasSeguridadOptions.Seccion);
 AgregarOpciones<OtpOptions>(OtpOptions.Seccion);
 AgregarOpciones<JwtOptions>(JwtOptions.Seccion);
@@ -145,12 +151,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-OptionsBuilder<T> AgregarOpciones<T>(string seccion) where T : class =>
-    builder.Services.AddOptions<T>()
-        .Bind(builder.Configuration.GetSection(seccion))
-        .ValidateDataAnnotations()
-        .ValidateOnStart();
 
 static async Task PrepararBaseDeDatosAsync(WebApplication app)
 {

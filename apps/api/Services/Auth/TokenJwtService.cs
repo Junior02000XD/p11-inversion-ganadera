@@ -35,11 +35,3 @@ public class TokenJwtService(IOptions<JwtOptions> opciones, TimeProvider reloj)
 
     public static SymmetricSecurityKey ClaveDeFirma(JwtOptions o) => new(Encoding.UTF8.GetBytes(o.ClaveFirma));
 }
-
-public static class ClaimsExtensiones
-{
-    public static Guid IdUsuario(this ClaimsPrincipal p) =>
-        Guid.Parse(p.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? throw new InvalidOperationException("El token no trae el id del usuario."));
-
-    public static string Correo(this ClaimsPrincipal p) => p.FindFirstValue(TokenJwtService.ClaimCorreo) ?? "";
-}

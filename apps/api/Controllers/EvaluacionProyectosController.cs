@@ -16,7 +16,9 @@ namespace P11.Api.Controllers;
 [Authorize(Roles = $"{Roles.Analista},{Roles.Administrador}")]
 public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto ciclo, TimeProvider reloj) : ControllerBase
 {
+    /// <summary>Proyectos por estado para el analista, por defecto los que esperan evaluación (RF-09).</summary>
     [HttpGet]
+    [ProducesResponseType<IReadOnlyList<ProyectoEvaluacionDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ProyectoEvaluacionDto>>> Listar(
         [FromQuery] EstadoProyecto estado = EstadoProyecto.EnRevision, CancellationToken ct = default)
     {
@@ -30,7 +32,10 @@ public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto 
         return filas.Select(f => new ProyectoEvaluacionDto(ProyectoDto.Desde(f.Proyecto), f.NombreCompleto, f.Email!, [])).ToList();
     }
 
+    /// <summary>Un proyecto con su productor y su historial, para evaluarlo.</summary>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType<ProyectoEvaluacionDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProyectoEvaluacionDto>> Obtener(Guid id, CancellationToken ct)
     {
         var proyecto = await db.Proyectos.FindAsync([id], ct);
@@ -39,9 +44,9 @@ public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto 
         var historial = await db.HistorialProyectos
             .Where(h => h.ProyectoId == id)
             .OrderBy(h => h.Fecha)
-            .Select(h => new HistorialProyectoDto(h.EstadoAnterior, h.EstadoNuevo, h.Accion, h.Responsable, h.Motivo, h.Fecha))
             .ToListAsync(ct);
-        return new ProyectoEvaluacionDto(ProyectoDto.Desde(proyecto), productor?.NombreCompleto ?? "", productor?.Email ?? "", historial);
+        return new ProyectoEvaluacionDto(ProyectoDto.Desde(proyecto), productor?.NombreCompleto ?? "", productor?.Email ?? "",
+            historial.Select(HistorialProyectoDto.Desde).ToList());
     }
 
     /// <summary>
@@ -49,6 +54,10 @@ public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto 
     /// Un proyecto que no está en revisión técnica, o una aprobación sin riesgos ni supuestos, responde 409.
     /// </summary>
     [HttpPost("{id:guid}/decision")]
+    [ProducesResponseType<ProyectoDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<ProyectoDto>> Decidir(Guid id, EvaluacionRequest req, CancellationToken ct)
     {
         var texto = req.Observaciones?.Trim() ?? "";

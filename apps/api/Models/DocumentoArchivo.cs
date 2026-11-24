@@ -16,5 +16,6 @@ public class DocumentoArchivo
     public string? RevisadoPor { get; set; }
     public DateTimeOffset? RevisadoEn { get; set; }
 
-    public static bool EsDeIdentidad(TipoDocumento t) => t is TipoDocumento.CiFrente or TipoDocumento.CiDorso or TipoDocumento.Selfie;
+    /// <summary>Documentos del predio (RF-05); los demás tipos son de identidad (CI y selfie).</summary>
+    public static readonly TipoDocumento[] TiposPredio = [TipoDocumento.Runsa, TipoDocumento.TituloPropiedad, TipoDocumento.ContratoAlquiler];
 }

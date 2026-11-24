@@ -29,6 +29,8 @@ public class AdminUsuariosController(
     [ProducesResponseType<IReadOnlyList<UsuarioAdminDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<UsuarioAdminDto>>> Listar(CancellationToken ct)
     {
+        // Cada usuario con el nombre de su rol. Las tablas de Identity guardan el rol aparte (UserRoles → Roles);
+        // «into … DefaultIfEmpty()» es un LEFT JOIN: el usuario aparece aunque todavía no tenga rol.
         var filas = await (
             from u in db.Users
             join ur in db.UserRoles on u.Id equals ur.UserId into rolesDelUsuario

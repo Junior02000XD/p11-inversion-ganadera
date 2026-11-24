@@ -16,6 +16,15 @@ public class OtpService(AppDbContext db, ICorreoService correo, IOptions<OtpOpti
 {
     private readonly OtpOptions _o = opciones.Value;
 
+    /// <summary>El texto para el usuario cuando el código no es válido (registro y firma del contrato).</summary>
+    public static string Mensaje(ResultadoOtp resultado) => resultado switch
+    {
+        ResultadoOtp.Vencido => "El código venció. Pide uno nuevo.",
+        ResultadoOtp.SinIntentos => "Agotaste los intentos para este código. Pide uno nuevo.",
+        ResultadoOtp.Inexistente => "No tienes un código vigente. Pide uno nuevo.",
+        _ => "El código no es correcto.",
+    };
+
     public async Task GenerarYEnviarAsync(Usuario usuario, PropositoOtp proposito, CancellationToken ct = default)
     {
         // Un código nuevo anula los anteriores del mismo propósito.

@@ -211,6 +211,7 @@ public class ProyectosController(
 
         try
         {
+            // Comando del mismo nombre que esta acción: por eso va con su namespace.
             await ciclo.EjecutarAsync(new Services.Projects.EnviarARevision(proyecto.Id, User.Correo()), ct);
         }
         catch (TransicionInvalidaException ex)

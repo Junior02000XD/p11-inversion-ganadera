@@ -41,10 +41,10 @@ public class InversionesController(
     [ProducesResponseType<Respuesta>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<InversionDto>> Obtener(Guid id, CancellationToken ct)
     {
-        var inversion = await Mias().FirstOrDefaultAsync(i => i.Id == id, ct);
-        if (inversion is null) return NoEncontrada();
+        var (inversion, proyecto) = await BuscarAsync(id, ct);
+        if (inversion is null || proyecto is null) return NoEncontrada();
         await gestor.VencerSiCorrespondeAsync(inversion, ct);
-        return (await ADtosAsync([inversion], ct))[0];
+        return InversionDto.Desde(inversion, proyecto);
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public class InversionesController(
     {
         var (inversion, _) = await BuscarAsync(id, ct);
         if (inversion is null) return NoEncontrada();
-        if (await gestor.VencerSiCorrespondeAsync(inversion, ct)) return Conflict(new Respuesta(new ReservaVencidaException().Message));
+        if (await gestor.VencerSiCorrespondeAsync(inversion, ct)) return Conflict(new Respuesta(ReservaVencidaException.Mensaje));
         if (inversion.Estado != EstadoInversion.Reservada) return Conflict(new Respuesta("El contrato de esta inversión ya está firmado."));
 
         var usuario = await usuarios.FindByIdAsync(User.IdUsuario().ToString());
@@ -131,19 +131,14 @@ public class InversionesController(
         var (inversion, proyecto) = await BuscarAsync(id, ct);
         if (inversion is null || proyecto is null) return NoEncontrada();
         if (!req.AceptaRiesgos) return BadRequest(new Respuesta("Debes aceptar el contrato y los riesgos para continuar."));
-        if (await gestor.VencerSiCorrespondeAsync(inversion, ct)) return Conflict(new Respuesta(new ReservaVencidaException().Message));
+        if (await gestor.VencerSiCorrespondeAsync(inversion, ct)) return Conflict(new Respuesta(ReservaVencidaException.Mensaje));
 
         var resultado = await otp.ValidarAsync(User.IdUsuario(), PropositoOtp.FirmarContrato, req.Codigo, ct);
-        if (resultado != ResultadoOtp.Valido)
-            return BadRequest(new Respuesta(resultado switch
-            {
-                ResultadoOtp.Vencido => "El código venció. Pide uno nuevo.",
-                ResultadoOtp.SinIntentos => "Agotaste los intentos. Pide un código nuevo.",
-                ResultadoOtp.Inexistente => "Primero pide el código.",
-                _ => "El código no es correcto.",
-            }));
+        if (resultado != ResultadoOtp.Valido) return BadRequest(new Respuesta(OtpService.Mensaje(resultado)));
 
-        return await AplicarAsync(inversion, proyecto, i => i.FirmarContrato(ContratoInversion.Version, User.Correo(), gestor.Ahora), ct);
+        var error = await AplicarAsync(inversion, i => i.FirmarContrato(ContratoInversion.Version, User.Correo(), gestor.Ahora), ct);
+        if (error is not null) return Conflict(error);
+        return InversionDto.Desde(inversion, proyecto);
     }
 
     /// <summary>RF-15: genera el QR de pago simulado. Sin contrato firmado no se habilita (409).</summary>
@@ -156,9 +151,10 @@ public class InversionesController(
         var (inversion, proyecto) = await BuscarAsync(id, ct);
         if (inversion is null || proyecto is null) return NoEncontrada();
 
-        var resultado = await AplicarAsync(inversion, proyecto, i => i.PrepararPago(gestor.Ahora), ct);
-        if (resultado.Result is not null) return resultado.Result;
+        var error = await AplicarAsync(inversion, i => i.PrepararPago(gestor.Ahora), ct);
+        if (error is not null) return Conflict(error);
 
+        // Texto del QR: P11|referencia|moneda|monto|proyecto. Lo lee la pasarela (hoy simulada).
         var contenido = $"P11|{inversion.ReferenciaPago}|BOB|{inversion.MontoBs:0.00}|{proyecto.Nombre}";
         return new PagoQrDto(inversion.ReferenciaPago!, inversion.MontoBs, contenido, inversion.ReservadaHasta);
     }
@@ -178,21 +174,23 @@ public class InversionesController(
 
         if (!req.Aprobado)
         {
-            var rechazo = await AplicarAsync(inversion, proyecto, i => i.RechazarPago(), ct);
-            if (rechazo.Result is null) await gestor.AvisarLiberacionAsync(inversion, "la pasarela rechazó el pago.", ct);
-            return rechazo;
+            var errorRechazo = await AplicarAsync(inversion, i => i.RechazarPago(), ct);
+            if (errorRechazo is not null) return Conflict(errorRechazo);
+            await gestor.AvisarLiberacionAsync(inversion, "la pasarela rechazó el pago.", ct);
+            return InversionDto.Desde(inversion, proyecto);
         }
 
-        var pago = await AplicarAsync(inversion, proyecto, i => i.ConfirmarPago(proyecto, gestor.Ahora), ct);
-        if (pago.Result is null) await gestor.AvisarParticipacionAsync(inversion, ct);
-        return pago;
+        var errorPago = await AplicarAsync(inversion, i => i.ConfirmarPago(proyecto, gestor.Ahora), ct);
+        if (errorPago is not null) return Conflict(errorPago);
+        await gestor.AvisarParticipacionAsync(inversion, ct);
+        return InversionDto.Desde(inversion, proyecto);
     }
 
     /// <summary>
-    /// Aplica una regla de la inversión y guarda. Si la reserva venció, la marca vencida y avisa (409);
-    /// si la regla no se cumple, responde 409 con el motivo.
+    /// Aplica una regla de la inversión y guarda. Devuelve null si salió bien, o el motivo si la regla no
+    /// se cumple (y si la reserva venció, antes la marca vencida y avisa).
     /// </summary>
-    private async Task<ActionResult<InversionDto>> AplicarAsync(Inversion inversion, ProyectoGanadero proyecto, Action<Inversion> regla, CancellationToken ct)
+    private async Task<Respuesta?> AplicarAsync(Inversion inversion, Action<Inversion> regla, CancellationToken ct)
     {
         try
         {
@@ -201,14 +199,14 @@ public class InversionesController(
         catch (ReservaVencidaException ex)
         {
             await gestor.VencerSiCorrespondeAsync(inversion, ct);
-            return Conflict(new Respuesta(ex.Message));
+            return new Respuesta(ex.Message);
         }
         catch (ReglaInversionException ex)
         {
-            return Conflict(new Respuesta(ex.Message));
+            return new Respuesta(ex.Message);
         }
         await db.SaveChangesAsync(ct);
-        return InversionDto.Desde(inversion, proyecto);
+        return null;
     }
 
     private IQueryable<Inversion> Mias()

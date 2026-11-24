@@ -56,9 +56,11 @@ public static class SemillaDatos
         var fichas = new[]
         {
             new DatosFicha(LineaProductiva.Engorde, "Engorde Chiquitania 2026", "San Ignacio de Velasco",
-                500_000m, 1_000m, 12, 100, 180m, 350m, 400_000m, null, null, null),
+                MontoRequeridoBs: 500_000m, MontoMinimoBs: 1_000m, PlazoMeses: 12,
+                CantidadAnimales: 100, PesoInicialKg: 180m, PesoMetaKg: 350m, CostosEstimadosBs: 400_000m),
             new DatosFicha(LineaProductiva.Lecheria, "Tambo Warnes", "Warnes",
-                300_000m, 1_000m, 18, null, null, null, null, 40, 500m, 3m),
+                MontoRequeridoBs: 300_000m, MontoMinimoBs: 1_000m, PlazoMeses: 18,
+                VacasEnOrdeno: 40, LitrosPorDia: 500m, PrecioLitroBs: 3m),
         };
 
         foreach (var ficha in fichas)

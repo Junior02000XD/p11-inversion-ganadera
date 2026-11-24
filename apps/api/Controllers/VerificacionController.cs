@@ -33,7 +33,10 @@ public class VerificacionController(
         public bool Consentimiento { get; set; }
     }
 
+    /// <summary>Estado de mi verificación de identidad, con su historial (RF-04).</summary>
     [HttpGet("estado")]
+    [ProducesResponseType<EstadoVerificacionDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<EstadoVerificacionDto>> Estado(CancellationToken ct)
     {
         var id = User.IdUsuario();
@@ -48,8 +51,14 @@ public class VerificacionController(
         return new EstadoVerificacionDto(usuario.EstadoVerificacion, historial);
     }
 
+    /// <summary>Envía CI (frente y dorso) y selfie con consentimiento (RF-03, RNF-07); se guardan cifrados.</summary>
     [HttpPost]
-    [RequestSizeLimit(20_000_000)]
+    [RequestSizeLimit(20_000_000)] // tope del pedido HTTP con las tres imágenes; cada una se revisa aparte
+    [ProducesResponseType<EstadoVerificacionDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ImagenesIlegibles>(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<EstadoVerificacionDto>> Enviar([FromForm] SolicitudVerificacion solicitud, CancellationToken ct)
     {
         if (!solicitud.Consentimiento)
