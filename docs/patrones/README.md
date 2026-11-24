@@ -23,10 +23,10 @@ Implementación de los patrones creacionales elegidos en el análisis grupal (§
 
 | Patrón | Prioridad (§9) | Dónde | RF | Prueba | Estado |
 |---|---|---|---|---|---|
-| Factory Method | Media | `apps/api/Models/Projects/CreadorProyecto.cs` (creador), `ProyectoGanadero.cs` (productos), `SelectorCreadorProyecto`, registro en `Program.cs` | RF-07 | `tests/api/Patrones/FactoryMethodTests.cs`, `Integration/ProyectosTests.cs` | En uso (`POST /api/proyectos`) |
-| Builder | Alta | `apps/api/Models/Dossiers/ConstructorExpediente.cs` | RF-22 | `tests/api/Patrones/BuilderTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
-| Prototype | Alta | `apps/api/Models/Simulation/ConfiguracionEscenario.cs`, usado por `Services/Simulation/SimuladorEscenarios.cs` | RF-12 | `tests/api/Patrones/PrototypeTests.cs`, `Integration/CatalogoTests.cs` | En uso (`POST /api/catalogo/{id}/simulacion`) |
-| Configuración inyectada (en lugar de Singleton) | Baja | `apps/api/Configuration/Opciones.cs` + `AddOptions<…>().ValidateOnStart()` en `Program.cs` | RF-02, RNF-01, RNF-02 | `tests/api/Patrones/ConfiguracionInyectadaTests.cs` | En uso |
+| Factory Method | Media | `apps/api/Models/Projects/CreadorProyecto.cs` (creador), `ProyectoGanadero.cs` (productos), `SelectorCreadorProyecto`, registro en `Program.cs` | RF-07 | `tests/api/Patterns/FactoryMethodTests.cs`, `Integration/ProyectosTests.cs` | En uso (`POST /api/proyectos`) |
+| Builder | Alta | `apps/api/Models/Dossiers/ConstructorExpediente.cs` | RF-22 | `tests/api/Patterns/BuilderTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
+| Prototype | Alta | `apps/api/Models/Simulation/ConfiguracionEscenario.cs`, usado por `Services/Simulation/SimuladorEscenarios.cs` | RF-12 | `tests/api/Patterns/PrototypeTests.cs`, `Integration/CatalogoTests.cs` | En uso (`POST /api/catalogo/{id}/simulacion`) |
+| Configuración inyectada (en lugar de Singleton) | Baja | `apps/api/Configuration/Opciones.cs` + `AddOptions<…>().ValidateOnStart()` en `Program.cs` | RF-02, RNF-01, RNF-02 | `tests/api/Patterns/ConfiguracionInyectadaTests.cs` | En uso |
 | Abstract Factory | Baja (opcional) | — | RF-18/19 | — | No se implementa hasta validar que las familias de validadores varían juntas (§8.2) |
 
 ## Cómo se aplica cada uno
@@ -57,8 +57,8 @@ Dinámica grupal del 09/11. De los siete patrones del catálogo GoF, seis quedar
 
 | Patrón | Dónde | RF | Prueba | Estado |
 |---|---|---|---|---|
-| Adapter | `apps/api/Services/Email/CorreoSmtpService.cs` | RF-01, RF-02, RF-04 | `tests/api/Patrones/AdapterTests.cs` | En uso (OTP y avisos) |
-| Decorator | `Services/Files/AlmacenDisco.cs` + `AlmacenCifrado.cs`; `CorreoConReintentos.cs`; composición en `Program.cs` | RNF-02, RF-01 | `Patterns/DecoratorTests.cs`, `Integration/VerificacionTests.cs` | En uso |
+| Adapter | `apps/api/Services/Email/CorreoSmtpService.cs` | RF-01, RF-02, RF-04 | `tests/api/Patterns/AdapterTests.cs` | En uso (OTP y avisos) |
+| Decorator | `Services/Files/AlmacenDisco.cs` + `AlmacenCifrado.cs`; `Services/Email/CorreoConReintentos.cs`; composición en `Program.cs` | RNF-02, RF-01 | `Patterns/DecoratorTests.cs`, `Integration/VerificacionTests.cs` | En uso |
 | Proxy (de protección) | `Services/Documents/VisorDocumentos.cs` + `VisorDocumentosProxy.cs` | RNF-02, RF-05 | `Patterns/ProxyTests.cs` | En uso (`GET /api/analista/archivos/{id}`, `GET /api/productor/documentos/{id}/archivo`) |
 | Facade | `Services/Verification/VerificacionService.cs` | RF-03, RF-04 | `Integration/VerificacionTests.cs` | En uso (`VerificacionController`, `AnalistaController`) |
 | Bridge | `Services/Notifications/` (`Aviso`, `AvisoVerificacion`, `AvisoBloqueo` × `ICanalAviso`, `CanalCorreo`, `CanalTelegram`) | RF-02, RF-04, RF-20 | `Patterns/BridgeTests.cs` | En uso por correo; Telegram listo y probado, sin usuarios vinculados |
@@ -75,7 +75,7 @@ Dinámica grupal del 09/11. De los siete patrones del catálogo GoF, seis quedar
 - `CorreoConReintentos` envuelve al SMTP. Ante un corte breve, el OTP del registro ya no se pierde.
 
 **Proxy.** `VisorDocumentosProxy` tiene la misma interfaz que el visor real y se pone delante de él:
-- deja abrir un documento solo a su dueño o a un analista;
+- deja abrir un documento solo a su dueño, a un analista o al administrador;
 - registra cada acceso;
 - a cualquier otro le responde 404, como si el documento no existiera.
 

@@ -53,7 +53,7 @@ Plan escrito el 18/11/2026 para la sesión siguiente.
    Con «Try it out» de Swagger se ve la respuesta y el código en pantalla. Las capturas se arman en un PDF, una por página con su título. Copia en `/mnt/DATOS/01_Universidad/2026_S4/` (carpeta de Programación Web 3).
 4. **ZIP**: desde la raíz del repo, con `git archive`, así salen solo los archivos versionados y nunca `bin`, `obj`, `.vs` ni secretos:
    ```bash
-   git archive --format=zip -o /tmp/P11_API_Los-Cesaritos.zip HEAD apps/api global.json dotnet-tools.json docker-compose.yml
+   git archive --format=zip -o /tmp/P11_API_Los-Cesaritos.zip HEAD apps/api global.json dotnet-tools.json docker-compose.yml .env.example
    zip -j /tmp/P11_API_Los-Cesaritos.zip docs/entregas/web3-api-integrador/evidencias-api.pdf
    unzip -l /tmp/P11_API_Los-Cesaritos.zip | grep -E "/(bin|obj|\.vs)/" && echo "ZIP SUCIO" || echo "ZIP limpio"
    ```

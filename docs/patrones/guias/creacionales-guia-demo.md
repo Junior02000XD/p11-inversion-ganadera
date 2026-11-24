@@ -22,7 +22,7 @@ Esta guía dice qué mostrar, en qué orden y qué decir de cada patrón. El an�
 Igual que en la guía de comportamiento:
 
 ```bash
-docker compose up -d                                          # desde la raíz del repo
+docker compose up -d --wait                                   # desde la raíz del repo
 cd apps/api && dotnet run --launch-profile https  # API
 cd apps/web && npm run dev                                    # web (otra terminal)
 ```
@@ -55,16 +55,16 @@ Se ve: `OptionsValidationException: Archivos:ClaveBase64 debe ser una clave AES-
 
 ## 4. Lo que se muestra con pruebas
 
-Desde `apps/api`:
+Desde la raíz del repo:
 
 ```bash
-dotnet test --filter "FullyQualifiedName~FactoryMethodTests"
-dotnet test --filter "FullyQualifiedName~BuilderTests"
-dotnet test --filter "FullyQualifiedName~PrototypeTests"
-dotnet test --filter "FullyQualifiedName~ConfiguracionInyectadaTests"
+dotnet test tests/api --filter "FullyQualifiedName~FactoryMethodTests"
+dotnet test tests/api --filter "FullyQualifiedName~BuilderTests"
+dotnet test tests/api --filter "FullyQualifiedName~PrototypeTests"
+dotnet test tests/api --filter "FullyQualifiedName~ConfiguracionInyectadaTests"
 ```
 
-Qué decir, abriendo las pruebas en `tests/api/Patrones/`:
+Qué decir, abriendo las pruebas en `tests/api/Patterns/`:
 
 - **Builder (RF-22, expediente).** `Ordena_la_cronologia_por_fecha`: los eventos se agregan en cualquier orden y el expediente sale ordenado. `Version_de_cierre_exige_venta_y_liquidacion`: un expediente de cierre sin venta no se construye. `Dos_construcciones_no_comparten_estado_y_un_constructor_no_se_reutiliza`: un constructor por solicitud.
 - **Prototype (RF-12, simulador).** `Modificar_la_copia_no_altera_la_base_ni_otras_copias`: las variantes pesimista y optimista se sacan clonando la base. `La_copia_no_hereda_el_resultado_anterior`. `Prepara_tres_variantes_ordenadas_y_con_advertencia`: cada resultado lleva «Estimación, no rentabilidad garantizada» (RNF-06). La fórmula es provisional hasta definirla con el cliente.

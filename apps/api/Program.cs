@@ -93,8 +93,11 @@ builder.Services.AddScoped<VisorDocumentos>();
 builder.Services.AddScoped<IVisorDocumentos, VisorDocumentosProxy>();
 
 builder.Services.AddScoped<OtpService>();
-builder.Services.AddScoped<VerificacionService>();
 builder.Services.AddScoped<TokenJwtService>();
+
+// Facade (RF-03, RF-04): VerificacionService esconde los pasos de la verificación de identidad.
+// Strategy: el verificador es intercambiable; hoy el simulado, mañana el proveedor real.
+builder.Services.AddScoped<VerificacionService>();
 builder.Services.AddScoped<IVerificadorIdentidad, VerificadorIdentidadSimulado>();
 
 // Factory Method (RF-07): un creador concreto por línea; el selector elige según la ficha.
@@ -109,7 +112,7 @@ builder.Services.AddScoped<GestorCicloProyecto>();
 builder.Services.AddScoped<IObservadorProyecto, AvisarAlProductor>();
 builder.Services.AddScoped<IObservadorProyecto, AvisarALosAnalistas>();
 
-// Sprint 2: cupo, reservas y avisos de la inversión (RF-13 a RF-16). El servicio de fondo libera cada
+// Inversión: cupo, reservas y avisos (RF-13 a RF-16). El servicio de fondo libera cada
 // minuto las reservas vencidas; en las pruebas no corre, porque ahí el reloj lo controla cada prueba.
 builder.Services.AddScoped<GestorInversiones>();
 if (!builder.Environment.IsEnvironment("Testing"))

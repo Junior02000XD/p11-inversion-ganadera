@@ -32,7 +32,7 @@ Para ver los diagramas sin instalar nada, usá los PNG de [`diagramas/figuras/`]
 | 03/11, 09/11, 13/11 | Patrones creacionales, estructurales y de comportamiento | Ing. de Software | `patrones/informes/`, `patrones/guias/` |
 | 06/11 | Sprint 1 (MV1) | Proyecto de Sistemas 1 | `sprints/sprint-1/` |
 | 18/11 | Corrección: pestañas = casos de uso (D1), Administrador con acceso a todo | Proyecto de Sistemas 1 | `sprints/sprint-2/correccion-pestanas-casos-de-uso.md` |
-| 20/11 (pendiente) | API Integrador: ZIP de la API + README + PDF de evidencias | Programación Web 3 | `entregas/web3-api-integrador/` |
+| 19/11 | API Integrador: ZIP de la API + README + PDF de evidencias | Programación Web 3 | `entregas/web3-api-integrador/` |
 | 20/11 | Sprint 2 (MV2) y guía de estudio | Proyecto de Sistemas 1 | `sprints/sprint-2/`, `guia/` |
 
 ## Reglas para mantenerla

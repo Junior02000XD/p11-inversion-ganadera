@@ -11,31 +11,33 @@ npm run build    # build de producción en dist/
 
 Para apuntar a otra API: `API_URL=https://otra-url npm run dev`.
 
-## Pantallas (Sprint 1, según los mockups 01a–03b)
-| Ruta | Pantalla | Rol |
-|---|---|---|
-| `/registro` | Crear cuenta (RF-01) | — |
-| `/verificar-cuenta` | Código OTP (RNF-01) | — |
-| `/ingresar` | Iniciar sesión, intentos restantes y bloqueo (RF-02) | — |
-| `/inicio` | Inicio según rol (RF-06) | todos |
-| `/identidad` | Verificación de identidad con consentimiento (RF-03/04, RNF-07) | Inversionista, Productor |
-| `/proyectos/nuevo`, `/proyectos` | Ficha por línea en borrador y envío a evaluación (RF-07, RF-05) | Productor |
-| `/documentos` | Documentos del predio (RF-05) | Productor |
-| `/analista` | Revisión manual de identidad y documentos | Analista |
-| `/admin/usuarios` | Usuarios y roles, desbloqueo (RF-06) | Administrador |
+## Pantallas
+
+El menú lateral tiene una pestaña por caso de uso del diagrama D1, con su nombre y en el mismo orden. La lista sale de [`src/casosDeUso.js`](src/casosDeUso.js), que también decide qué roles entran a cada una (el Administrador entra a todas). Las rutas están en [`src/main.jsx`](src/main.jsx) y las pantallas en `src/pages/`, una carpeta por módulo.
+
+Públicas: `/ingresar` (RF-02), `/registro` (RF-01) y `/verificar-cuenta` (OTP, RNF-01).
+
+| Caso de uso | Rutas | Roles (además del Administrador) | Datos |
+|---|---|---|---|
+| Registrar cuenta y verificar identidad | `/identidad` | Inversionista, Productor, Analista | API |
+| Gestionar usuarios, roles y permisos | `/admin/usuarios` | — | API |
+| Consultar bitácora de auditoría | `/admin/bitacora` | — | API |
+| Postular proyecto | `/proyectos`, `/proyectos/nuevo`, `/proyectos/:id/editar`, `/proyectos/documentos` | Productor | API |
+| Evaluar y publicar proyecto | `/evaluacion`, `/evaluacion/:id` | Analista | API |
+| Explorar catálogo y simular escenarios | `/catalogo`, `/catalogo/:id` | Inversionista | API |
+| Invertir en un proyecto | `/inversiones`, `/inversiones/nueva/:proyectoId`, `/inversiones/:id/contrato`, `/inversiones/:id/pago` | Inversionista | API |
+| Cerrar ronda de financiamiento | `/rondas`, `/rondas/:id` | Productor, Inversionista | Ejemplo |
+| Registrar compra del ganado | `/compra` | Analista | Ejemplo |
+| Registrar traslado del ganado | `/traslado` | Analista | Ejemplo |
+| Registrar avance productivo | `/avance`, `/avance/pendientes` | Productor, Analista | Ejemplo |
+| Gestionar incidencias | `/incidencias`, `/incidencias/nueva`, `/incidencias/:id` | Productor, Analista | Ejemplo |
+| Gestionar reclamo al seguro | `/reclamos` | Analista | Ejemplo |
+| Liquidar proyecto | `/liquidacion` | Productor, Inversionista, Analista | Ejemplo |
+| Consultar expediente del proyecto | `/expedientes`, `/expedientes/:id` | Productor, Inversionista, Analista | Ejemplo |
+| Consultar portafolio | `/portafolio`, `/portafolio/:id` | Inversionista | API |
+
+**Datos**: «API» = la pantalla lee y guarda con la API. «Ejemplo» = la pantalla lee `src/datosEjemplo.js` y no guarda nada (son las de `pages/operations/` y `pages/closing/`); cuando exista su endpoint, cambia ese import por una llamada a `api(...)`.
+
+En los casos de uso con varios actores, `VistaPorRol` muestra la vista de cada rol, y el Administrador elige cuál con «Ver como».
 
 El token se guarda en `sessionStorage`: sobrevive a recargar la página, pero se pierde al cerrar la pestaña.
-
-## Pantallas de los sprints 2 y 3 (mockups 04a–12c)
-Ya están en la app, dentro del menú de cada rol, y se navega entre ellas como en la versión final. Todavía no tienen endpoints en la API: leen los datos de ejemplo de `src/datosEjemplo.js` y no guardan nada. Cuando exista el endpoint, cada pantalla cambia ese import por una llamada a `api(...)`.
-
-| Ruta | Pantalla | Rol |
-|---|---|---|
-| `/catalogo` → `/catalogo/:id` → `…/invertir` → `…/contrato` → `…/pago` → `…/ronda` | Catálogo, simulador, monto y cupo, contrato y riesgos, pago QR, cierre de la ronda (RF-11…RF-17) | Inversionista |
-| `/portafolio` → `/portafolio/:id` → `…/liquidacion` | Portafolio, expediente, conformidad y cobro (RF-22, RF-24…RF-26) | Inversionista |
-| `/avance` → `/avance/pendientes` | Avance del lote y sincronización sin conexión (RF-18, RNF-04) | Productor |
-| `/incidencias/nueva` → `/incidencias/:id` | Reportar incidencia y seguimiento (RF-20, RF-21) | Productor |
-| `/cierre` | Venta y costos para liquidar (RF-23) | Productor |
-| `/evaluacion` → `/evaluacion/:id` | Cola de evaluación, checklist y decisión (RF-08…RF-10) | Analista |
-| `/operaciones/compra` → `/operaciones/traslado` | Compra del ganado y traslado con GMA (RNF-11) | Analista |
-| `/liquidaciones/:id` | Liquidación calculada y aprobación (RF-23, RF-24) | Analista |

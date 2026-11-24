@@ -24,7 +24,7 @@ Esta guía dice qué mostrar, en qué orden y qué decir de cada patrón. El rep
 En una terminal, desde la raíz del repositorio `p11-inversion-ganadera`:
 
 ```bash
-docker start mssql-dev && docker compose up -d       # SQL Server (1433) y Mailpit (8025)
+docker compose up -d --wait         # SQL Server (1433) y Mailpit (8025)
 cd apps/api && dotnet run --launch-profile https   # API en https://localhost:7080
 ```
 
@@ -62,27 +62,27 @@ Al terminar, el proyecto queda otra vez en revisión, listo para el próximo ens
 
 ## 3. Lo que se muestra con pruebas (unos 2 minutos)
 
-En una terminal, desde `apps/api`:
+En una terminal, desde la raíz del repo:
 
 ```bash
-dotnet test --filter "FullyQualifiedName~Patrones"      # todas las pruebas de patrones (las tres familias)
+dotnet test tests/api --filter "FullyQualifiedName~Patterns"      # todas las pruebas de patrones (las tres familias)
 ```
 
 Para cada patrón por separado (útil si preguntan por uno):
 
 ```bash
-dotnet test --filter "FullyQualifiedName~StateTests"
-dotnet test --filter "FullyQualifiedName~ChainOfResponsibilityTests"
-dotnet test --filter "FullyQualifiedName~CommandTests"
-dotnet test --filter "FullyQualifiedName~ObserverTests"
-dotnet test --filter "FullyQualifiedName~StrategyTests"
-dotnet test --filter "FullyQualifiedName~TemplateMethodTests"
-dotnet test --filter "FullyQualifiedName~IteratorTests"
-dotnet test --filter "FullyQualifiedName~EvaluacionProyectosTests"   # el flujo de la demo, de punta a punta
-dotnet test                                             # todo: 87 pruebas
+dotnet test tests/api --filter "FullyQualifiedName~StateTests"
+dotnet test tests/api --filter "FullyQualifiedName~ChainOfResponsibilityTests"
+dotnet test tests/api --filter "FullyQualifiedName~CommandTests"
+dotnet test tests/api --filter "FullyQualifiedName~ObserverTests"
+dotnet test tests/api --filter "FullyQualifiedName~StrategyTests"
+dotnet test tests/api --filter "FullyQualifiedName~TemplateMethodTests"
+dotnet test tests/api --filter "FullyQualifiedName~IteratorTests"
+dotnet test tests/api --filter "FullyQualifiedName~EvaluacionProyectosTests"   # el flujo de la demo, de punta a punta
+dotnet test tests/api                                   # todo: 112 pruebas
 ```
 
-Qué decir de cada una, abriendo el archivo de la prueba en `tests/api/Patrones/`:
+Qué decir de cada una, abriendo el archivo de la prueba en `tests/api/Patterns/`:
 
 - **Chain of Responsibility.** `El_primero_que_falla_responde_y_los_siguientes_no_se_consultan`: la cadena corta en el eslabón que falla. `La_cadena_real_pide_verificacion_antes_que_documentos`: un productor sin verificar recibe «Tu identidad todavía no está verificada.» aunque también le falten documentos.
 - **Strategy.** `Otra_regla_cambia_el_reparto_sin_cambiar_el_calculo_del_resultado`: con otra regla cambia lo que recibe cada inversionista, pero el resultado de la liquidación (62.500 Bs) es el mismo. La regla «partes iguales» existe solo en la prueba; la definitiva la decide el cliente (lo dice el ERS).
@@ -103,6 +103,6 @@ Se muestran con el diagrama del documento (secciones 5.8 y 5.9) y se explica por
 |---|---|---|
 | La lista de Evaluación está vacía | El proyecto ya no está en revisión | Pestaña B → «Enviar a evaluación técnica». |
 | «No se pudo conectar con el servidor.» | La API no está corriendo | Volver a correr `dotnet run --launch-profile https`. |
-| No llegan correos a Mailpit | El contenedor está apagado | `docker compose up -d`. |
+| No llegan correos a Mailpit | El contenedor está apagado | `docker compose up -d --wait`. |
 | La sesión se cierra sola | El token venció | Volver a iniciar sesión. |
-| Cualquier otra cosa | — | No improvisar: decir qué tendría que pasar y correr `dotnet test --filter "FullyQualifiedName~EvaluacionProyectosTests"`, que hace el mismo flujo. |
+| Cualquier otra cosa | — | No improvisar: decir qué tendría que pasar y correr `dotnet test tests/api --filter "FullyQualifiedName~EvaluacionProyectosTests"`, que hace el mismo flujo. |

@@ -23,7 +23,7 @@ Esta guía dice qué mostrar, en qué orden y qué decir de cada patrón. Casi t
 ## 1. Preparación (antes de la clase)
 
 ```bash
-docker compose up -d                                          # desde la raíz del repo
+docker compose up -d --wait                                   # desde la raíz del repo
 cd apps/api && dotnet run --launch-profile https  # API (dejar la terminal visible: ahí salen los registros)
 cd apps/web && npm run dev                                    # web (otra terminal)
 ```
@@ -78,18 +78,18 @@ Qué decir: `AvisoBloqueo` es otro aviso del mismo puente y está marcado como u
 
 ## 3. Lo que se muestra con pruebas
 
-Desde `apps/api`:
+Desde la raíz del repo:
 
 ```bash
-dotnet test --filter "FullyQualifiedName~AdapterTests"
-dotnet test --filter "FullyQualifiedName~DecoratorTests"
-dotnet test --filter "FullyQualifiedName~ProxyTests"
-dotnet test --filter "FullyQualifiedName~BridgeTests"
-dotnet test --filter "FullyQualifiedName~CompositeTests"
-dotnet test --filter "FullyQualifiedName~VerificacionTests"   # la Facade, de punta a punta
+dotnet test tests/api --filter "FullyQualifiedName~AdapterTests"
+dotnet test tests/api --filter "FullyQualifiedName~DecoratorTests"
+dotnet test tests/api --filter "FullyQualifiedName~ProxyTests"
+dotnet test tests/api --filter "FullyQualifiedName~BridgeTests"
+dotnet test tests/api --filter "FullyQualifiedName~CompositeTests"
+dotnet test tests/api --filter "FullyQualifiedName~VerificacionTests"   # la Facade, de punta a punta
 ```
 
-Qué decir, abriendo las pruebas en `tests/api/Patrones/`:
+Qué decir, abriendo las pruebas en `tests/api/Patterns/`:
 
 - **Proxy.** `Otro_productor_no_puede_abrirlo_ni_saber_que_existe`: otro productor recibe «no encontrado», como si el documento no existiera, y el intento queda registrado. Esto no se muestra en vivo porque necesita el identificador del documento y el token de otra cuenta.
 - **Bridge.** `El_mismo_aviso_sale_por_Telegram_y_suena_porque_es_urgente`: el mismo `AvisoBloqueo` sale por `CanalTelegram` sin cambiar su código. Telegram está programado y probado, pero no activado, porque los usuarios todavía no tienen un chat vinculado.

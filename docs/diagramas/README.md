@@ -13,7 +13,7 @@ Antes de crear o cambiar un diagrama, leé [`convenciones.md`](convenciones.md):
 | 02 | Actividad | [`uml/02-actividad.mdj`](uml/02-actividad.mdj) | 12 (una por CU) | Julio | CU-01 a CU-04 coinciden con lo programado |
 | 03 | Secuencia | [`uml/03-secuencia.mdj`](uml/03-secuencia.mdj) | 13 (12 CU + reclamo al seguro) | Brandon | **Actualizado**: CU-03 (borrador → enviar a revisión con requisitos) y CU-04 (observar, rechazar o aprobar y publicar) |
 | 04 | Colaboración | [`uml/04-colaboracion.mdj`](uml/04-colaboracion.mdj) | 13, misma numeración que Secuencia | Brandon | Igual que Secuencia (se derivan de los mismos mensajes) |
-| 05 | Clases | [`uml/05-clases.mdj`](uml/05-clases.mdj) | 4: dominio + 3 de patrones | Sergio | **Rehecho**: las clases programadas son las de `apps/api/Dominio`; las de los Sprints 2-3 llevan «planificada» |
+| 05 | Clases | [`uml/05-clases.mdj`](uml/05-clases.mdj) | 4: dominio + 3 de patrones | Sergio | **Rehecho**: las clases programadas son las de `apps/api/Models`; las de los Sprints 2-3 llevan «planificada» |
 | 06 | Objetos | [`uml/06-objetos.mdj`](uml/06-objetos.mdj) | 1 | Sergio | **Actualizado**: `Usuario` con rol y `ProyectoEngorde`, con los datos de la demo |
 | 07 | Estados | [`uml/07-estados.mdj`](uml/07-estados.mdj) | 5 (EST-1 a EST-5) | Matías | **Actualizado**: EST-1 permite reenviar CI y selfie desde Rechazado; EST-3 marca lo implementado (State: `EstadoFicha`) |
 | 08 | Componentes | [`uml/08-componentes.mdj`](uml/08-componentes.mdj) | 1 | Matías | **Actualizado**: tecnología de cada componente como estereotipo (ASP.NET Core, React + Vite, SQL Server…). Desde el 18/11 la base es SQL Server |

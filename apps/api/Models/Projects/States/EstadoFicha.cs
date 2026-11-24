@@ -90,7 +90,7 @@ public sealed class Rechazado : EstadoFicha
 
 /// <summary>
 /// Publicado y recibiendo inversiones. El cierre de la ronda (RF-17: «Cerrado sin fondos» o
-/// «En compra y traslado») llega con los Sprints 2 y 3; cada estado nuevo es una clase más.
+/// «En compra y traslado») llega en el Sprint 3; cada estado nuevo es una clase más.
 /// </summary>
 public sealed class EnFinanciamiento : EstadoFicha
 {
