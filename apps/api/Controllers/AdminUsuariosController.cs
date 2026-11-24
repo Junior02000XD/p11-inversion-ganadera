@@ -95,9 +95,8 @@ public class AdminUsuariosController(
     }
 
     /// <summary>
-    /// Elimina una cuenta con sus códigos OTP, su historial de verificación y sus documentos (también los
-    /// archivos). Una cuenta con proyectos no se borra (409): la bitácora del proyecto debe quedar (RNF-03);
-    /// para esos casos está el bloqueo.
+    /// Elimina una cuenta sin actividad, con sus códigos OTP y sus documentos. Si tiene proyectos, inversiones
+    /// o historial de verificación no se borra (409), porque esa traza debe quedar (RNF-03): se bloquea.
     /// </summary>
     /// <param name="id">Identificador GUID de la cuenta. No puede ser la del administrador autenticado.</param>
     /// <param name="ct">Token de cancelación de la solicitud.</param>
@@ -106,7 +105,7 @@ public class AdminUsuariosController(
     /// <response code="401">Falta el token JWT o no es válido.</response>
     /// <response code="403">Solo el administrador puede eliminar cuentas.</response>
     /// <response code="404">El usuario no existe.</response>
-    /// <response code="409">La cuenta tiene proyectos registrados y no se puede eliminar.</response>
+    /// <response code="409">La cuenta tiene proyectos, inversiones o historial de verificación.</response>
     /// <response code="500">Identity no pudo eliminar la cuenta; devuelve el detalle del problema.</response>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -121,15 +120,18 @@ public class AdminUsuariosController(
         var usuario = await usuarios.FindByIdAsync(id.ToString());
         if (usuario is null) return NotFound(new Respuesta("No encontramos al usuario."));
 
-        if (await db.Proyectos.AnyAsync(p => p.ProductorId == id, ct))
-            return Conflict(new Respuesta($"{usuario.NombreCompleto} tiene proyectos registrados y no se puede eliminar. Puedes bloquear la cuenta."));
+        var tieneActividad = await db.Proyectos.AnyAsync(p => p.ProductorId == id, ct)
+            || await db.Inversiones.AnyAsync(i => i.InversionistaId == id, ct)
+            || await db.HistorialVerificaciones.AnyAsync(h => h.UsuarioId == id, ct);
+        if (tieneActividad)
+            return Conflict(new Respuesta($"{usuario.NombreCompleto} tiene proyectos, inversiones o historial de verificación, y eso debe quedar registrado. Puedes bloquear la cuenta."));
 
         var archivos = await db.Documentos.Where(d => d.UsuarioId == id).Select(d => d.ArchivoCifrado).ToListAsync(ct);
         db.CodigosOtp.RemoveRange(db.CodigosOtp.Where(o => o.UsuarioId == id));
-        db.HistorialVerificaciones.RemoveRange(db.HistorialVerificaciones.Where(h => h.UsuarioId == id));
         db.Documentos.RemoveRange(db.Documentos.Where(d => d.UsuarioId == id));
-        await db.SaveChangesAsync(ct);
 
+        // Identity usa el mismo AppDbContext: DeleteAsync guarda estos borrados junto con la cuenta en un solo
+        // SaveChanges. Si algo falla, no se borra nada.
         var resultado = await usuarios.DeleteAsync(usuario);
         if (!resultado.Succeeded)
             return Problem(string.Join(" ", resultado.Errors.Select(e => e.Description)));

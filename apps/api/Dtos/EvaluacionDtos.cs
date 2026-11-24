@@ -19,7 +19,9 @@ public enum DecisionProyecto { Aprobar, Observar, Rechazar }
 /// </summary>
 public class EvaluacionRequest
 {
-    public DecisionProyecto Decision { get; set; }
+    // Nullable + Required: si falta, da 400 en vez de tomar el primer valor del enum (Aprobar).
+    [Required(ErrorMessage = "Indica la decisión: Aprobar, Observar o Rechazar.")]
+    public DecisionProyecto? Decision { get; set; }
 
     public string? Observaciones { get; set; }
 

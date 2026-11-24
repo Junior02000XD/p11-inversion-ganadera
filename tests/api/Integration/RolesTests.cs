@@ -66,4 +66,39 @@ public class RolesTests(ApiFactory f) : IClassFixture<ApiFactory>
         var r = await admin.PutAsJsonAsync($"/api/admin/usuarios/{yo.GetProperty("id").GetGuid()}/rol", new { rol = Roles.Inversionista });
         Assert.Equal(HttpStatusCode.BadRequest, r.StatusCode);
     }
+
+    [Fact]
+    public async Task El_administrador_elimina_una_cuenta_sin_actividad()
+    {
+        var correo = Pasos.CorreoNuevo("sinactividad");
+        await Pasos.UsuarioConfirmado(f, Roles.Inversionista, correo);
+        var admin = await Pasos.Autenticado(f, ApiFactory.Admin, ApiFactory.ClaveInterna);
+        var id = await IdDe(admin, correo);
+
+        Assert.Equal(HttpStatusCode.NoContent, (await admin.DeleteAsync($"/api/admin/usuarios/{id}")).StatusCode);
+        var lista = await admin.GetFromJsonAsync<JsonElement>("/api/admin/usuarios");
+        Assert.DoesNotContain(lista.EnumerateArray(), u => u.GetProperty("correo").GetString() == correo);
+    }
+
+    [Fact]
+    public async Task No_se_elimina_una_cuenta_con_historial_de_verificacion_o_inversiones_y_devuelve_409()
+    {
+        // RNF-03: el historial de verificación y las inversiones tienen que quedar registrados.
+        var proyecto = await PasosInversion.ProyectoPublicado(f, "Engorde Cotoca");
+        var (inv, correo) = await PasosInversion.InversionistaVerificado(f);
+        var admin = await Pasos.Autenticado(f, ApiFactory.Admin, ApiFactory.ClaveInterna);
+        var id = await IdDe(admin, correo);
+
+        Assert.Equal(HttpStatusCode.Conflict, (await admin.DeleteAsync($"/api/admin/usuarios/{id}")).StatusCode);
+
+        await PasosInversion.ReservarYFirmar(f, inv, correo, proyecto, 1000);
+        Assert.Equal(HttpStatusCode.Conflict, (await admin.DeleteAsync($"/api/admin/usuarios/{id}")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await inv.GetAsync("/api/auth/yo")).StatusCode);
+    }
+
+    private static async Task<Guid> IdDe(HttpClient admin, string correo)
+    {
+        var lista = await admin.GetFromJsonAsync<JsonElement>("/api/admin/usuarios");
+        return lista.EnumerateArray().Single(u => u.GetProperty("correo").GetString() == correo).GetProperty("id").GetGuid();
+    }
 }

@@ -56,13 +56,15 @@ public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto 
             return BadRequest(new Respuesta("Escribe las observaciones o el motivo para el productor."));
 
         var analista = User.Correo();
-        ComandoProyecto comando = req.Decision switch
+        ComandoProyecto? comando = req.Decision switch
         {
             DecisionProyecto.Observar => new ObservarProyecto(id, analista, texto),
             DecisionProyecto.Rechazar => new RechazarProyecto(id, analista, texto),
-            _ => new AprobarYPublicarProyecto(id, analista, texto.Length > 0 ? texto : "Aprobado en evaluación técnica.",
+            DecisionProyecto.Aprobar => new AprobarYPublicarProyecto(id, analista, texto.Length > 0 ? texto : "Aprobado en evaluación técnica.",
                 req.ADatosPublicacion(), reloj.GetUtcNow()),
+            _ => null,
         };
+        if (comando is null) return BadRequest(new Respuesta("La decisión debe ser Aprobar, Observar o Rechazar."));
 
         try
         {

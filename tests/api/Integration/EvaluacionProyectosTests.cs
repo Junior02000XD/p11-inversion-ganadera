@@ -75,6 +75,23 @@ public class EvaluacionProyectosTests(ApiFactory f) : IClassFixture<ApiFactory>
     }
 
     /// <summary>Productor verificado, con documentos del predio aprobados y una ficha enviada a revisión.</summary>
+    [Fact]
+    public async Task Una_decision_que_no_es_Aprobar_Observar_ni_Rechazar_da_400_y_no_publica()
+    {
+        var (prod, _, id) = await ProyectoEnRevision("Engorde Warnes");
+        var analista = await Pasos.Autenticado(f, ApiFactory.Analista, ApiFactory.ClaveInterna);
+
+        // Un número (aunque sea el de Aprobar), un texto desconocido o la decisión ausente: 400.
+        foreach (var cuerpo in new object[] { new { decision = 0 }, new { decision = 7 }, new { decision = "Publicar" }, new { observaciones = "Sin decisión" } })
+        {
+            var r = await analista.PostAsJsonAsync($"/api/analista/proyectos/{id}/decision", cuerpo);
+            Assert.Equal(HttpStatusCode.BadRequest, r.StatusCode);
+        }
+
+        var proyecto = await prod.GetFromJsonAsync<JsonElement>($"/api/proyectos/{id}");
+        Assert.Equal("EnRevision", proyecto.GetProperty("estado").GetString());
+    }
+
     private async Task<(HttpClient prod, string correo, Guid id)> ProyectoEnRevision(string nombre)
     {
         var correo = Pasos.CorreoNuevo("productor");

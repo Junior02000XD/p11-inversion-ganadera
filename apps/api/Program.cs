@@ -119,7 +119,8 @@ if (!builder.Environment.IsEnvironment("Testing"))
     builder.Services.AddHostedService<VencimientoReservas>();
 
 builder.Services.AddControllers()
-    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    // Los enum viajan como texto ("Aprobar"); un número como 7 no se acepta y da 400.
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false)));
 builder.Services.AddOpenApi(o => o.AddDocumentTransformer<DocumentoOpenApi>());
 
 var app = builder.Build();
