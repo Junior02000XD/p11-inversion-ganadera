@@ -20,6 +20,12 @@ Cada sprint tiene su carpeta, con un `README.md` (alcance, requerimiento → end
 
 Roles: Sergio (Scrum Master), Matías (Product Owner), Julio y Brandon (Desarrolladores).
 
+## Sprint 2
+
+| Archivo | Qué es |
+|---|---|
+| [`sprint-2/entrega-sprint-2.pdf`](sprint-2/entrega-sprint-2.pdf) | PDF entregado (APA): planificación del equipo (el Excel del Sprint 0 en tablas), diagrama de casos de uso (versión del docente), modelo de negocio propuesto y acceso al repositorio. Lo genera `_generador/build.py` en la carpeta `05_Entregas/04_Sprint2_MV2/` de DATOS. |
+
 ## Evidencia de cada sprint
 
 Las capturas van en `sprint-N/capturas/` (las del recorrido completo de los Sprints 1 y 2 están en [`../guia/capturas/`](../guia/capturas/)), numeradas en el orden del guion de la demo (`01-registro-formulario.png`, `02-otp-pantalla.png`…), así se leen en el mismo orden en que se presentan.
