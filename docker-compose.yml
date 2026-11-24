@@ -1,13 +1,39 @@
-# Entorno local del Proyecto 11: bandeja de correo de prueba.
-# La base de datos es SQL Server en localhost:1433 (contenedor aparte, ver apps/api/README.md).
-#   docker compose up -d        → levanta Mailpit
-#   http://localhost:8025        → correos que envía la API (OTP y avisos)
-# Si algún puerto ya está ocupado en tu máquina, cámbialo con una variable de entorno o un archivo .env
-# junto a este (por ejemplo P11_PUERTO_SMTP=1026) y apunta la API al puerto nuevo con Correo__Puerto.
+# Entorno local del Proyecto 11: base de datos y bandeja de correo de prueba.
+#   docker compose up -d --wait   → levanta SQL Server y Mailpit, y espera a que estén listos
+#   docker compose up -d mailpit  → solo Mailpit (si ya tienes SQL Server instalado, por ejemplo Express en Windows)
+#   http://localhost:8025          → correos que envía la API (OTP y avisos)
+#
+# La clave de SQL Server va en un archivo .env junto a este (copia .env.example); .env no se sube al repo.
+# Si algún puerto ya está ocupado en tu máquina, cámbialo en el .env (por ejemplo P11_PUERTO_SQL=1434)
+# y apunta la cadena de conexión de la API al puerto nuevo (ver apps/api/README.md).
 services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: p11-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${P11_SQL_CLAVE:?Falta P11_SQL_CLAVE en el archivo .env (ver .env.example)}
+      # sqlcmd la toma de acá para el chequeo de salud, sin escribirla en el comando.
+      SQLCMDPASSWORD: ${P11_SQL_CLAVE}
+      # Tope de RAM para que no se coma la memoria de una laptop.
+      MSSQL_MEMORY_LIMIT_MB: ${P11_SQL_MEMORIA_MB:-2048}
+    ports:
+      - "${P11_PUERTO_SQL:-1433}:1433"
+    volumes:
+      - p11-sqlserver-datos:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -b -Q 'SELECT 1' -o /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
   mailpit:
     image: axllent/mailpit:v1.27
     container_name: p11-mailpit
     ports:
       - "${P11_PUERTO_SMTP:-1025}:1025"
       - "${P11_PUERTO_CORREO_WEB:-8025}:8025"
+
+volumes:
+  p11-sqlserver-datos:

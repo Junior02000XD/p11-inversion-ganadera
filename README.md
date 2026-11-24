@@ -31,7 +31,8 @@ docs/sprints/       Planificación, alcance y evidencia de cada sprint
 docs/guia/          Guía de estudio del proyecto, con capturas
 tests/api/          Pruebas automáticas de la API (dotnet test tests/api)
 P11.sln             Solución de .NET: abre la API y las pruebas juntas en el IDE
-docker-compose.yml  Correo de prueba (Mailpit) para desarrollo
+docker-compose.yml  Entorno local: SQL Server y correo de prueba (Mailpit)
+.env.example        Plantilla del .env con la clave de SQL Server (el .env no se sube)
 ```
 
 ## Stack tecnológico
@@ -46,11 +47,10 @@ docker-compose.yml  Correo de prueba (Mailpit) para desarrollo
 
 ## Cómo levantar todo en local
 
-Hace falta .NET SDK 10, Node.js 20.19 o superior, Docker y un SQL Server en `localhost:1433` (en Windows, SQL Server Express o Developer; en Linux o Mac, el contenedor de abajo). La cadena de conexión con tu clave se guarda una sola vez con `dotnet user-secrets` (ver [`apps/api/README.md`](apps/api/README.md)); la API crea la base y aplica las migraciones sola al arrancar. Cada comando va en su propia terminal, desde la raíz del repo:
+Hace falta .NET SDK 10, Node.js 20.19 o superior, Docker y SQL Server: lo levanta el `docker-compose.yml` (en Windows también sirve un SQL Server Express o Developer instalado, y entonces se levanta solo Mailpit con `docker compose up -d mailpit`). La primera vez, copiá `.env.example` como `.env` y poné ahí una clave para SQL Server. La cadena de conexión con tu clave se guarda una sola vez con `dotnet user-secrets` (ver [`apps/api/README.md`](apps/api/README.md)); la API crea la base y aplica las migraciones sola al arrancar. Cada comando va en su propia terminal, desde la raíz del repo:
 
 ```bash
-docker run -d --name p11-sql -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='<una clave fuerte>' -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest   # solo la primera vez
-docker compose up -d                                           # Mailpit (correos de prueba en :8025)
+docker compose up -d --wait                       # SQL Server (:1433) y Mailpit (:8025); espera a que estén listos
 cd apps/api && dotnet run --launch-profile https   # API en https://localhost:7080
 cd apps/web && npm install && npm run dev                      # web en http://localhost:5173
 ```

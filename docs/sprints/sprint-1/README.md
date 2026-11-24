@@ -27,7 +27,7 @@ Resultado: `dotnet test` → **44 pruebas, 0 fallas**.
 - **Roles internos** (Analista y Administrador) no se autoregistran. Se crean con la semilla de `appsettings.Development.json` al arrancar la API.
 
 ## Guion de la demo (≈ 8 min)
-Requisitos (ver el [`README.md`](../../../README.md) de la raíz): `docker compose up -d`, la API (`dotnet run --launch-profile https` en `apps/api`) y el web (`npm run dev` en `apps/web`). Abrir http://localhost:5173 y Mailpit en http://localhost:8025.
+Requisitos (ver el [`README.md`](../../../README.md) de la raíz): `docker compose up -d --wait`, la API (`dotnet run --launch-profile https` en `apps/api`) y el web (`npm run dev` en `apps/web`). Abrir http://localhost:5173 y Mailpit en http://localhost:8025.
 
 1. **Registro (RF-01)**: crear un productor, mostrar el OTP en Mailpit y confirmarlo. Intentar registrar el mismo CI otra vez: error.
 2. **Login (RF-02)**: dos contraseñas incorrectas («Quedan 3 intentos») y después la correcta. El inicio muestra el rol y la identidad «Pendiente».

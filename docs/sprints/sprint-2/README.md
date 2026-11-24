@@ -32,7 +32,7 @@ Resultado: `dotnet test` → **112 pruebas, 0 fallas**: 87 antes del sprint, 13 
 
 ## Guion de la demo (≈ 8 min)
 
-Requisitos: SQL Server, `docker compose up -d` (Mailpit), la API y la web (ver el [`README.md`](../../../README.md) de la raíz).
+Requisitos: `docker compose up -d --wait` (SQL Server y Mailpit), la API y la web (ver el [`README.md`](../../../README.md) de la raíz).
 
 1. **Productor** verificado y con documentos aprobados envía «Engorde Chiquitania 2026» a evaluación (como en el Sprint 1).
 2. **Analista** (`analista@p11.local`): «Evaluar». Aprobar sin la variación → 409, no publica. Completar riesgos y supuestos → publicado. Mostrar el correo al productor en Mailpit.

@@ -16,20 +16,24 @@ Repositorio: [github.com/Junior02000XD/p11-inversion-ganadera](https://github.co
 ## Requisitos
 
 - .NET SDK 10.0.x (el `global.json` del repositorio selecciona la versión compatible).
-- SQL Server 2022 Express o Developer en `localhost:1433`. En Linux o macOS se puede usar el contenedor oficial (la clave la elige cada uno y no se sube al repositorio):
-
-  ```bash
-  docker run -d --name p11-sql -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='<una clave fuerte>' -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
-  ```
-- Docker y Docker Compose para Mailpit, que recibe los correos de desarrollo.
+- Docker y Docker Compose: el `docker-compose.yml` de la raíz levanta SQL Server 2022 (`localhost:1433`) y Mailpit, que recibe los correos de desarrollo.
+- En Windows también sirve un SQL Server 2022 Express o Developer instalado; en ese caso se levanta solo Mailpit.
 
 ## Configurar y ejecutar
 
-Desde la raíz del repositorio, iniciar Mailpit:
+La primera vez, desde la raíz del repositorio, copiar la plantilla y poner una clave para el usuario `sa` (mínimo 8 caracteres, con mayúsculas, minúsculas, números y símbolos). El `.env` no se sube al repositorio:
 
 ```bash
-docker compose up -d
+cp .env.example .env
 ```
+
+Cada vez que se vaya a trabajar, levantar SQL Server y Mailpit. `--wait` espera a que SQL Server acepte conexiones; si la API arranca antes, falla con un error de «inicio de sesión previo del protocolo de enlace»:
+
+```bash
+docker compose up -d --wait
+```
+
+Con SQL Server instalado en Windows, levantar solo Mailpit con `docker compose up -d mailpit`.
 
 Configurar la cadena de conexión local sin guardar contraseñas en archivos versionados. En Windows, con autenticación integrada:
 
@@ -38,7 +42,7 @@ cd apps/api
 dotnet user-secrets set "ConnectionStrings:Principal" "Server=localhost;Database=P11;Trusted_Connection=True;TrustServerCertificate=True"
 ```
 
-Con SQL Server configurado para autenticación SQL, usar una contraseña propia:
+Con el SQL Server del `docker-compose.yml` (o cualquiera con autenticación SQL), usar la clave del `.env`. Si cambiaste el puerto con `P11_PUERTO_SQL`, usá ese en lugar de 1433:
 
 ```powershell
 dotnet user-secrets set "ConnectionStrings:Principal" "Server=localhost,1433;Database=P11;User Id=sa;Password=<tu_clave>;TrustServerCertificate=True"
