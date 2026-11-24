@@ -79,7 +79,7 @@ dotnet test tests/api --filter "FullyQualifiedName~StrategyTests"
 dotnet test tests/api --filter "FullyQualifiedName~TemplateMethodTests"
 dotnet test tests/api --filter "FullyQualifiedName~IteratorTests"
 dotnet test tests/api --filter "FullyQualifiedName~EvaluacionProyectosTests"   # el flujo de la demo, de punta a punta
-dotnet test tests/api                                   # todo: 112 pruebas
+dotnet test tests/api                                   # todo: 115 pruebas
 ```
 
 Qué decir de cada una, abriendo el archivo de la prueba en `tests/api/Patterns/`:

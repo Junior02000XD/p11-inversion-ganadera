@@ -429,7 +429,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
     <div class="tarjeta termino"><h4>Ruta</h4><p>La dirección de una pantalla en la web: <code>/catalogo</code>, <code>/inversiones/:id/contrato</code>. Las define <code>main.jsx</code>.</p><p class="analogia">El número de oficina dentro del edificio.</p></div>
     <div class="tarjeta termino"><h4>Proxy de Vite</h4><p>En desarrollo, la web corre en el puerto 5173 y la API en el 7080. Vite reenvía todo lo que empieza con <code>/api</code> a la API, así el navegador cree que es un solo sitio.</p><p class="analogia">La recepcionista que pasa la llamada al interno correcto.</p></div>
     <div class="tarjeta termino"><h4>Swagger / OpenAPI</h4><p>Página que lista todos los endpoints de la API y permite probarlos («Try it out»). En <code>/swagger</code>.</p><p class="analogia">El menú del restaurante, con la opción de pedir una probadita.</p></div>
-    <div class="tarjeta termino"><h4>Prueba automática</h4><p>Código que usa el sistema y verifica el resultado. <b>Unitaria</b>: prueba una clase sola. <b>De integración</b>: levanta la API entera y le hace pedidos reales. En P11 hay 112.</p><p class="analogia">El control de calidad que revisa cada lote antes de salir.</p></div>
+    <div class="tarjeta termino"><h4>Prueba automática</h4><p>Código que usa el sistema y verifica el resultado. <b>Unitaria</b>: prueba una clase sola. <b>De integración</b>: levanta la API entera y le hace pedidos reales. En P11 hay 115.</p><p class="analogia">El control de calidad que revisa cada lote antes de salir.</p></div>
     <div class="tarjeta termino"><h4>Patrón de diseño</h4><p>Solución conocida y con nombre a un problema que se repite al programar (State, Command, Prototype…). Ver la sección 9.</p><p class="analogia">Una receta clásica: no la inventas, la adaptas.</p></div>
     <div class="tarjeta termino"><h4>Docker / contenedor</h4><p>Forma de correr programas (SQL Server, Mailpit) ya configurados, sin instalarlos a mano.</p><p class="analogia">Un contenedor de barco: llega cerrado y funciona igual en cualquier puerto.</p></div>
     <div class="tarjeta termino"><h4>Mailpit</h4><p>Buzón falso para desarrollo: atrapa todos los correos de la API (OTP, avisos) y los muestra en <code>http://localhost:8025</code>. No envía nada de verdad.</p><p class="analogia">Un buzón de práctica.</p></div>
@@ -637,7 +637,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
             <div class="hoja">Dossiers/, Settlements/ <span class="desc">Builder, Composite y Strategy, listos para el Sprint 3</span></div>
           </details>
           <details><summary><b>Services/</b> <span class="desc">lógica que usan varios controladores</span></summary>
-            <div class="hoja">Auth/ <span class="desc">OtpService (genera y valida códigos, solo guarda el hash) y TokenJwtService (firma los tokens)</span></div>
+            <div class="hoja">Auth/ <span class="desc">OtpService (genera y valida códigos, solo guarda el hash), TokenJwtService (firma los tokens) y ClaimsExtensiones (<code>User.IdUsuario()</code>, <code>User.Correo()</code>)</span></div>
             <div class="hoja">Verification/ <span class="desc">VerificacionService: fachada de la verificación de identidad</span></div>
             <div class="hoja">Files/ <span class="desc">AlmacenDisco, AlmacenCifrado: guardar archivos cifrados (Decorator)</span></div>
             <div class="hoja">Email/ <span class="desc">CorreoSmtpService, CorreoConReintentos: enviar correos (Adapter y Decorator)</span></div>
@@ -654,7 +654,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
           </details>
           <details><summary><b>Configuration/</b> <span class="desc">opciones validadas al arrancar, documento de Swagger, claves de desarrollo</span></summary></details>
         </details>
-        <details><summary><b>tests/api/</b> <span class="desc">112 pruebas automáticas, en un proyecto aparte (dotnet test tests/api)</span></summary>
+        <details><summary><b>tests/api/</b> <span class="desc">115 pruebas automáticas, en un proyecto aparte (dotnet test tests/api)</span></summary>
           <div class="hoja">Integration/ <span class="desc">levantan la API entera: AutenticacionTests, VerificacionTests, ProyectosTests, EvaluacionProyectosTests, CatalogoTests <span class="chip chip-ok">Sprint 2</span>, InversionesTests <span class="chip chip-ok">Sprint 2</span>…</span></div>
           <div class="hoja">Patterns/ <span class="desc">una prueba por patrón de diseño</span></div>
         </details>
@@ -1024,7 +1024,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
   <div class="cu-bloque" id="cu-admin">
     <h3>Gestionar usuarios, roles y permisos · Consultar bitácora de auditoría</h3>
     <div class="cu-meta"><span class="chip chip-ok">Sprint 1 y corrección del 18/11</span><span class="chip">Administrador</span><span class="chip">RF-06</span><span class="chip">RNF-03</span></div>
-    <p class="texto">El Administrador busca usuarios, cambia su rol, desbloquea cuentas y elimina las que no tienen proyectos. La bitácora reúne en una lista cada cambio de estado de identidades y proyectos, con quién lo hizo y por qué. Además, el Administrador puede entrar a <b>todas</b> las pestañas; en las que tienen varios actores aparece «Ver como».</p>
+    <p class="texto">El Administrador busca usuarios, cambia su rol, desbloquea cuentas y elimina las que no tienen actividad (proyectos, inversiones ni historial de verificación). La bitácora reúne en una lista cada cambio de estado de identidades y proyectos, con quién lo hizo y por qué. Además, el Administrador puede entrar a <b>todas</b> las pestañas; en las que tienen varios actores aparece «Ver como».</p>
     <div class="capturas">
       <figure class="captura"><button type="button"><img src="capturas/27-admin-usuarios.jpg" alt="Administración de usuarios" loading="lazy"></button><figcaption><b>27.</b> Usuarios: rol, estado, bloqueo. El menú muestra las 16 pestañas.</figcaption></figure>
       <figure class="captura"><button type="button"><img src="capturas/28-admin-bitacora.jpg" alt="Bitácora de auditoría" loading="lazy"></button><figcaption><b>28.</b> Bitácora: fecha, módulo, acción, estados, responsable y motivo.</figcaption></figure>
@@ -1035,7 +1035,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
       <thead><tr><th>Acción</th><th>Regla</th><th>Si no se cumple</th></tr></thead>
       <tbody>
         <tr><td>Cambiar rol</td><td>Debe ser un rol existente; no puede cambiar el suyo. Rige desde el próximo inicio de sesión</td><td>400</td></tr>
-        <tr><td>Eliminar cuenta</td><td>No la propia; no una con proyectos (se sugiere bloquearla)</td><td>400 / 409</td></tr>
+        <tr><td>Eliminar cuenta</td><td>No la propia; no una con proyectos, inversiones o historial de verificación, que deben quedar registrados (RNF-03): se sugiere bloquearla</td><td>400 / 409</td></tr>
         <tr><td>Filtrar bitácora</td><td>«Desde» no puede ser posterior a «hasta»</td><td>400</td></tr>
         <tr><td>Entrar a una pestaña ajena</td><td>Cada endpoint declara sus roles</td><td>403 en la API; la web redirige a la primera pestaña del rol</td></tr>
       </tbody>
@@ -1354,17 +1354,17 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
   <p class="eyebrow">Sección 10</p>
   <h2>Pruebas automáticas</h2>
   <div class="breve"><strong>En breve</strong><p>Una prueba automática es código que usa el sistema y comprueba el resultado. Las <b>de integración</b> levantan la API completa en memoria y le hacen pedidos HTTP reales, con una base de datos en memoria y un correo falso; no necesitan SQL Server. Las <b>de patrones</b> prueban una clase sola.</p></div>
-  <p class="texto">Se corren con <code>dotnet test tests/api</code>. Resultado actual: <b>112 pruebas, 0 fallas</b> (44 al cerrar el Sprint 1, 87 antes del Sprint 2, 13 más de Sergio para Programación Web 3 y 12 del Sprint 2).</p>
+  <p class="texto">Se corren con <code>dotnet test tests/api</code>. Resultado actual: <b>115 pruebas, 0 fallas</b> (44 al cerrar el Sprint 1, 87 antes del Sprint 2, 13 más de Sergio para Programación Web 3, 12 del Sprint 2 y 3 de la revisión del 24/11: eliminar cuentas y decisión del analista).</p>
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Archivo</th><th class="num">Pruebas</th><th>Qué demuestra</th></tr></thead>
     <tbody>
       <tr><td>AutenticacionTests</td><td class="num">7</td><td>Registro, CI o correo repetido, OTP, login con intentos y bloqueo</td></tr>
       <tr><td>OtpServiceTests</td><td class="num">4</td><td>Código vencido, 3 intentos, un solo uso, solo se guarda el hash</td></tr>
       <tr><td>VerificacionTests</td><td class="num">5</td><td>Consentimiento, imágenes ilegibles, revisión manual, archivos cifrados</td></tr>
-      <tr><td>RolesTests</td><td class="num">5</td><td>Cada rol entra solo a lo suyo; el Administrador a todo</td></tr>
+      <tr><td>RolesTests</td><td class="num">7</td><td>Cada rol entra solo a lo suyo; el Administrador a todo; solo se eliminan cuentas sin actividad</td></tr>
       <tr><td>ProyectosTests</td><td class="num">4</td><td>Ficha por línea, requisitos para enviar a evaluación</td></tr>
       <tr><td>ProyectosCrudTests</td><td class="num">13</td><td>CRUD de la ficha: 201 con <code>Location</code>, 400, 404, edición y borrado solo en borrador, historial, administración de usuarios (aporte de Sergio)</td></tr>
-      <tr><td>EvaluacionProyectosTests</td><td class="num">3</td><td>Observar, publicar solo con riesgos y supuestos, roles</td></tr>
+      <tr><td>EvaluacionProyectosTests</td><td class="num">4</td><td>Observar, publicar solo con riesgos y supuestos, roles, decisión inválida (400)</td></tr>
       <tr><td>CatalogoTests <span class="chip chip-ok">Sprint 2</span></td><td class="num">5</td><td>Filtros, borrador oculto, tres escenarios con advertencia</td></tr>
       <tr><td>InversionesTests <span class="chip chip-ok">Sprint 2</span></td><td class="num">7</td><td>Flujo completo, mínimo (400), cupo (409), vencimiento, rechazo, sin verificar, privacidad</td></tr>
       <tr><td>Patterns/*</td><td class="num">59</td><td>Una o más pruebas por patrón (State, Command, Prototype, Decorator…)</td></tr>
@@ -1415,7 +1415,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
     <li>Contrato: pedir el código, leerlo en Mailpit, firmar.</li>
     <li>Pago QR: «Ya pagué, verificar» → constancia (1 %, 216 kg). Mostrar el portafolio y el correo con la constancia.</li>
     <li><b>Administrador</b>: entrar a «Invertir en un proyecto» o «Liquidar proyecto» y mostrar «Ver como»; abrir la bitácora.</li>
-    <li>Cerrar con <code>dotnet test</code>: 112 pruebas en verde.</li>
+    <li>Cerrar con <code>dotnet test tests/api</code>: 115 pruebas en verde.</li>
   </ol>
   <h3>Si algo falla</h3>
   <div class="tabla-scroll"><table class="tabla">
@@ -1480,7 +1480,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
     <details class="pregunta" data-tema="patrones"><summary><span class="chip">Patrones</span>¿Cómo trabajan juntos State, Command y Observer al evaluar?</summary><div class="respuesta"><p>La decisión del analista se convierte en un <b>Command</b>. El gestor lo ejecuta: el <b>State</b> del proyecto decide si la transición vale (si no, 409), se guarda una fila en la bitácora y los <b>Observers</b> avisan al productor y a los analistas.</p></div></details>
     <details class="pregunta" data-tema="patrones"><summary><span class="chip">Patrones</span>¿Por qué no usaron Mediator en el flujo de inversión?</summary><div class="respuesta"><p>Porque reservar, firmar, pagar y asignar son pasos en secuencia de una sola entidad, no objetos que conversan entre sí. Alcanza con la entidad <code>Inversion</code> y un servicio; Mediator sumaría una capa sin resolver nada.</p></div></details>
     <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cómo prueban que una reserva vence sin esperar 30 minutos?</summary><div class="respuesta"><p>Con <code>FakeTimeProvider</code>: un reloj falso que la prueba adelanta 31 minutos. Como la API pide la hora a ese reloj, cree que pasó el tiempo. Lo usa <code>InversionesTests</code>.</p></div></details>
-    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cuántas pruebas hay y cómo se corren?</summary><div class="respuesta"><p>112, todas en verde. Se corren con <code>dotnet test</code> desde <code>apps/api</code>. No necesitan SQL Server: usan una base en memoria.</p></div></details>
+    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cuántas pruebas hay y cómo se corren?</summary><div class="respuesta"><p>115, todas en verde. Se corren con <code>dotnet test tests/api</code> desde la raíz del repositorio. No necesitan SQL Server: usan una base en memoria.</p></div></details>
   </div>
 </section>
 
@@ -1492,6 +1492,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Fecha</th><th>Cambio</th></tr></thead>
     <tbody>
+      <tr><td class="num">24/11/2026</td><td>Revisión del código: solo se eliminan cuentas sin actividad, la decisión del analista se valida y ClaimsExtensiones pasa a su propio archivo; 115 pruebas.</td></tr>
       <tr><td class="num">24/11/2026</td><td>Al día con el código: carpetas de la API en inglés (<code>Controllers</code>, <code>Dtos</code>, <code>Models</code>, <code>Services</code>, <code>Data</code>) y pruebas en <code>tests/api</code>; DTO en un archivo por tema (class lo que entra, record lo que sale); SQL Server en el <code>docker-compose.yml</code> con <code>.env</code>; Sprint 2 cerrado.</td></tr>
       <tr><td class="num">20/11/2026</td><td>Se suma el aporte de Matías: cuentas de prueba y dos proyectos en la semilla.</td></tr>
       <tr><td class="num">20/11/2026</td><td>Se suman los aportes de Sergio (13 pruebas del CRUD) y Brandon (respuestas documentadas en Swagger): 112 pruebas.</td></tr>
