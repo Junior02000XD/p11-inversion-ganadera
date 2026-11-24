@@ -7,12 +7,12 @@ Esta guía dice qué mostrar, en qué orden y qué decir de cada patrón. El an�
 
 ## Resumen: qué se muestra y cómo
 
-| Patrón | Prioridad (§9 del análisis) | Cómo se muestra | Archivo para abrir (en `apps/api/src/P11.Api/`) |
+| Patrón | Prioridad (§9 del análisis) | Cómo se muestra | Archivo para abrir (en `apps/api/`) |
 |---|---|---|---|
-| Factory Method | Media | En vivo (web) + prueba | `Dominio/Proyectos/CreadorProyecto.cs`, `ProyectoGanadero.cs` |
-| Builder | Alta | Prueba (el endpoint llega en el Sprint 3) | `Dominio/Expediente/ConstructorExpediente.cs` |
-| Prototype | Alta | Prueba (el endpoint llega en el Sprint 2) | `Dominio/Simulacion/ConfiguracionEscenario.cs` |
-| Configuración inyectada (en lugar de Singleton) | Baja | En vivo (la API no arranca con una clave mala) + prueba | `Configuracion/Opciones.cs`, `Program.cs`, `appsettings.json` |
+| Factory Method | Media | En vivo (web) + prueba | `Models/Projects/CreadorProyecto.cs`, `ProyectoGanadero.cs` |
+| Builder | Alta | Prueba (el endpoint llega en el Sprint 3) | `Models/Dossiers/ConstructorExpediente.cs` |
+| Prototype | Alta | Prueba (el endpoint llega en el Sprint 2) | `Models/Simulation/ConfiguracionEscenario.cs` |
+| Configuración inyectada (en lugar de Singleton) | Baja | En vivo (la API no arranca con una clave mala) + prueba | `Configuration/Opciones.cs`, `Program.cs`, `appsettings.json` |
 | Abstract Factory | Baja, opcional | No implementado: se explica | — |
 
 **Ojo:** las pantallas «Simulador» y «Expediente» de la web todavía muestran datos de ejemplo, no los del Builder ni del Prototype. No presentarlas como si usaran el patrón.
@@ -23,7 +23,7 @@ Igual que en la guía de comportamiento:
 
 ```bash
 docker compose up -d                                          # desde la raíz del repo
-cd apps/api/src/P11.Api && dotnet run --launch-profile https  # API
+cd apps/api && dotnet run --launch-profile https  # API
 cd apps/web && npm run dev                                    # web (otra terminal)
 ```
 
@@ -47,7 +47,7 @@ Mostrar `appsettings.json` (sección `ReglasSeguridad`: 5 intentos, 15 minutos d
 Para demostrarlo, en una terminal nueva (la API de la demo puede seguir corriendo; esta usa otro puerto):
 
 ```bash
-cd apps/api/src/P11.Api
+cd apps/api
 ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS=http://localhost:7999 Archivos__ClaveBase64=abc dotnet run --no-launch-profile
 ```
 
@@ -64,7 +64,7 @@ dotnet test --filter "FullyQualifiedName~PrototypeTests"
 dotnet test --filter "FullyQualifiedName~ConfiguracionInyectadaTests"
 ```
 
-Qué decir, abriendo las pruebas en `apps/api/tests/P11.Tests/Patrones/`:
+Qué decir, abriendo las pruebas en `tests/api/Patrones/`:
 
 - **Builder (RF-22, expediente).** `Ordena_la_cronologia_por_fecha`: los eventos se agregan en cualquier orden y el expediente sale ordenado. `Version_de_cierre_exige_venta_y_liquidacion`: un expediente de cierre sin venta no se construye. `Dos_construcciones_no_comparten_estado_y_un_constructor_no_se_reutiliza`: un constructor por solicitud.
 - **Prototype (RF-12, simulador).** `Modificar_la_copia_no_altera_la_base_ni_otras_copias`: las variantes pesimista y optimista se sacan clonando la base. `La_copia_no_hereda_el_resultado_anterior`. `Prepara_tres_variantes_ordenadas_y_con_advertencia`: cada resultado lleva «Estimación, no rentabilidad garantizada» (RNF-06). La fórmula es provisional hasta definirla con el cliente.

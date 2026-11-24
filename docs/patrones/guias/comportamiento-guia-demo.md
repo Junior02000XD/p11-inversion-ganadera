@@ -7,15 +7,15 @@ Esta guía dice qué mostrar, en qué orden y qué decir de cada patrón. El rep
 
 ## Resumen: qué se muestra y cómo
 
-| Patrón | Cómo se muestra | Archivo para abrir (en `apps/api/src/P11.Api/`) |
+| Patrón | Cómo se muestra | Archivo para abrir (en `apps/api/`) |
 |---|---|---|
-| State | En vivo (web) | `Dominio/Proyectos/Estados/EstadoFicha.cs` |
-| Chain of Responsibility | En vivo (web) + prueba | `Servicios/Proyectos/RequisitosEnvio.cs` |
-| Command | En vivo (web, historial) | `Servicios/Proyectos/ComandosProyecto.cs`, `GestorCicloProyecto.cs` |
-| Observer | En vivo (Mailpit) | `Servicios/Proyectos/ObservadoresProyecto.cs`, `Program.cs` |
-| Strategy | Prueba | `Dominio/Liquidaciones/ReglaReparto.cs` |
-| Template Method | Prueba (ya estaba) | `Dominio/Proyectos/ProyectoGanadero.cs` (`Validar`) |
-| Iterator | Prueba (lo da C#) | `Dominio/Liquidaciones/ConceptoLiquidacion.cs` (`Detalle`) |
+| State | En vivo (web) | `Models/Projects/States/EstadoFicha.cs` |
+| Chain of Responsibility | En vivo (web) + prueba | `Services/Projects/RequisitosEnvio.cs` |
+| Command | En vivo (web, historial) | `Services/Projects/ComandosProyecto.cs`, `GestorCicloProyecto.cs` |
+| Observer | En vivo (Mailpit) | `Services/Projects/ObservadoresProyecto.cs`, `Program.cs` |
+| Strategy | Prueba | `Models/Settlements/ReglaReparto.cs` |
+| Template Method | Prueba (ya estaba) | `Models/Projects/ProyectoGanadero.cs` (`Validar`) |
+| Iterator | Prueba (lo da C#) | `Models/Settlements/ConceptoLiquidacion.cs` (`Detalle`) |
 | Mediator | Solo diagrama: no aplica | — |
 | Memento | Solo diagrama: no aplica | — |
 
@@ -25,7 +25,7 @@ En una terminal, desde la raíz del repositorio `p11-inversion-ganadera`:
 
 ```bash
 docker start mssql-dev && docker compose up -d       # SQL Server (1433) y Mailpit (8025)
-cd apps/api/src/P11.Api && dotnet run --launch-profile https   # API en https://localhost:7080
+cd apps/api && dotnet run --launch-profile https   # API en https://localhost:7080
 ```
 
 En otra terminal:
@@ -82,7 +82,7 @@ dotnet test --filter "FullyQualifiedName~EvaluacionProyectosTests"   # el flujo 
 dotnet test                                             # todo: 87 pruebas
 ```
 
-Qué decir de cada una, abriendo el archivo de la prueba en `apps/api/tests/P11.Tests/Patrones/`:
+Qué decir de cada una, abriendo el archivo de la prueba en `tests/api/Patrones/`:
 
 - **Chain of Responsibility.** `El_primero_que_falla_responde_y_los_siguientes_no_se_consultan`: la cadena corta en el eslabón que falla. `La_cadena_real_pide_verificacion_antes_que_documentos`: un productor sin verificar recibe «Tu identidad todavía no está verificada.» aunque también le falten documentos.
 - **Strategy.** `Otra_regla_cambia_el_reparto_sin_cambiar_el_calculo_del_resultado`: con otra regla cambia lo que recibe cada inversionista, pero el resultado de la liquidación (62.500 Bs) es el mismo. La regla «partes iguales» existe solo en la prueba; la definitiva la decide el cliente (lo dice el ERS).

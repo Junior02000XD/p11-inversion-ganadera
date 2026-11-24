@@ -21,7 +21,7 @@ La base ya está hecha y probada: SQL Server, migración inicial, CRUD completo 
    git clone https://github.com/Junior02000XD/p11-inversion-ganadera.git
    cd p11-inversion-ganadera
    git switch -c aporte/tu-nombre        # p. ej. aporte/sergio
-   cd apps/api && dotnet test            # tiene que dar todo en verde antes de tocar nada
+   dotnet test tests/api            # tiene que dar todo en verde antes de tocar nada
    ```
 4. **SQL Server** (solo lo necesitan Brandon y Matías, para ver la API funcionando; las pruebas de Sergio no usan base):
    - **Windows**: SQL Server 2022 Express o Developer. La cadena de conexión:
@@ -31,7 +31,7 @@ La base ya está hecha y probada: SQL Server, migración inicial, CRUD completo 
      La cadena de conexión: `Server=localhost,1433;Database=P11;User Id=sa;Password=<la misma clave>;TrustServerCertificate=True`
    - Guardar la cadena **sin subirla al repo**:
      ```bash
-     cd apps/api/src/P11.Api
+     cd apps/api
      dotnet user-secrets set "ConnectionStrings:Principal" "<tu cadena>"
      dotnet run --launch-profile https     # crea la base sola y abre en https://localhost:7080/swagger
      ```
@@ -50,7 +50,7 @@ La base ya está hecha y probada: SQL Server, migración inicial, CRUD completo 
 
 **Rúbrica que cubre:** «Validación y errores» (respuestas 400 y 404 verificables) y «Aportes concretos… a las pruebas».
 
-**Archivo nuevo:** `apps/api/tests/P11.Tests/Integracion/ProyectosCrudTests.cs`. No toques los demás archivos de prueba.
+**Archivo nuevo:** `tests/api/Integration/ProyectosCrudTests.cs`. No toques los demás archivos de prueba.
 
 Copiá el estilo de `ProyectosTests.cs`, que está en la misma carpeta. Ya tenés los ayudantes de `ApiFactory.cs`: `Pasos.UsuarioConfirmado(f, Roles.Productor)` te da un cliente con sesión, y `Pasos.Autenticado(f, ApiFactory.Admin, ApiFactory.ClaveInterna)` te da el administrador. Las pruebas usan base en memoria, así que no necesitás SQL Server.
 
@@ -79,7 +79,7 @@ Casos mínimos (un `[Fact]` cada uno):
 
 **Rúbrica que cubre:** «Swagger UI con rutas, parámetros, esquemas **y respuestas**» (8 pts). Hoy Swagger muestra las rutas y los esquemas, pero casi no muestra los códigos de respuesta.
 
-**Archivos:** `apps/api/src/P11.Api/Controllers/ProyectosController.cs` (el recurso principal, el más importante), `AdminUsuariosController.cs` y `AdminBitacoraController.cs`. Si te da el tiempo, también `AuthController.cs`.
+**Archivos:** `apps/api/Controllers/ProyectosController.cs` (el recurso principal, el más importante), `AdminUsuariosController.cs` y `AdminBitacoraController.cs`. Si te da el tiempo, también `AuthController.cs`.
 
 Qué hay que hacer en **cada acción**:
 1. Agregar `[ProducesResponseType]` por cada código que la acción puede devolver. Mirá los `return` del método: `NotFound` es 404, `Conflict` es 409, `ValidationProblem` es 400, `CreatedAtAction` es 201 y `NoContent` es 204. Ejemplo:
@@ -103,7 +103,7 @@ Qué hay que hacer en **cada acción**:
 
 **Rúbrica que cubre:** «Datos de prueba y persistencia» y «README con instrucciones reproducibles».
 
-**Parte 1: semilla.** Archivos: `apps/api/src/P11.Api/Datos/SemillaDatos.cs` y `apps/api/src/P11.Api/appsettings.Development.json`.
+**Parte 1: semilla.** Archivos: `apps/api/Data/SemillaDatos.cs` y `apps/api/appsettings.Development.json`.
 - En `appsettings.Development.json`, sección `Semilla:Usuarios`, agregar dos usuarios con el mismo formato que los que ya están:
   - `productor@p11.local` (rol Productor);
   - `inversionista@p11.local` (rol Inversionista).
@@ -118,7 +118,7 @@ Qué hay que hacer en **cada acción**:
 - nombre del proyecto, versión de .NET (10) y enlace al repositorio;
 - integrantes con su usuario de GitHub: Julio César Cruz Kübber (`Junior02000XD`), Sergio Ricardo Aguilera Pantoja, Jael Brandon Quiroga Vedia, Matías Raldes León (los usuarios se completan cuando cada uno los pase);
 - pasos para configurar SQL Server: los de la sección «Antes de empezar», con la cadena de ejemplo **sin clave real**;
-- aplicar migraciones: `dotnet ef database update` desde `apps/api/src/P11.Api` (o simplemente arrancar la API, que migra sola);
+- aplicar migraciones: `dotnet ef database update` desde `apps/api` (o simplemente arrancar la API, que migra sola);
 - datos de prueba: qué usuarios y proyectos crea la semilla, con sus contraseñas de desarrollo;
 - abrir Swagger (`https://localhost:7080/swagger`) y cómo usar **Authorize**;
 - cómo correr las pruebas (`dotnet test`).

@@ -18,5 +18,5 @@ trim_trailing_whitespace = false
 # Usings sin uso: aviso al compilar.
 dotnet_diagnostic.IDE0005.severity = warning
 
-[**/Migraciones/*.cs]
+[**/Migrations/*.cs]
 generated_code = true

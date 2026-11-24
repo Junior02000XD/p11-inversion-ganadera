@@ -23,10 +23,10 @@ Implementación de los patrones creacionales elegidos en el análisis grupal (§
 
 | Patrón | Prioridad (§9) | Dónde | RF | Prueba | Estado |
 |---|---|---|---|---|---|
-| Factory Method | Media | `src/P11.Api/Dominio/Proyectos/CreadorProyecto.cs` (creador), `ProyectoGanadero.cs` (productos), `SelectorCreadorProyecto`, registro en `Program.cs` | RF-07 | `tests/P11.Tests/Patrones/FactoryMethodTests.cs`, `Integracion/ProyectosTests.cs` | En uso (`POST /api/proyectos`) |
-| Builder | Alta | `src/P11.Api/Dominio/Expediente/ConstructorExpediente.cs` | RF-22 | `tests/P11.Tests/Patrones/BuilderTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
-| Prototype | Alta | `src/P11.Api/Dominio/Simulacion/ConfiguracionEscenario.cs`, usado por `Servicios/Simulacion/SimuladorEscenarios.cs` | RF-12 | `tests/P11.Tests/Patrones/PrototypeTests.cs`, `Integracion/CatalogoTests.cs` | En uso (`POST /api/catalogo/{id}/simulacion`) |
-| Configuración inyectada (en lugar de Singleton) | Baja | `src/P11.Api/Configuracion/Opciones.cs` + `AddOptions<…>().ValidateOnStart()` en `Program.cs` | RF-02, RNF-01, RNF-02 | `tests/P11.Tests/Patrones/ConfiguracionInyectadaTests.cs` | En uso |
+| Factory Method | Media | `apps/api/Models/Projects/CreadorProyecto.cs` (creador), `ProyectoGanadero.cs` (productos), `SelectorCreadorProyecto`, registro en `Program.cs` | RF-07 | `tests/api/Patrones/FactoryMethodTests.cs`, `Integration/ProyectosTests.cs` | En uso (`POST /api/proyectos`) |
+| Builder | Alta | `apps/api/Models/Dossiers/ConstructorExpediente.cs` | RF-22 | `tests/api/Patrones/BuilderTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
+| Prototype | Alta | `apps/api/Models/Simulation/ConfiguracionEscenario.cs`, usado por `Services/Simulation/SimuladorEscenarios.cs` | RF-12 | `tests/api/Patrones/PrototypeTests.cs`, `Integration/CatalogoTests.cs` | En uso (`POST /api/catalogo/{id}/simulacion`) |
+| Configuración inyectada (en lugar de Singleton) | Baja | `apps/api/Configuration/Opciones.cs` + `AddOptions<…>().ValidateOnStart()` en `Program.cs` | RF-02, RNF-01, RNF-02 | `tests/api/Patrones/ConfiguracionInyectadaTests.cs` | En uso |
 | Abstract Factory | Baja (opcional) | — | RF-18/19 | — | No se implementa hasta validar que las familias de validadores varían juntas (§8.2) |
 
 ## Cómo se aplica cada uno
@@ -57,12 +57,12 @@ Dinámica grupal del 09/11. De los siete patrones del catálogo GoF, seis quedar
 
 | Patrón | Dónde | RF | Prueba | Estado |
 |---|---|---|---|---|
-| Adapter | `src/P11.Api/Servicios/CorreoSmtpService.cs` | RF-01, RF-02, RF-04 | `tests/P11.Tests/Patrones/AdapterTests.cs` | En uso (OTP y avisos) |
-| Decorator | `Servicios/AlmacenDisco.cs` + `AlmacenCifrado.cs`; `CorreoConReintentos.cs`; composición en `Program.cs` | RNF-02, RF-01 | `Patrones/DecoratorTests.cs`, `Integracion/VerificacionTests.cs` | En uso |
-| Proxy (de protección) | `Servicios/Documentos/VisorDocumentos.cs` + `VisorDocumentosProxy.cs` | RNF-02, RF-05 | `Patrones/ProxyTests.cs` | En uso (`GET /api/analista/archivos/{id}`, `GET /api/productor/documentos/{id}/archivo`) |
-| Facade | `Servicios/VerificacionService.cs` | RF-03, RF-04 | `Integracion/VerificacionTests.cs` | En uso (`VerificacionController`, `AnalistaController`) |
-| Bridge | `Servicios/Avisos/` (`Aviso`, `AvisoVerificacion`, `AvisoBloqueo` × `ICanalAviso`, `CanalCorreo`, `CanalTelegram`) | RF-02, RF-04, RF-20 | `Patrones/BridgeTests.cs` | En uso por correo; Telegram listo y probado, sin usuarios vinculados |
-| Composite | `src/P11.Api/Dominio/Liquidaciones/` | RF-23 | `Patrones/CompositeTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
+| Adapter | `apps/api/Services/Email/CorreoSmtpService.cs` | RF-01, RF-02, RF-04 | `tests/api/Patrones/AdapterTests.cs` | En uso (OTP y avisos) |
+| Decorator | `Services/Files/AlmacenDisco.cs` + `AlmacenCifrado.cs`; `CorreoConReintentos.cs`; composición en `Program.cs` | RNF-02, RF-01 | `Patterns/DecoratorTests.cs`, `Integration/VerificacionTests.cs` | En uso |
+| Proxy (de protección) | `Services/Documents/VisorDocumentos.cs` + `VisorDocumentosProxy.cs` | RNF-02, RF-05 | `Patterns/ProxyTests.cs` | En uso (`GET /api/analista/archivos/{id}`, `GET /api/productor/documentos/{id}/archivo`) |
+| Facade | `Services/Verification/VerificacionService.cs` | RF-03, RF-04 | `Integration/VerificacionTests.cs` | En uso (`VerificacionController`, `AnalistaController`) |
+| Bridge | `Services/Notifications/` (`Aviso`, `AvisoVerificacion`, `AvisoBloqueo` × `ICanalAviso`, `CanalCorreo`, `CanalTelegram`) | RF-02, RF-04, RF-20 | `Patterns/BridgeTests.cs` | En uso por correo; Telegram listo y probado, sin usuarios vinculados |
+| Composite | `apps/api/Models/Settlements/` | RF-23 | `Patterns/CompositeTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
 | Flyweight | — | RF-18 | — | No aplica |
 
 ## Cómo se aplica cada uno
@@ -95,13 +95,13 @@ Dinámica grupal del 13/11. Son los nueve patrones de la consigna. Cinco tienen 
 
 | Patrón | Dónde | RF | Prueba | Estado |
 |---|---|---|---|---|
-| State | `src/P11.Api/Dominio/Proyectos/Estados/EstadoFicha.cs`; operaciones en `ProyectoGanadero` | RF-08, RF-09, RF-10 (EST-3) | `Patrones/StateTests.cs` | En uso |
-| Chain of Responsibility | `Servicios/Proyectos/RequisitosEnvio.cs` | RF-04, RF-05, RF-08 | `Patrones/ChainOfResponsibilityTests.cs`, `Integracion/ProyectosTests.cs` | En uso (`POST /api/proyectos/{id}/enviar-revision`) |
-| Command | `Servicios/Proyectos/ComandosProyecto.cs` + `GestorCicloProyecto.cs` (invocador); bitácora `HistorialProyecto` | RF-09, RNF-03 | `Patrones/CommandTests.cs` | En uso (`POST /api/analista/proyectos/{id}/decision`) |
-| Observer | `Servicios/Proyectos/ObservadoresProyecto.cs` (`AvisarAlProductor`, `AvisarALosAnalistas`); registro en `Program.cs` | RF-09 | `Patrones/ObserverTests.cs`, `Integracion/EvaluacionProyectosTests.cs` | En uso (avisos en Mailpit) |
-| Strategy | `Dominio/Liquidaciones/ReglaReparto.cs` (`IReglaReparto`, `RepartoProporcional`) | RF-23 | `Patrones/StrategyTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
-| Template Method | `ProyectoGanadero.Validar()` → `ValidarLinea()`; `CreadorProyecto.CrearBorrador()`; `Aviso.EnviarAsync()` | RF-07, RF-08, RF-02, RF-04 | `Patrones/TemplateMethodTests.cs` | Ya estaba en el código |
-| Iterator | `GrupoConceptos.Detalle()` (`yield`), `ValidarLinea()`; `IEnumerable`/LINQ | RF-23 | `Patrones/IteratorTests.cs` | Lo da C#; no se escribe un iterador a mano |
+| State | `apps/api/Models/Projects/States/EstadoFicha.cs`; operaciones en `ProyectoGanadero` | RF-08, RF-09, RF-10 (EST-3) | `Patterns/StateTests.cs` | En uso |
+| Chain of Responsibility | `Services/Projects/RequisitosEnvio.cs` | RF-04, RF-05, RF-08 | `Patterns/ChainOfResponsibilityTests.cs`, `Integration/ProyectosTests.cs` | En uso (`POST /api/proyectos/{id}/enviar-revision`) |
+| Command | `Services/Projects/ComandosProyecto.cs` + `GestorCicloProyecto.cs` (invocador); bitácora `HistorialProyecto` | RF-09, RNF-03 | `Patterns/CommandTests.cs` | En uso (`POST /api/analista/proyectos/{id}/decision`) |
+| Observer | `Services/Projects/ObservadoresProyecto.cs` (`AvisarAlProductor`, `AvisarALosAnalistas`); registro en `Program.cs` | RF-09 | `Patterns/ObserverTests.cs`, `Integration/EvaluacionProyectosTests.cs` | En uso (avisos en Mailpit) |
+| Strategy | `Models/Settlements/ReglaReparto.cs` (`IReglaReparto`, `RepartoProporcional`) | RF-23 | `Patterns/StrategyTests.cs` | Dominio y pruebas; el endpoint llega en el Sprint 3 |
+| Template Method | `ProyectoGanadero.Validar()` → `ValidarLinea()`; `CreadorProyecto.CrearBorrador()`; `Aviso.EnviarAsync()` | RF-07, RF-08, RF-02, RF-04 | `Patterns/TemplateMethodTests.cs` | Ya estaba en el código |
+| Iterator | `GrupoConceptos.Detalle()` (`yield`), `ValidarLinea()`; `IEnumerable`/LINQ | RF-23 | `Patterns/IteratorTests.cs` | Lo da C#; no se escribe un iterador a mano |
 | Mediator | — | RF-13 a RF-16 | — | No aplica |
 | Memento | — | RF-07, RF-12 | — | No aplica |
 

@@ -34,7 +34,7 @@ docker compose up -d
 Configurar la cadena de conexión local sin guardar contraseñas en archivos versionados. En Windows, con autenticación integrada:
 
 ```powershell
-cd apps/api/src/P11.Api
+cd apps/api
 dotnet user-secrets set "ConnectionStrings:Principal" "Server=localhost;Database=P11;Trusted_Connection=True;TrustServerCertificate=True"
 ```
 
@@ -50,7 +50,7 @@ Restaurar la herramienta local desde la raíz y aplicar las migraciones (opciona
 
 ```powershell
 dotnet tool restore
-cd apps/api/src/P11.Api
+cd apps/api
 dotnet ef database update
 ```
 
@@ -82,11 +82,10 @@ Para autenticar una solicitud en Swagger, ejecutar `POST /api/auth/login` con el
 
 ## Pruebas
 
-Desde la raíz:
+Las pruebas están en un proyecto aparte, `tests/api` (fuera de esta carpeta, para que no se compilen dentro de la API). Desde la raíz:
 
 ```powershell
-cd apps/api
-dotnet test
+dotnet test tests/api
 ```
 
 Las pruebas de integración usan una base de datos en memoria y no requieren SQL Server.

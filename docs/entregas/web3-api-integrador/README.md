@@ -13,14 +13,14 @@ Plan escrito el 18/11/2026 para la sesión siguiente.
 
 | Criterio (pts) | Dónde está | Estado |
 |---|---|---|
-| Entidades, claves y relación (8) | `Datos/AppDbContext.cs`. `ProyectoGanadero` (TPH engorde/lechería) → `Usuario`; `HistorialProyecto` → `ProyectoGanadero` | ✓ |
-| Configuración de EF Core y migración aplicable (8) | SQL Server, `Datos/Migraciones/*_Inicial.cs` | ✓ |
-| Datos de prueba y persistencia tras reiniciar (4) | `Datos/SemillaDatos.cs` | ✓ (productor, inversionista y dos proyectos de Matías) |
+| Entidades, claves y relación (8) | `Data/AppDbContext.cs`. `ProyectoGanadero` (TPH engorde/lechería) → `Usuario`; `HistorialProyecto` → `ProyectoGanadero` | ✓ |
+| Configuración de EF Core y migración aplicable (8) | SQL Server, `Data/Migrations/*_Inicial.cs` | ✓ |
+| Datos de prueba y persistencia tras reiniciar (4) | `Data/SemillaDatos.cs` | ✓ (productor, inversionista y dos proyectos de Matías) |
 | Listado y consulta por ID (6) | `GET /api/proyectos`, `GET /api/proyectos/{id}` | ✓ |
 | POST con 201 y `Location` (6) | `POST /api/proyectos` | ✓ |
 | PUT y DELETE (9) | `PUT` y `DELETE /api/proyectos/{id}` | ✓ |
 | Recurso relacionado (4) | `GET /api/proyectos/{id}/historial` | ✓ |
-| Separación modelos / controladores / DTO / datos (3) | `Dominio/`, `Controllers/`, `Contratos/`, `Datos/` | ✓ |
+| Separación modelos / controladores / DTO / datos (3) | `Models/`, `Controllers/`, `Dtos/`, `Data/` | ✓ |
 | DTO de entrada y salida (5) | `ProyectoEntradaDto` (entrada, con validaciones), `ProyectoDto` y `HistorialProyectoDto` (salida) | ✓ |
 | Contexto inyectado y operaciones asíncronas (2) | constructor primario + `async`/`CancellationToken` | ✓ |
 | Obligatorios y regla del dominio (5) | `[Required]`/`[Range]` + `Validar()` + State (solo se edita y borra un borrador) | ✓ |

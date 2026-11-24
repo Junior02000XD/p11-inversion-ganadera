@@ -7,15 +7,15 @@ Esta guía dice qué mostrar, en qué orden y qué decir de cada patrón. Casi t
 
 ## Resumen: qué se muestra y cómo
 
-| Patrón | Cómo se muestra | Archivo para abrir (en `apps/api/src/P11.Api/`) |
+| Patrón | Cómo se muestra | Archivo para abrir (en `apps/api/`) |
 |---|---|---|
-| Adapter | En vivo: llega el código OTP a Mailpit | `Servicios/CorreoSmtpService.cs` |
-| Decorator (cifrado) | En vivo: el archivo en disco no se puede leer, pero «Ver» lo abre | `Servicios/AlmacenDisco.cs`, `AlmacenCifrado.cs`, `Program.cs` |
-| Decorator (reintentos) | En vivo, opcional: se apaga Mailpit y la API reintenta | `Servicios/CorreoConReintentos.cs` |
-| Facade | En vivo: verificación de identidad | `Servicios/VerificacionService.cs` |
-| Bridge | En vivo: avisos por correo; Telegram con prueba | `Servicios/Avisos/` |
-| Proxy | En vivo, el dueño abre su documento; el acceso ajeno, con prueba | `Servicios/Documentos/VisorDocumentosProxy.cs` |
-| Composite | Prueba (el endpoint llega en el Sprint 3) | `Dominio/Liquidaciones/ConceptoLiquidacion.cs` |
+| Adapter | En vivo: llega el código OTP a Mailpit | `Services/Email/CorreoSmtpService.cs` |
+| Decorator (cifrado) | En vivo: el archivo en disco no se puede leer, pero «Ver» lo abre | `Services/Files/AlmacenDisco.cs`, `AlmacenCifrado.cs`, `Program.cs` |
+| Decorator (reintentos) | En vivo, opcional: se apaga Mailpit y la API reintenta | `Services/Email/CorreoConReintentos.cs` |
+| Facade | En vivo: verificación de identidad | `Services/Verification/VerificacionService.cs` |
+| Bridge | En vivo: avisos por correo; Telegram con prueba | `Services/Notifications/` |
+| Proxy | En vivo, el dueño abre su documento; el acceso ajeno, con prueba | `Services/Documents/VisorDocumentosProxy.cs` |
+| Composite | Prueba (el endpoint llega en el Sprint 3) | `Models/Settlements/ConceptoLiquidacion.cs` |
 | Flyweight | Sin demo: no aplica, se defiende con números | — |
 
 **Ojo:** la pantalla «Liquidaciones» de la web todavía muestra datos de ejemplo, no el Composite. No presentarla como si lo usara.
@@ -24,7 +24,7 @@ Esta guía dice qué mostrar, en qué orden y qué decir de cada patrón. Casi t
 
 ```bash
 docker compose up -d                                          # desde la raíz del repo
-cd apps/api/src/P11.Api && dotnet run --launch-profile https  # API (dejar la terminal visible: ahí salen los registros)
+cd apps/api && dotnet run --launch-profile https  # API (dejar la terminal visible: ahí salen los registros)
 cd apps/web && npm run dev                                    # web (otra terminal)
 ```
 
@@ -53,7 +53,7 @@ Para cada ensayo hace falta un correo y un CI que no estén usados: por ejemplo 
 | 6 | B (analista) | Menú «Identidad y documentos». Aparece el usuario nuevo con sus tres imágenes. Abrir una con su enlace y apretar «Aprobar». | La imagen se ve; el usuario pasa a «Verificado». | **Proxy**: el analista puede abrir el archivo porque `VisorDocumentosProxy` lo deja pasar. **Facade**: `DecidirAsync`. |
 | 7 | C | Recargar. | Correo «Verificación de identidad: Verificado». | **Bridge** otra vez: el mismo canal, otro aviso. |
 | 8 | A | Menú «Documentos». Elegir el tipo «Registro RUNSA» y subir `runsa.pdf`. Apretar «Ver». | El PDF se abre en otra pestaña. | **Proxy**: el dueño abre su propio documento. |
-| 9 | Terminal | Desde `apps/api/src/P11.Api`: `ls -t App_Data/archivos \| head -1` y después `xxd App_Data/archivos/<ese archivo> \| head -3`. | Bytes ilegibles: no aparece el `%PDF` del comienzo de un PDF. | **Decorator**: `AlmacenCifrado` cifra con AES-256-GCM y le pasa los bytes a `AlmacenDisco`, que solo escribe. «Ver» descifra al leer. |
+| 9 | Terminal | Desde `apps/api`: `ls -t App_Data/archivos \| head -1` y después `xxd App_Data/archivos/<ese archivo> \| head -3`. | Bytes ilegibles: no aparece el `%PDF` del comienzo de un PDF. | **Decorator**: `AlmacenCifrado` cifra con AES-256-GCM y le pasa los bytes a `AlmacenDisco`, que solo escribe. «Ver» descifra al leer. |
 | 10 | Terminal de la API | Mirar los registros. | Líneas como «… abrió el documento …». | **Proxy**: registra cada acceso. |
 
 ### Opcional: los reintentos del correo (Decorator), 1 minuto
@@ -89,7 +89,7 @@ dotnet test --filter "FullyQualifiedName~CompositeTests"
 dotnet test --filter "FullyQualifiedName~VerificacionTests"   # la Facade, de punta a punta
 ```
 
-Qué decir, abriendo las pruebas en `apps/api/tests/P11.Tests/Patrones/`:
+Qué decir, abriendo las pruebas en `tests/api/Patrones/`:
 
 - **Proxy.** `Otro_productor_no_puede_abrirlo_ni_saber_que_existe`: otro productor recibe «no encontrado», como si el documento no existiera, y el intento queda registrado. Esto no se muestra en vivo porque necesita el identificador del documento y el token de otra cuenta.
 - **Bridge.** `El_mismo_aviso_sale_por_Telegram_y_suena_porque_es_urgente`: el mismo `AvisoBloqueo` sale por `CanalTelegram` sin cambiar su código. Telegram está programado y probado, pero no activado, porque los usuarios todavía no tienen un chat vinculado.

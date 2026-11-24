@@ -14401,7 +14401,7 @@
               "top": 40,
               "width": 740,
               "height": 52,
-              "text": "«planificada» = clase de los Sprints 2-3: es diseño, todavía no tiene código.\nLas demás clases y las enumeraciones están en apps/api/src/P11.Api/Dominio."
+              "text": "«planificada» = clase de los Sprints 2-3: es diseño, todavía no tiene código.\nLas demás clases y las enumeraciones están en apps/api/Dominio."
             }
           ],
           "defaultDiagram": true

@@ -412,10 +412,10 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
     <div class="tarjeta termino"><h4>Clave foránea (FK)</h4><p>Columna que apunta a una fila de otra tabla. <code>Inversiones.ProyectoId</code> apunta a <code>Proyectos.Id</code>.</p><p class="analogia">En la boleta, el número de cliente que te lleva a su ficha.</p></div>
     <div class="tarjeta termino"><h4>ORM (Entity Framework Core)</h4><p>Traduce clases de C# a tablas y consultas SQL. Escribes <code>db.Inversiones.Add(x)</code> y EF genera el <code>INSERT</code>.</p><p class="analogia">Un traductor entre el idioma del programa y el de la base.</p></div>
     <div class="tarjeta termino"><h4>Migración</h4><p>Archivo que describe un cambio en la estructura de la base (crear tabla, agregar columna). La API las aplica sola al arrancar. Hay dos: <code>Inicial</code> y <code>Sprint2Inversiones</code>.</p><p class="analogia">El plano de una remodelación, con fecha, que se puede repetir en otra casa igual.</p></div>
-    <div class="tarjeta termino"><h4>Entidad / Dominio</h4><p>Las clases que representan el negocio y sus reglas: <code>ProyectoGanadero</code>, <code>Inversion</code>. Están en la carpeta <code>Dominio/</code>.</p><p class="analogia">El reglamento interno de la empresa.</p></div>
+    <div class="tarjeta termino"><h4>Entidad / Dominio</h4><p>Las clases que representan el negocio y sus reglas: <code>ProyectoGanadero</code>, <code>Inversion</code>. Están en la carpeta <code>Models/</code>.</p><p class="analogia">El reglamento interno de la empresa.</p></div>
     <div class="tarjeta termino"><h4>DTO</h4><p>«Objeto de transferencia de datos»: la forma exacta de lo que entra o sale por la API (<code>ReservaRequest</code>, <code>InversionDto</code>). Separa lo que se muestra de lo que se guarda.</p><p class="analogia">El formulario impreso que se entrega en ventanilla, distinto del expediente interno.</p></div>
     <div class="tarjeta termino"><h4>Controlador</h4><p>Clase de la API que recibe los pedidos de un tema y responde (<code>InversionesController</code>). Debería ser delgado: valida, llama a las reglas y responde.</p><p class="analogia">El cajero: atiende, pero sigue el reglamento.</p></div>
-    <div class="tarjeta termino"><h4>Servicio</h4><p>Clase con lógica que usan varios controladores (<code>OtpService</code>, <code>GestorInversiones</code>). Están en <code>Servicios/</code>.</p><p class="analogia">Un área de apoyo: contabilidad, mensajería.</p></div>
+    <div class="tarjeta termino"><h4>Servicio</h4><p>Clase con lógica que usan varios controladores (<code>OtpService</code>, <code>GestorInversiones</code>). Están en <code>Services/</code>.</p><p class="analogia">Un área de apoyo: contabilidad, mensajería.</p></div>
     <div class="tarjeta termino"><h4>Inyección de dependencias</h4><p>Las clases no crean lo que necesitan: lo reciben en el constructor. <code>Program.cs</code> dice qué clase se entrega para cada interfaz.</p><p class="analogia">El restaurante no cría sus gallinas: el proveedor se las trae.</p></div>
     <div class="tarjeta termino"><h4>Interfaz</h4><p>Un contrato: lista lo que una clase sabe hacer sin decir cómo (<code>ICorreoService.EnviarAsync</code>). Permite cambiar la implementación sin tocar a quien la usa.</p><p class="analogia">El enchufe: cualquier aparato que lo respete funciona.</p></div>
     <div class="tarjeta termino"><h4>Autenticación vs. autorización</h4><p>Autenticación: quién eres (login). Autorización: qué puedes hacer (tu rol). En la API, <code>[Authorize(Roles = "…")]</code> hace la segunda.</p><p class="analogia">Mostrar el carnet en la puerta vs. tener pase a la zona VIP.</p></div>
@@ -423,7 +423,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
     <div class="tarjeta termino"><h4>OTP</h4><p>Código de un solo uso enviado por correo: 6 dígitos, vence en 10 minutos, 3 intentos. Se usa al confirmar la cuenta y al firmar el contrato de inversión.</p><p class="analogia">El código que te manda el banco para confirmar una transferencia.</p></div>
     <div class="tarjeta termino"><h4>Hash</h4><p>Huella de un dato que no se puede revertir. Las contraseñas y los OTP se guardan como hash, nunca en texto.</p><p class="analogia">Como una huella digital: identifica, pero no reconstruye la mano.</p></div>
     <div class="tarjeta termino"><h4>Cifrado (AES-256-GCM)</h4><p>Convierte un archivo en algo ilegible sin la clave. Las fotos del CI, la selfie y los documentos del predio se guardan cifrados (RNF-02).</p><p class="analogia">Una caja fuerte: con la llave se abre, sin ella no.</p></div>
-    <div class="tarjeta termino"><h4>Componente (React)</h4><p>Una pieza de pantalla reutilizable, escrita como función: <code>Tarjeta</code>, <code>Campo</code>, <code>Aviso</code>. Cada pantalla de <code>paginas/</code> es un componente.</p><p class="analogia">Piezas de Lego.</p></div>
+    <div class="tarjeta termino"><h4>Componente (React)</h4><p>Una pieza de pantalla reutilizable, escrita como función: <code>Tarjeta</code>, <code>Campo</code>, <code>Aviso</code>. Cada pantalla de <code>pages/</code> es un componente.</p><p class="analogia">Piezas de Lego.</p></div>
     <div class="tarjeta termino"><h4>Estado (useState)</h4><p>Lo que una pantalla recuerda mientras está abierta: lo que escribiste, el error a mostrar. Al cambiar, React vuelve a dibujar.</p><p class="analogia">La pizarra del aula: se borra y se vuelve a escribir.</p></div>
     <div class="tarjeta termino"><h4>useEffect</h4><p>Código que React ejecuta después de dibujar, por ejemplo pedir datos a la API al abrir la pantalla.</p><p class="analogia">«Apenas abras la tienda, revisa el correo.»</p></div>
     <div class="tarjeta termino"><h4>Ruta</h4><p>La dirección de una pantalla en la web: <code>/catalogo</code>, <code>/inversiones/:id/contrato</code>. Las define <code>main.jsx</code>.</p><p class="analogia">El número de oficina dentro del edificio.</p></div>
@@ -454,7 +454,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
     <thead><tr><th>Parte</th><th>Tecnología</th><th>Dónde</th></tr></thead>
     <tbody>
       <tr><td>Web</td><td>React 19 + Vite 7 + React Router 7, en JavaScript</td><td><code>apps/web</code></td></tr>
-      <tr><td>API</td><td>ASP.NET Core (.NET 10), en C#</td><td><code>apps/api/src/P11.Api</code></td></tr>
+      <tr><td>API</td><td>ASP.NET Core (.NET 10), en C#</td><td><code>apps/api</code></td></tr>
       <tr><td>Base de datos</td><td>SQL Server 2022 con Entity Framework Core 10</td><td>Docker o instalación local</td></tr>
       <tr><td>Usuarios y sesión</td><td>ASP.NET Core Identity + JWT</td><td><code>Program.cs</code>, <code>TokenJwtService.cs</code></td></tr>
       <tr><td>Documentación de la API</td><td>OpenAPI + Swagger UI (también Scalar)</td><td><code>/swagger</code>, <code>/scalar</code></td></tr>
@@ -526,7 +526,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
       <rect id="n-web" class="d-caja verde" x="20" y="40" width="230" height="130" rx="12"/>
       <text class="d-titulo" x="36" y="68">Web (React + Vite)</text>
       <text class="d-texto" x="36" y="92">apps/web · puerto 5173</text>
-      <text class="d-texto" x="36" y="112">Pantallas en paginas/</text>
+      <text class="d-texto" x="36" y="112">Pantallas en pages/</text>
       <text class="d-texto" x="36" y="132">api.js agrega el token</text>
       <text class="d-texto" x="36" y="152">Vite reenvía /api → API</text>
       <rect class="d-caja" x="20" y="240" width="230" height="100" rx="12" stroke-dasharray="6 5"/>
@@ -536,20 +536,20 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
       <!-- API -->
       <rect class="d-caja" x="300" y="16" width="360" height="380" rx="16"/>
       <text class="d-titulo" x="318" y="44">API (ASP.NET Core · .NET 10)</text>
-      <text class="d-texto" x="318" y="64">apps/api/src/P11.Api · puerto 7080 (https)</text>
+      <text class="d-texto" x="318" y="64">apps/api · puerto 7080 (https)</text>
       <rect id="n-ctrl" class="d-caja azul" x="320" y="80" width="320" height="80" rx="10"/>
       <text class="d-titulo" x="336" y="106">Controllers/</text>
       <text class="d-texto" x="336" y="128">Reciben el pedido, revisan rol (401/403),</text>
       <text class="d-texto" x="336" y="146">validan la entrada (400) y responden.</text>
       <rect id="n-dom" class="d-caja ocre" x="320" y="180" width="320" height="90" rx="10"/>
-      <text class="d-titulo" x="336" y="206">Servicios/ y Dominio/</text>
+      <text class="d-titulo" x="336" y="206">Services/ y Models/</text>
       <text class="d-texto" x="336" y="228">Las reglas del negocio: estados, cupo,</text>
       <text class="d-texto" x="336" y="246">OTP, avisos, patrones de diseño.</text>
       <text class="d-texto" x="336" y="262">Si una regla no se cumple → 409.</text>
       <rect id="n-ef" class="d-caja verde" x="320" y="290" width="320" height="86" rx="10"/>
-      <text class="d-titulo" x="336" y="316">Datos/ (Entity Framework Core)</text>
+      <text class="d-titulo" x="336" y="316">Data/ (Entity Framework Core)</text>
       <text class="d-texto" x="336" y="338">AppDbContext traduce clases a tablas;</text>
-      <text class="d-texto" x="336" y="356">Migraciones/ crea y actualiza la base.</text>
+      <text class="d-texto" x="336" y="356">Migrations/ crea y actualiza la base.</text>
       <!-- Externos -->
       <rect id="n-mail" class="d-caja ocre" x="710" y="30" width="170" height="86" rx="12"/>
       <text class="d-titulo" x="726" y="58">Mailpit</text>
@@ -580,13 +580,13 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
   <h3>El viaje de un pedido: reservar Bs 1.000</h3>
   <p class="texto">Así viaja un clic desde la pantalla hasta la base de datos y de vuelta. Es el paso 1 del caso de uso «Invertir en un proyecto» (RF-13).</p>
   <ol class="pasos pasos-clic" id="viaje">
-    <li data-nodo="n-web" tabindex="0"><b>La pantalla manda el pedido.</b> En <code>Invertir.jsx</code>, el botón «Reservar cupo por 30 min» llama a <code>api('/inversiones', { cuerpo: { proyectoId, montoBs: 1000 } })</code>.<span class="donde">apps/web/src/paginas/Invertir.jsx</span></li>
+    <li data-nodo="n-web" tabindex="0"><b>La pantalla manda el pedido.</b> En <code>Invertir.jsx</code>, el botón «Reservar cupo por 30 min» llama a <code>api('/inversiones', { cuerpo: { proyectoId, montoBs: 1000 } })</code>.<span class="donde">apps/web/src/pages/investments/Invertir.jsx</span></li>
     <li data-nodo="n-web" tabindex="0"><b>Se agrega el token.</b> <code>api.js</code> pone <code>Authorization: Bearer &lt;token&gt;</code> y envía <code>POST /api/inversiones</code>. Vite lo reenvía a la API.<span class="donde">apps/web/src/api.js · función pedir()</span></li>
     <li data-nodo="n-ctrl" tabindex="0"><b>La API revisa quién eres.</b> Valida la firma del token. Si falta o venció: <b>401</b>. Si tu rol no es Inversionista ni Administrador: <b>403</b>. Lo hace el atributo <code>[Authorize(Roles = …)]</code>.<span class="donde">Controllers/InversionesController.cs · encabezado de la clase</span></li>
     <li data-nodo="n-ctrl" tabindex="0"><b>El controlador revisa la entrada y el contexto.</b> ¿El monto es mayor a 0? ¿Tu identidad está verificada? ¿El proyecto está publicado y con la ronda abierta?<span class="donde">InversionesController.Reservar()</span></li>
-    <li data-nodo="n-dom" tabindex="0"><b>Se calcula el cupo libre.</b> <code>GestorInversiones</code> suma lo pagado y las reservas vigentes de ese proyecto (las vencidas ya no cuentan).<span class="donde">Servicios/Inversiones/GestorInversiones.cs · CupoAsync()</span></li>
+    <li data-nodo="n-dom" tabindex="0"><b>Se calcula el cupo libre.</b> <code>GestorInversiones</code> suma lo pagado y las reservas vigentes de ese proyecto (las vencidas ya no cuentan).<span class="donde">Services/Investments/GestorInversiones.cs · CupoAsync()</span></li>
     <li data-nodo="n-dom" tabindex="0"><b>Se aplican las reglas.</b> Bajo el mínimo: <b>400</b> mostrando el cupo. Más que el cupo: <b>409</b>. Otra reserva tuya en curso en el mismo proyecto: <b>409</b>.<span class="donde">InversionesController.Reservar()</span></li>
-    <li data-nodo="n-ef" tabindex="0"><b>Se guarda.</b> <code>Inversion.Reservar(...)</code> crea la reserva con vencimiento a los 30 minutos y <code>db.SaveChangesAsync()</code> hace el <code>INSERT</code> en la tabla <code>Inversiones</code>.<span class="donde">Dominio/Inversiones/Inversion.cs · Datos/AppDbContext.cs</span></li>
+    <li data-nodo="n-ef" tabindex="0"><b>Se guarda.</b> <code>Inversion.Reservar(...)</code> crea la reserva con vencimiento a los 30 minutos y <code>db.SaveChangesAsync()</code> hace el <code>INSERT</code> en la tabla <code>Inversiones</code>.<span class="donde">Models/Investments/Inversion.cs · Data/AppDbContext.cs</span></li>
     <li data-nodo="n-sql" tabindex="0"><b>SQL Server guarda la fila</b> con sus claves foráneas al proyecto y al usuario.<span class="donde">tabla Inversiones</span></li>
     <li data-nodo="n-web" tabindex="0"><b>Vuelve la respuesta.</b> <b>201 Created</b> con la inversión en JSON. La web lee su <code>id</code> y navega a <code>/inversiones/{id}/contrato</code>.<span class="donde">Invertir.jsx · navegar(...)</span></li>
   </ol>
@@ -613,8 +613,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
   <p class="texto">Abre cada carpeta para ver qué hay. Lo marcado con <span class="chip chip-ok">Sprint 2</span> es nuevo en este sprint.</p>
   <div class="arbol">
     <details open><summary><b>p11-inversion-ganadera/</b> <span class="desc">raíz: README, docker-compose.yml (Mailpit), global.json (.NET 10)</span></summary>
-      <details open><summary><b>apps/api/</b> <span class="desc">la API y sus pruebas (solución P11.sln)</span></summary>
-        <details open><summary><b>src/P11.Api/</b> <span class="desc">el proyecto de la API</span></summary>
+        <details open><summary><b>apps/api/</b> <span class="desc">la API (dotnet run)</span></summary>
           <div class="hoja">Program.cs <span class="desc">arranque: registra servicios, seguridad, base de datos y Swagger</span></div>
           <div class="hoja">appsettings.json <span class="desc">reglas configurables: 5 intentos, OTP de 6 dígitos y 10 min, JWT de 120 min, archivos de 5 MB</span></div>
           <details><summary><b>Controllers/</b> <span class="desc">un controlador por tema; cada método es un endpoint</span></summary>
@@ -629,38 +628,36 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
             <div class="hoja">PortafolioController.cs <span class="chip chip-ok">Sprint 2</span> <span class="desc">participaciones pagadas y constancia (RF-16)</span></div>
             <div class="hoja">AdminUsuariosController.cs, AdminBitacoraController.cs <span class="desc">usuarios, roles, bloqueo y bitácora (RF-06, RNF-03)</span></div>
           </details>
-          <details><summary><b>Contratos/Dtos.cs</b> <span class="desc">todos los DTO: lo que entra (con sus validaciones) y lo que sale</span></summary></details>
-          <details><summary><b>Dominio/</b> <span class="desc">las reglas del negocio, sin saber nada de HTTP</span></summary>
+          <details><summary><b>Dtos/Dtos.cs</b> <span class="desc">todos los DTO: lo que entra (con sus validaciones) y lo que sale</span></summary></details>
+          <details><summary><b>Models/</b> <span class="desc">las reglas del negocio, sin saber nada de HTTP</span></summary>
             <div class="hoja">Usuario.cs, Roles.cs, Enums.cs, CodigoOtp.cs, DocumentoArchivo.cs</div>
-            <div class="hoja">Proyectos/ <span class="desc">ProyectoGanadero (engorde y lechería), CreadorProyecto (Factory Method), Estados/EstadoFicha (State), DatosPublicacion <span class="chip chip-ok">Sprint 2</span></span></div>
-            <div class="hoja">Inversiones/ <span class="chip chip-ok">Sprint 2</span> <span class="desc">Inversion (reservar, firmar, pagar, vencer) y ContratoInversion (texto y versión)</span></div>
-            <div class="hoja">Simulacion/ <span class="desc">ConfiguracionEscenario (Prototype) y PreparadorEscenarios</span></div>
-            <div class="hoja">Expediente/, Liquidaciones/ <span class="desc">Builder, Composite y Strategy, listos para el Sprint 3</span></div>
+            <div class="hoja">Projects/ <span class="desc">ProyectoGanadero (engorde y lechería), CreadorProyecto (Factory Method), States/EstadoFicha (State), DatosPublicacion <span class="chip chip-ok">Sprint 2</span></span></div>
+            <div class="hoja">Investments/ <span class="chip chip-ok">Sprint 2</span> <span class="desc">Inversion (reservar, firmar, pagar, vencer) y ContratoInversion (texto y versión)</span></div>
+            <div class="hoja">Simulation/ <span class="desc">ConfiguracionEscenario (Prototype) y PreparadorEscenarios</span></div>
+            <div class="hoja">Dossiers/, Settlements/ <span class="desc">Builder, Composite y Strategy, listos para el Sprint 3</span></div>
           </details>
-          <details><summary><b>Servicios/</b> <span class="desc">lógica que usan varios controladores</span></summary>
-            <div class="hoja">OtpService.cs <span class="desc">genera y valida códigos (solo guarda el hash)</span></div>
-            <div class="hoja">VerificacionService.cs <span class="desc">fachada de la verificación de identidad</span></div>
-            <div class="hoja">TokenJwtService.cs <span class="desc">firma los tokens</span></div>
-            <div class="hoja">AlmacenDisco.cs, AlmacenCifrado.cs <span class="desc">guardar archivos cifrados (Decorator)</span></div>
-            <div class="hoja">CorreoSmtpService.cs, CorreoConReintentos.cs <span class="desc">enviar correos (Adapter y Decorator)</span></div>
-            <div class="hoja">Avisos/ <span class="desc">qué se avisa y por qué canal (Bridge); AvisoInversion <span class="chip chip-ok">Sprint 2</span></span></div>
-            <div class="hoja">Documentos/ <span class="desc">VisorDocumentosProxy: solo el dueño o un analista abre un archivo</span></div>
-            <div class="hoja">Proyectos/ <span class="desc">RequisitosEnvio (Chain), ComandosProyecto (Command), GestorCicloProyecto, ObservadoresProyecto (Observer)</span></div>
-            <div class="hoja">Inversiones/ <span class="chip chip-ok">Sprint 2</span> <span class="desc">GestorInversiones (cupo y vencimientos) y VencimientoReservas (servicio de fondo)</span></div>
-            <div class="hoja">Simulacion/ <span class="chip chip-ok">Sprint 2</span> <span class="desc">SimuladorEscenarios: arma los tres escenarios</span></div>
+          <details><summary><b>Services/</b> <span class="desc">lógica que usan varios controladores</span></summary>
+            <div class="hoja">Auth/ <span class="desc">OtpService (genera y valida códigos, solo guarda el hash) y TokenJwtService (firma los tokens)</span></div>
+            <div class="hoja">Verification/ <span class="desc">VerificacionService: fachada de la verificación de identidad</span></div>
+            <div class="hoja">Files/ <span class="desc">AlmacenDisco, AlmacenCifrado: guardar archivos cifrados (Decorator)</span></div>
+            <div class="hoja">Email/ <span class="desc">CorreoSmtpService, CorreoConReintentos: enviar correos (Adapter y Decorator)</span></div>
+            <div class="hoja">Notifications/ <span class="desc">qué se avisa y por qué canal (Bridge); AvisoInversion <span class="chip chip-ok">Sprint 2</span></span></div>
+            <div class="hoja">Documents/ <span class="desc">VisorDocumentosProxy: solo el dueño o un analista abre un archivo</span></div>
+            <div class="hoja">Projects/ <span class="desc">RequisitosEnvio (Chain), ComandosProyecto (Command), GestorCicloProyecto, ObservadoresProyecto (Observer)</span></div>
+            <div class="hoja">Investments/ <span class="chip chip-ok">Sprint 2</span> <span class="desc">GestorInversiones (cupo y vencimientos) y VencimientoReservas (servicio de fondo)</span></div>
+            <div class="hoja">Simulation/ <span class="chip chip-ok">Sprint 2</span> <span class="desc">SimuladorEscenarios: arma los tres escenarios</span></div>
           </details>
-          <details><summary><b>Datos/</b> <span class="desc">la base de datos</span></summary>
+          <details><summary><b>Data/</b> <span class="desc">la base de datos</span></summary>
             <div class="hoja">AppDbContext.cs <span class="desc">qué tablas hay y cómo se relacionan</span></div>
-            <div class="hoja">Migraciones/ <span class="desc">Inicial y Sprint2Inversiones <span class="chip chip-ok">Sprint 2</span></span></div>
+            <div class="hoja">Migrations/ <span class="desc">Inicial y Sprint2Inversiones <span class="chip chip-ok">Sprint 2</span></span></div>
             <div class="hoja">SemillaDatos.cs <span class="desc">crea roles y cuentas internas al arrancar</span></div>
           </details>
-          <details><summary><b>Configuracion/</b> <span class="desc">opciones validadas al arrancar, documento de Swagger, claves de desarrollo</span></summary></details>
+          <details><summary><b>Configuration/</b> <span class="desc">opciones validadas al arrancar, documento de Swagger, claves de desarrollo</span></summary></details>
         </details>
-        <details><summary><b>tests/P11.Tests/</b> <span class="desc">112 pruebas automáticas</span></summary>
-          <div class="hoja">Integracion/ <span class="desc">levantan la API entera: AutenticacionTests, VerificacionTests, ProyectosTests, EvaluacionProyectosTests, CatalogoTests <span class="chip chip-ok">Sprint 2</span>, InversionesTests <span class="chip chip-ok">Sprint 2</span>…</span></div>
-          <div class="hoja">Patrones/ <span class="desc">una prueba por patrón de diseño</span></div>
+        <details><summary><b>tests/api/</b> <span class="desc">112 pruebas automáticas, en un proyecto aparte (dotnet test tests/api)</span></summary>
+          <div class="hoja">Integration/ <span class="desc">levantan la API entera: AutenticacionTests, VerificacionTests, ProyectosTests, EvaluacionProyectosTests, CatalogoTests <span class="chip chip-ok">Sprint 2</span>, InversionesTests <span class="chip chip-ok">Sprint 2</span>…</span></div>
+          <div class="hoja">Patterns/ <span class="desc">una prueba por patrón de diseño</span></div>
         </details>
-      </details>
       <details open><summary><b>apps/web/</b> <span class="desc">la web (npm run dev)</span></summary>
         <div class="hoja">vite.config.js <span class="desc">puerto 5173 y proxy de /api hacia la API</span></div>
         <details open><summary><b>src/</b></summary>
@@ -671,7 +668,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
           <div class="hoja">componentes.jsx <span class="desc">piezas comunes: Tarjeta, Campo, Aviso, Datos, Progreso, VistaPorRol, CuentaRegresiva</span></div>
           <div class="hoja">estilos.css, estilo.js <span class="desc">los dos estilos visuales: Pampa verde y Cuero y madera</span></div>
           <div class="hoja">datosEjemplo.js <span class="desc">datos de ejemplo para las pantallas del Sprint 3</span></div>
-          <div class="hoja">paginas/ <span class="desc">una pantalla por archivo (41 en total)</span></div>
+          <div class="hoja">pages/ <span class="desc">una carpeta por módulo del menú (account, admin, projects, investments, operations, closing) y una pantalla por archivo (41 en total)</span></div>
         </details>
       </details>
       <details><summary><b>apps/android/</b> <span class="desc">la app, se inicia en el Sprint 3</span></summary></details>
@@ -692,22 +689,22 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
     <tbody>
       <tr><td>¿Dónde se decide qué pestañas ve cada rol?</td><td><code>apps/web/src/casosDeUso.js</code> (web) y <code>[Authorize(Roles = …)]</code> en cada controlador (API)</td></tr>
       <tr><td>¿Dónde se bloquea la cuenta al 5.º intento?</td><td><code>Program.cs</code> (opciones de Identity) con los valores de <code>appsettings.json</code> → <code>ReglasSeguridad</code>; el aviso, en <code>AuthController.Login</code></td></tr>
-      <tr><td>¿Dónde se genera y valida el OTP?</td><td><code>Servicios/OtpService.cs</code></td></tr>
-      <tr><td>¿Dónde se cifran los archivos?</td><td><code>Servicios/AlmacenCifrado.cs</code></td></tr>
-      <tr><td>¿Dónde se valida la ficha del proyecto?</td><td>Dos capas: atributos en <code>Contratos/Dtos.cs</code> (<code>ProyectoEntradaDto</code>) y reglas en <code>ProyectoGanadero.Validar()</code></td></tr>
-      <tr><td>¿Qué impide enviar a evaluación sin documentos?</td><td><code>Servicios/Proyectos/RequisitosEnvio.cs</code> (cadena de requisitos)</td></tr>
-      <tr><td>¿Dónde están los estados del proyecto?</td><td><code>Dominio/Proyectos/Estados/EstadoFicha.cs</code></td></tr>
-      <tr><td>¿Qué se exige para publicar?</td><td><code>Dominio/Proyectos/DatosPublicacion.cs</code> → <code>Incumplido()</code></td></tr>
+      <tr><td>¿Dónde se genera y valida el OTP?</td><td><code>Services/Auth/OtpService.cs</code></td></tr>
+      <tr><td>¿Dónde se cifran los archivos?</td><td><code>Services/Files/AlmacenCifrado.cs</code></td></tr>
+      <tr><td>¿Dónde se valida la ficha del proyecto?</td><td>Dos capas: atributos en <code>Dtos/Dtos.cs</code> (<code>ProyectoEntradaDto</code>) y reglas en <code>ProyectoGanadero.Validar()</code></td></tr>
+      <tr><td>¿Qué impide enviar a evaluación sin documentos?</td><td><code>Services/Projects/RequisitosEnvio.cs</code> (cadena de requisitos)</td></tr>
+      <tr><td>¿Dónde están los estados del proyecto?</td><td><code>Models/Projects/States/EstadoFicha.cs</code></td></tr>
+      <tr><td>¿Qué se exige para publicar?</td><td><code>Models/Projects/DatosPublicacion.cs</code> → <code>Incumplido()</code></td></tr>
       <tr><td>¿Dónde se filtra el catálogo?</td><td><code>Controllers/CatalogoController.cs</code> → <code>Listar()</code></td></tr>
-      <tr><td>¿Dónde está la fórmula del simulador?</td><td><code>Dominio/Simulacion/ConfiguracionEscenario.cs</code> → <code>Calcular()</code></td></tr>
-      <tr><td>¿Dónde se calcula el cupo libre?</td><td><code>Servicios/Inversiones/GestorInversiones.cs</code> → <code>CuposAsync()</code></td></tr>
+      <tr><td>¿Dónde está la fórmula del simulador?</td><td><code>Models/Simulation/ConfiguracionEscenario.cs</code> → <code>Calcular()</code></td></tr>
+      <tr><td>¿Dónde se calcula el cupo libre?</td><td><code>Services/Investments/GestorInversiones.cs</code> → <code>CuposAsync()</code></td></tr>
       <tr><td>¿Dónde se valida el monto mínimo?</td><td><code>InversionesController.Reservar()</code></td></tr>
       <tr><td>¿Cuánto dura la reserva y dónde se define?</td><td>30 minutos, <code>Inversion.MinutosReserva</code></td></tr>
       <tr><td>¿Dónde se calcula la participación?</td><td><code>Inversion.ConfirmarPago()</code></td></tr>
-      <tr><td>¿Quién libera las reservas vencidas?</td><td><code>Servicios/Inversiones/VencimientoReservas.cs</code> (cada minuto) y también al tocar la inversión</td></tr>
-      <tr><td>¿Dónde está el texto del contrato?</td><td><code>Dominio/Inversiones/ContratoInversion.cs</code></td></tr>
-      <tr><td>¿Dónde se crean las tablas?</td><td><code>Datos/AppDbContext.cs</code> y <code>Datos/Migraciones/</code></td></tr>
-      <tr><td>¿Dónde se crean las cuentas de admin y analista?</td><td><code>Datos/SemillaDatos.cs</code> con los datos de <code>appsettings.Development.json</code></td></tr>
+      <tr><td>¿Quién libera las reservas vencidas?</td><td><code>Services/Investments/VencimientoReservas.cs</code> (cada minuto) y también al tocar la inversión</td></tr>
+      <tr><td>¿Dónde está el texto del contrato?</td><td><code>Models/Investments/ContratoInversion.cs</code></td></tr>
+      <tr><td>¿Dónde se crean las tablas?</td><td><code>Data/AppDbContext.cs</code> y <code>Data/Migrations/</code></td></tr>
+      <tr><td>¿Dónde se crean las cuentas de admin y analista?</td><td><code>Data/SemillaDatos.cs</code> con los datos de <code>appsettings.Development.json</code></td></tr>
       <tr><td>¿Dónde se manda el token en la web?</td><td><code>apps/web/src/api.js</code> → <code>pedir()</code></td></tr>
       <tr><td>¿Dónde está el «Ver como» del Administrador?</td><td><code>componentes.jsx</code> → <code>VistaPorRol</code></td></tr>
     </tbody>
@@ -807,7 +804,7 @@ public class InversionesController(AppDbContext db, GestorInversiones gestor, Ot
   </ul>
 
   <h3>4. Una entidad que cuida sus reglas</h3>
-  <div class="codigo"><div class="codigo-cabecera"><code>Dominio/Inversiones/Inversion.cs</code><span>C#</span></div>
+  <div class="codigo"><div class="codigo-cabecera"><code>Models/Investments/Inversion.cs</code><span>C#</span></div>
 <pre><code class="language-csharp">public enum EstadoInversion { Reservada, Firmada, Pagada, Vencida, Rechazada }
 
 public class Inversion
@@ -843,7 +840,7 @@ public class Inversion
   </ul>
 
   <h3>5. Los estados del proyecto (patrón State)</h3>
-  <div class="codigo"><div class="codigo-cabecera"><code>Dominio/Proyectos/Estados/EstadoFicha.cs</code><span>C#</span></div>
+  <div class="codigo"><div class="codigo-cabecera"><code>Models/Projects/States/EstadoFicha.cs</code><span>C#</span></div>
 <pre><code class="language-csharp">public abstract class EstadoFicha
 {
     public virtual EstadoFicha EnviarARevision()  =&gt; throw Invalida("enviar a evaluación");
@@ -871,7 +868,7 @@ public sealed class EnRevisionTecnica : EstadoFicha
   </ul>
 
   <h3>6. Requisitos en cadena (Chain of Responsibility)</h3>
-  <div class="codigo"><div class="codigo-cabecera"><code>Servicios/Proyectos/RequisitosEnvio.cs</code><span>C#</span></div>
+  <div class="codigo"><div class="codigo-cabecera"><code>Services/Projects/RequisitosEnvio.cs</code><span>C#</span></div>
 <pre><code class="language-csharp">public Task&lt;string?&gt; RevisarAsync(ProyectoGanadero proyecto, CancellationToken ct = default)
 {
     var cadena = new FichaCompleta();                   // RF-08: campos válidos
@@ -885,7 +882,7 @@ public sealed class EnRevisionTecnica : EstadoFicha
   </ul>
 
   <h3>7. El simulador (Prototype)</h3>
-  <div class="codigo"><div class="codigo-cabecera"><code>Servicios/Simulacion/SimuladorEscenarios.cs</code> y <code>Dominio/Simulacion/ConfiguracionEscenario.cs</code><span>C#</span></div>
+  <div class="codigo"><div class="codigo-cabecera"><code>Services/Simulation/SimuladorEscenarios.cs</code> y <code>Models/Simulation/ConfiguracionEscenario.cs</code><span>C#</span></div>
 <pre><code class="language-csharp">var baseConfig = new ConfiguracionEscenario { ProyectoId = proyecto.Id, MontoInversionBs = montoBs, … };
 baseConfig.Supuestos["rendimiento"] = proyecto.RendimientoPct / 100;   // los cargó el analista
 baseConfig.Supuestos["costos"]      = proyecto.CostosPct / 100;
@@ -904,7 +901,7 @@ PreparadorEscenarios.Preparar(baseConfig, proyecto.VariacionPct / 100)
   </ul>
 
   <h3>8. Una pantalla de React</h3>
-  <div class="codigo"><div class="codigo-cabecera"><code>apps/web/src/paginas/Invertir.jsx</code><span>JSX</span></div>
+  <div class="codigo"><div class="codigo-cabecera"><code>apps/web/src/pages/investments/Invertir.jsx</code><span>JSX</span></div>
 <pre><code class="language-javascript">export default function Invertir() {
   const { proyectoId } = useParams()                 // sale de la ruta /inversiones/nueva/:proyectoId
   const [monto, setMonto] = useState('')
@@ -934,7 +931,7 @@ PreparadorEscenarios.Preparar(baseConfig, proyecto.VariacionPct / 100)
   </ul>
 
   <h3>9. Una prueba automática</h3>
-  <div class="codigo"><div class="codigo-cabecera"><code>tests/P11.Tests/Integracion/InversionesTests.cs</code><span>C#</span></div>
+  <div class="codigo"><div class="codigo-cabecera"><code>tests/api/Integration/InversionesTests.cs</code><span>C#</span></div>
 <pre><code class="language-csharp">[Fact]
 public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_cupo_disponible()
 {
@@ -1101,7 +1098,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
         <tr><td>Archivo</td><td>PDF, JPG o PNG reales, hasta 5 MB; se guarda cifrado</td><td>400 «Formato no admitido…» o «…de hasta 5 MB.»</td></tr>
       </tbody>
     </table></div>
-    <p class="nota">Las reglas se revisan en <b>dos capas</b>: primero los atributos del DTO (obligatorios y rangos, en <code>Contratos/Dtos.cs</code>) y, si pasan, las reglas del dominio (por ejemplo «peso meta mayor al inicial», en <code>ProyectoEngorde.ValidarLinea()</code>). Por eso, en la captura 9, el error del peso meta aparece recién cuando los demás campos están bien.</p>
+    <p class="nota">Las reglas se revisan en <b>dos capas</b>: primero los atributos del DTO (obligatorios y rangos, en <code>Dtos/Dtos.cs</code>) y, si pasan, las reglas del dominio (por ejemplo «peso meta mayor al inicial», en <code>ProyectoEngorde.ValidarLinea()</code>). Por eso, en la captura 9, el error del peso meta aparece recién cuando los demás campos están bien.</p>
     <h4>Para enviar a evaluación (en este orden)</h4>
     <ol class="pasos">
       <li>Ficha completa y válida. <span class="donde">409 «La ficha tiene campos con error: …»</span></li>
@@ -1292,7 +1289,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
         <tr><td>Consultar expediente del proyecto</td><td>Productor, Inversionista, Analista</td><td>RF-22</td><td><code>Expedientes.jsx</code>, <code>Expediente.jsx</code></td></tr>
       </tbody>
     </table></div>
-    <p class="texto">Parte del dominio ya está lista y probada: el <b>Builder</b> del expediente (<code>Dominio/Expediente</code>) y el <b>Composite</b> y la <b>Strategy</b> de la liquidación (<code>Dominio/Liquidaciones</code>).</p>
+    <p class="texto">Parte del dominio ya está lista y probada: el <b>Builder</b> del expediente (<code>Models/Dossiers</code>) y el <b>Composite</b> y la <b>Strategy</b> de la liquidación (<code>Models/Settlements</code>).</p>
   </div>
 </section>
 
@@ -1300,7 +1297,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
 <section class="seccion" id="cifras">
   <p class="eyebrow">Sección 8</p>
   <h2>Cifras y reglas clave</h2>
-  <div class="breve"><strong>En breve</strong><p>Son los números que más se preguntan. Casi todos se pueden cambiar sin tocar código, en <code>apps/api/src/P11.Api/appsettings.json</code>; los del Sprint 2 están como constantes en el dominio.</p></div>
+  <div class="breve"><strong>En breve</strong><p>Son los números que más se preguntan. Casi todos se pueden cambiar sin tocar código, en <code>apps/api/appsettings.json</code>; los del Sprint 2 están como constantes en el dominio.</p></div>
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Regla</th><th>Valor</th><th>Requerimiento</th><th>Dónde se define</th></tr></thead>
     <tbody>
@@ -1338,7 +1335,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
       <tr><td>Decorator</td><td>Estructural</td><td>Agregar cifrado al almacén de archivos y reintentos al correo sin cambiarlos</td><td><code>AlmacenCifrado.cs</code>, <code>CorreoConReintentos.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
       <tr><td>Proxy</td><td>Estructural</td><td>Solo el dueño o un analista abre un documento; cada acceso queda registrado</td><td><code>VisorDocumentosProxy.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
       <tr><td>Facade</td><td>Estructural</td><td>Una sola puerta para verificar identidad (guardar, comparar, cambiar estado, avisar)</td><td><code>VerificacionService.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
-      <tr><td>Bridge</td><td>Estructural</td><td>Separar qué se avisa (bloqueo, constancia) de por dónde llega (correo, Telegram)</td><td><code>Servicios/Avisos/</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
+      <tr><td>Bridge</td><td>Estructural</td><td>Separar qué se avisa (bloqueo, constancia) de por dónde llega (correo, Telegram)</td><td><code>Services/Notifications/</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
       <tr><td>Composite</td><td>Estructural</td><td>Conceptos de la liquidación agrupados en árbol</td><td><code>ConceptoLiquidacion.cs</code></td><td><span class="chip chip-ocre">Sprint 3</span></td></tr>
       <tr><td>State</td><td>Comportamiento</td><td>Qué se puede hacer con el proyecto según su estado</td><td><code>EstadoFicha.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
       <tr><td>Chain of Responsibility</td><td>Comportamiento</td><td>Los tres requisitos para enviar a evaluación, en cadena</td><td><code>RequisitosEnvio.cs</code></td><td><span class="chip chip-ok">En uso</span></td></tr>
@@ -1357,7 +1354,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
   <p class="eyebrow">Sección 10</p>
   <h2>Pruebas automáticas</h2>
   <div class="breve"><strong>En breve</strong><p>Una prueba automática es código que usa el sistema y comprueba el resultado. Las <b>de integración</b> levantan la API completa en memoria y le hacen pedidos HTTP reales, con una base de datos en memoria y un correo falso; no necesitan SQL Server. Las <b>de patrones</b> prueban una clase sola.</p></div>
-  <p class="texto">Se corren con <code>cd apps/api &amp;&amp; dotnet test</code>. Resultado actual: <b>112 pruebas, 0 fallas</b> (44 al cerrar el Sprint 1, 87 antes del Sprint 2, 13 más de Sergio para Programación Web 3 y 12 del Sprint 2).</p>
+  <p class="texto">Se corren con <code>dotnet test tests/api</code>. Resultado actual: <b>112 pruebas, 0 fallas</b> (44 al cerrar el Sprint 1, 87 antes del Sprint 2, 13 más de Sergio para Programación Web 3 y 12 del Sprint 2).</p>
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Archivo</th><th class="num">Pruebas</th><th>Qué demuestra</th></tr></thead>
     <tbody>
@@ -1370,7 +1367,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
       <tr><td>EvaluacionProyectosTests</td><td class="num">3</td><td>Observar, publicar solo con riesgos y supuestos, roles</td></tr>
       <tr><td>CatalogoTests <span class="chip chip-ok">Sprint 2</span></td><td class="num">5</td><td>Filtros, borrador oculto, tres escenarios con advertencia</td></tr>
       <tr><td>InversionesTests <span class="chip chip-ok">Sprint 2</span></td><td class="num">7</td><td>Flujo completo, mínimo (400), cupo (409), vencimiento, rechazo, sin verificar, privacidad</td></tr>
-      <tr><td>Patrones/*</td><td class="num">59</td><td>Una o más pruebas por patrón (State, Command, Prototype, Decorator…)</td></tr>
+      <tr><td>Patterns/*</td><td class="num">59</td><td>Una o más pruebas por patrón (State, Command, Prototype, Decorator…)</td></tr>
     </tbody>
   </table></div>
   <p class="texto">Trucos que usan las pruebas: <code>ApiFactory</code> reemplaza SQL Server por una base en memoria y el SMTP por <code>CorreoEnMemoria</code> (así leen el OTP del correo); <code>ApiFactoryConReloj</code> usa <code>FakeTimeProvider</code> para adelantar 31 minutos y vencer una reserva sin esperar.</p>
@@ -1385,13 +1382,13 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
   <ol class="pasos">
     <li>Instalar .NET SDK 10, Node.js 20.19 o superior y Docker.</li>
     <li>SQL Server: en Windows, SQL Server Express o Developer; en Linux o Mac, <code>docker run -d --name p11-sql -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='&lt;una clave fuerte&gt;' -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest</code></li>
-    <li>Guardar la cadena de conexión sin subirla al repo: en <code>apps/api/src/P11.Api</code>, <code>dotnet user-secrets set "ConnectionStrings:Principal" "&lt;tu cadena&gt;"</code></li>
+    <li>Guardar la cadena de conexión sin subirla al repo: en <code>apps/api</code>, <code>dotnet user-secrets set "ConnectionStrings:Principal" "&lt;tu cadena&gt;"</code></li>
     <li><code>dotnet dev-certs https --trust</code> (para el https local).</li>
   </ol>
   <h3>Cada vez (una terminal por comando, desde la raíz)</h3>
   <div class="codigo"><div class="codigo-cabecera"><span>Terminal</span><span>bash</span></div>
 <pre><code class="language-bash">docker compose up -d                                           # Mailpit en http://localhost:8025
-cd apps/api/src/P11.Api &amp;&amp; dotnet run --launch-profile https   # API en https://localhost:7080
+cd apps/api &amp;&amp; dotnet run --launch-profile https   # API en https://localhost:7080
 cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      # web en http://localhost:5173</code></pre></div>
   <h3>Cuentas</h3>
   <div class="tabla-scroll"><table class="tabla">
@@ -1403,7 +1400,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
       <tr><td>Inversionista</td><td><code>inversionista@p11.local</code></td><td><code>Inversionista.p11-2026</code></td></tr>
     </tbody>
   </table></div>
-  <p class="texto">La semilla (<code>Datos/SemillaDatos.cs</code>, aporte de Matías) crea estas cuentas al arrancar y, si la base no tiene proyectos, dos borradores del productor de prueba: «Engorde Chiquitania 2026» y «Tambo Warnes». Al reiniciar no se duplican. Para invertir, el inversionista de prueba primero verifica su identidad. También se pueden registrar cuentas nuevas desde la web; el OTP se lee en Mailpit.</p>
+  <p class="texto">La semilla (<code>Data/SemillaDatos.cs</code>, aporte de Matías) crea estas cuentas al arrancar y, si la base no tiene proyectos, dos borradores del productor de prueba: «Engorde Chiquitania 2026» y «Tambo Warnes». Al reiniciar no se duplican. Para invertir, el inversionista de prueba primero verifica su identidad. También se pueden registrar cuentas nuevas desde la web; el OTP se lee en Mailpit.</p>
   <p class="texto">Swagger queda en <code>https://localhost:7080/swagger</code>: <code>POST /api/auth/login</code> con una cuenta, copiar el <code>token</code>, tocar <b>Authorize</b> y pegarlo.</p>
   <div class="capturas una">
     <figure class="captura"><button type="button"><img src="capturas/31-swagger.jpg" alt="Swagger UI" loading="lazy"></button><figcaption><b>31.</b> Swagger UI con los grupos de endpoints, incluidos Catalogo, Inversiones y Portafolio.</figcaption></figure>
