@@ -458,7 +458,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
       <tr><td>Base de datos</td><td>SQL Server 2022 con Entity Framework Core 10</td><td>Docker o instalación local</td></tr>
       <tr><td>Usuarios y sesión</td><td>ASP.NET Core Identity + JWT</td><td><code>Program.cs</code>, <code>TokenJwtService.cs</code></td></tr>
       <tr><td>Documentación de la API</td><td>OpenAPI + Swagger UI (también Scalar)</td><td><code>/swagger</code>, <code>/scalar</code></td></tr>
-      <tr><td>Pruebas</td><td>xUnit + WebApplicationFactory + base en memoria + reloj falso</td><td><code>apps/api/tests</code></td></tr>
+      <tr><td>Pruebas</td><td>xUnit + WebApplicationFactory + base en memoria + reloj falso</td><td><code>tests/api</code></td></tr>
       <tr><td>Correo de desarrollo</td><td>Mailpit en Docker</td><td><code>docker-compose.yml</code></td></tr>
       <tr><td>Android (Sprint 3)</td><td>Java nativo con Retrofit, Room y WorkManager</td><td><code>apps/android</code></td></tr>
       <tr><td>Diagramas</td><td>StarUML (<code>.mdj</code>) y PNG exportados</td><td><code>docs/diagramas</code></td></tr>
@@ -607,12 +607,12 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
   <p class="eyebrow">Sección 5</p>
   <h2>Mapa del repositorio</h2>
   <div class="breve"><strong>En breve</strong>
-    <p>Es un <b>monorepo</b>: un solo repositorio con la API (C#), la web (React) y la app Android, más toda la documentación. La API se organiza en capas: <b>Controllers</b> (reciben pedidos), <b>Contratos</b> (forma de los datos que entran y salen), <b>Dominio</b> (reglas del negocio), <b>Servicios</b> (lógica compartida) y <b>Datos</b> (base de datos).</p>
+    <p>Es un <b>monorepo</b>: un solo repositorio con la API (C#), la web (React) y la app Android, más toda la documentación. La API se organiza en capas: <b>Controllers</b> (reciben pedidos), <b>Dtos</b> (forma de los datos que entran y salen), <b>Models</b> (reglas del negocio), <b>Services</b> (lógica compartida) y <b>Data</b> (base de datos). Las carpetas van en inglés, como en los proyectos de Programación Web 3; las clases siguen en español.</p>
   </div>
 
-  <p class="texto">Abre cada carpeta para ver qué hay. Lo marcado con <span class="chip chip-ok">Sprint 2</span> es nuevo en este sprint.</p>
+  <p class="texto">Abre cada carpeta para ver qué hay. Lo marcado con <span class="chip chip-ok">Sprint 2</span> se sumó en el Sprint 2.</p>
   <div class="arbol">
-    <details open><summary><b>p11-inversion-ganadera/</b> <span class="desc">raíz: README, docker-compose.yml (Mailpit), global.json (.NET 10)</span></summary>
+    <details open><summary><b>p11-inversion-ganadera/</b> <span class="desc">raíz: README, P11.sln (abre la API y las pruebas juntas), docker-compose.yml (SQL Server y Mailpit), .env.example (plantilla de la clave), global.json (.NET 10)</span></summary>
         <details open><summary><b>apps/api/</b> <span class="desc">la API (dotnet run)</span></summary>
           <div class="hoja">Program.cs <span class="desc">arranque: registra servicios, seguridad, base de datos y Swagger</span></div>
           <div class="hoja">appsettings.json <span class="desc">reglas configurables: 5 intentos, OTP de 6 dígitos y 10 min, JWT de 120 min, archivos de 5 MB</span></div>
@@ -668,7 +668,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
           <div class="hoja">componentes.jsx <span class="desc">piezas comunes: Tarjeta, Campo, Aviso, Datos, Progreso, VistaPorRol, CuentaRegresiva</span></div>
           <div class="hoja">estilos.css, estilo.js <span class="desc">los dos estilos visuales: Pampa verde y Cuero y madera</span></div>
           <div class="hoja">datosEjemplo.js <span class="desc">datos de ejemplo para las pantallas del Sprint 3</span></div>
-          <div class="hoja">pages/ <span class="desc">una carpeta por módulo del menú (account, admin, projects, investments, operations, closing) y una pantalla por archivo (41 en total)</span></div>
+          <div class="hoja">pages/ <span class="desc">una carpeta por módulo del menú (account, admin, projects, investments, operations, closing) y una pantalla por archivo (36 en total)</span></div>
         </details>
       </details>
       <details><summary><b>apps/android/</b> <span class="desc">la app, se inicia en el Sprint 3</span></summary></details>
@@ -1381,15 +1381,16 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
   <h3>Una sola vez por máquina</h3>
   <ol class="pasos">
     <li>Instalar .NET SDK 10, Node.js 20.19 o superior y Docker.</li>
-    <li>SQL Server: en Windows, SQL Server Express o Developer; en Linux o Mac, <code>docker run -d --name p11-sql -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='&lt;una clave fuerte&gt;' -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest</code></li>
-    <li>Guardar la cadena de conexión sin subirla al repo: en <code>apps/api</code>, <code>dotnet user-secrets set "ConnectionStrings:Principal" "&lt;tu cadena&gt;"</code></li>
+    <li>En la raíz, copiar <code>.env.example</code> como <code>.env</code> y poner en <code>P11_SQL_CLAVE</code> una clave para SQL Server (mínimo 8 caracteres, con mayúsculas, minúsculas, números y símbolos). El <code>.env</code> no se sube al repo.</li>
+    <li>Guardar la cadena de conexión sin subirla al repo: en <code>apps/api</code>, <code>dotnet user-secrets set "ConnectionStrings:Principal" "Server=localhost,1433;Database=P11;User Id=sa;Password=&lt;tu clave&gt;;TrustServerCertificate=True"</code></li>
     <li><code>dotnet dev-certs https --trust</code> (para el https local).</li>
   </ol>
   <h3>Cada vez (una terminal por comando, desde la raíz)</h3>
   <div class="codigo"><div class="codigo-cabecera"><span>Terminal</span><span>bash</span></div>
-<pre><code class="language-bash">docker compose up -d                                           # Mailpit en http://localhost:8025
+<pre><code class="language-bash">docker compose up -d --wait                       # SQL Server (:1433) y Mailpit (:8025); espera a que estén listos
 cd apps/api &amp;&amp; dotnet run --launch-profile https   # API en https://localhost:7080
 cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      # web en http://localhost:5173</code></pre></div>
+  <p class="texto">El <code>docker-compose.yml</code> levanta SQL Server 2022 (con un volumen, así los datos sobreviven al apagarlo) y Mailpit. <code>--wait</code> espera a que la base acepte conexiones: si la API arranca antes, falla. En Windows con SQL Server Express o Developer instalado, se levanta solo el correo con <code>docker compose up -d mailpit</code>. Para apagar todo: <code>docker compose stop</code>.</p>
   <h3>Cuentas</h3>
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Rol</th><th>Correo</th><th>Contraseña</th></tr></thead>
@@ -1421,8 +1422,10 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
     <thead><tr><th>Síntoma</th><th>Causa probable</th></tr></thead>
     <tbody>
       <tr><td>La web dice «No se pudo conectar con el servidor.»</td><td>La API no está corriendo o no está en el puerto 7080</td></tr>
-      <tr><td>La API no arranca por la base</td><td>SQL Server apagado, o falta la cadena en <code>user-secrets</code></td></tr>
-      <tr><td>No llega el OTP</td><td>Mailpit no está corriendo: <code>docker compose up -d</code></td></tr>
+      <tr><td>La API no arranca por la base</td><td>SQL Server apagado (<code>docker compose up -d --wait</code>), o falta la cadena en <code>user-secrets</code></td></tr>
+      <tr><td><code>docker compose</code> dice «Falta P11_SQL_CLAVE»</td><td>No existe el <code>.env</code>: copiar <code>.env.example</code> y poner la clave</td></tr>
+      <tr><td>El puerto 1433 ya está ocupado</td><td>Otro SQL Server en la máquina: poner <code>P11_PUERTO_SQL=1434</code> en el <code>.env</code> y usar <code>localhost,1434</code> en la cadena de conexión</td></tr>
+      <tr><td>No llega el OTP</td><td>Mailpit no está corriendo: <code>docker compose up -d --wait</code></td></tr>
       <tr><td>«Tu identidad todavía no está verificada»</td><td>El usuario no pasó por «Registrar cuenta y verificar identidad»</td></tr>
       <tr><td>El catálogo está vacío</td><td>Ningún proyecto fue aprobado por el analista todavía</td></tr>
       <tr><td>Error de certificado en https</td><td>Falta <code>dotnet dev-certs https --trust</code></td></tr>
@@ -1454,7 +1457,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
     <details class="pregunta" data-tema="tecnologia"><summary><span class="chip">Tecnologías</span>¿Qué hace Vite además de levantar la web?</summary><div class="respuesta"><p>Arma la versión final optimizada (<code>npm run build</code>) y, en desarrollo, su proxy reenvía <code>/api</code> a la API. Así el navegador ve un solo sitio y no hay problemas de CORS.</p></div></details>
     <details class="pregunta" data-tema="tecnologia"><summary><span class="chip">Tecnologías</span>¿Qué es Entity Framework y qué es una migración?</summary><div class="respuesta"><p>EF Core es el ORM: traduce clases de C# a tablas y consultas SQL. Una migración es un archivo con un cambio de la estructura de la base. Hay dos: <code>Inicial</code> y <code>Sprint2Inversiones</code> (tabla <code>Inversiones</code> y columnas de publicación). La API las aplica sola al arrancar.</p></div></details>
     <details class="pregunta" data-tema="tecnologia"><summary><span class="chip">Tecnologías</span>¿Para qué sirve Mailpit?</summary><div class="respuesta"><p>Es un buzón falso para desarrollo: atrapa todos los correos de la API (OTP, avisos, constancias) y los muestra en <code>localhost:8025</code> sin enviarlos de verdad.</p></div></details>
-    <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Qué hay en Controllers, Dominio y Servicios?</summary><div class="respuesta"><p><b>Controllers</b>: reciben el pedido HTTP, revisan roles y entrada, y responden con un código. <b>Dominio</b>: las clases del negocio con sus reglas (<code>ProyectoGanadero</code>, <code>Inversion</code>), sin saber nada de HTTP. <b>Servicios</b>: lógica que usan varios controladores (OTP, correo, cupo).</p></div></details>
+    <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Qué hay en Controllers, Dtos, Models, Services y Data?</summary><div class="respuesta"><p><b>Controllers</b>: reciben el pedido HTTP, revisan roles y entrada, y responden con un código. <b>Dtos</b>: lo que entra (una <code>class</code> con sus validaciones) y lo que sale (un <code>record</code>), un archivo por tema. <b>Models</b>: las clases del negocio con sus reglas (<code>ProyectoGanadero</code>, <code>Inversion</code>), sin saber nada de HTTP. <b>Services</b>: lógica que usan varios controladores (OTP, correo, cupo). <b>Data</b>: el <code>AppDbContext</code>, las migraciones y la semilla.</p></div></details>
     <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Qué es un DTO y por qué no devolver la entidad directamente?</summary><div class="respuesta"><p>Es la forma exacta de los datos que entran o salen por la API. Separarlo de la entidad evita exponer campos internos, permite validar la entrada con atributos (<code>[Required]</code>, <code>[Range]</code>) y deja cambiar la base sin romper a la web.</p></div></details>
     <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Por qué <code>Estado</code> tiene <code>private set</code>?</summary><div class="respuesta"><p>Para que nadie de afuera pueda cambiar el estado a mano. Solo cambia por los métodos (<code>FirmarContrato</code>, <code>ConfirmarPago</code>…), que revisan las reglas antes. Si la regla no se cumple, lanzan una excepción y la API responde 409.</p></div></details>
     <details class="pregunta" data-tema="codigo"><summary><span class="chip">Código</span>¿Qué es la inyección de dependencias? Da un ejemplo.</summary><div class="respuesta"><p>Las clases reciben lo que necesitan por el constructor en vez de crearlo. <code>InversionesController</code> recibe <code>AppDbContext</code>, <code>GestorInversiones</code> y <code>OtpService</code>; <code>Program.cs</code> decide qué se entrega. En las pruebas se cambia el correo real por uno en memoria sin tocar el controlador.</p></div></details>
@@ -1489,6 +1492,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Fecha</th><th>Cambio</th></tr></thead>
     <tbody>
+      <tr><td class="num">24/11/2026</td><td>Al día con el código: carpetas de la API en inglés (<code>Controllers</code>, <code>Dtos</code>, <code>Models</code>, <code>Services</code>, <code>Data</code>) y pruebas en <code>tests/api</code>; DTO en un archivo por tema (class lo que entra, record lo que sale); SQL Server en el <code>docker-compose.yml</code> con <code>.env</code>; Sprint 2 cerrado.</td></tr>
       <tr><td class="num">20/11/2026</td><td>Se suma el aporte de Matías: cuentas de prueba y dos proyectos en la semilla.</td></tr>
       <tr><td class="num">20/11/2026</td><td>Se suman los aportes de Sergio (13 pruebas del CRUD) y Brandon (respuestas documentadas en Swagger): 112 pruebas.</td></tr>
       <tr><td class="num">20/11/2026</td><td>Primera versión, al cerrar el Sprint 2: proyecto, tecnologías, arquitectura, repositorio, código, casos de uso de los Sprints 1 y 2 con 33 capturas reales, patrones, pruebas, demo y preguntas.</td></tr>
@@ -1520,8 +1524,8 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
 const SPRINTS = [
   { nombre: 'Sprint 0', fecha: '25/10/2026', resumen: 'Planificación y backlog', estado: 'hecho' },
   { nombre: 'Sprint 1 · MV1', fecha: '06/11/2026', resumen: 'Registro, OTP, login, identidad, roles, ficha en borrador', estado: 'hecho' },
-  { nombre: 'Sprint 2 · MV2', fecha: '20/11/2026', resumen: 'Evaluación, catálogo, simulador, inversión con OTP y pago QR', estado: 'actual' },
-  { nombre: 'Sprint 3', fecha: '04/12/2026', resumen: 'Ronda, compra, avance, incidencias, expediente, liquidación, Android', estado: 'pendiente' },
+  { nombre: 'Sprint 2 · MV2', fecha: '20/11/2026', resumen: 'Evaluación, catálogo, simulador, inversión con OTP y pago QR', estado: 'hecho' },
+  { nombre: 'Sprint 3', fecha: '04/12/2026', resumen: 'Ronda, compra, avance, incidencias, expediente, liquidación, Android', estado: 'actual' },
   { nombre: 'Defensa final', fecha: '11/12/2026', resumen: 'Proyecto completo', estado: 'pendiente' },
 ]
 // Casos de uso del diagrama D1, en su orden. roles: actores además del Administrador.
