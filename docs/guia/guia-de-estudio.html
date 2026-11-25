@@ -311,8 +311,9 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
   <a href="#patrones"><span class="num">9</span>Patrones de diseño</a>
   <a href="#pruebas"><span class="num">10</span>Pruebas automáticas</a>
   <a href="#demo"><span class="num">11</span>Levantar y mostrar la demo</a>
-  <a href="#practica"><span class="num">12</span>Preguntas para practicar</a>
-  <a href="#historial"><span class="num">13</span>Historial de la guía</a>
+  <a href="#base-datos"><span class="num">12</span>La base de datos por dentro</a>
+  <a href="#practica"><span class="num">13</span>Preguntas para practicar</a>
+  <a href="#historial"><span class="num">14</span>Historial de la guía</a>
 </nav>
 
 <main>
@@ -338,7 +339,8 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
         <li>Si recién llegas: secciones 1, 3 y 4.</li>
         <li>Si te van a preguntar por una pantalla: sección 7.</li>
         <li>Si te van a pedir código: secciones 5 y 6.</li>
-        <li>Para repasar rápido: secciones 8 y 12.</li>
+        <li>Si te piden abrir la base de datos: sección 12.</li>
+        <li>Para repasar rápido: secciones 8 y 13.</li>
       </ul>
     </div>
   </div>
@@ -586,7 +588,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
     <li data-nodo="n-ctrl" tabindex="0"><b>El controlador revisa la entrada y el contexto.</b> ¿El monto es mayor a 0? ¿Tu identidad está verificada? ¿El proyecto está publicado y con la ronda abierta?<span class="donde">InversionesController.Reservar()</span></li>
     <li data-nodo="n-dom" tabindex="0"><b>Se calcula el cupo libre.</b> <code>GestorInversiones</code> suma lo pagado y las reservas vigentes de ese proyecto (las vencidas ya no cuentan).<span class="donde">Services/Investments/GestorInversiones.cs · CupoAsync()</span></li>
     <li data-nodo="n-dom" tabindex="0"><b>Se aplican las reglas.</b> Bajo el mínimo: <b>400</b> mostrando el cupo. Más que el cupo: <b>409</b>. Otra reserva tuya en curso en el mismo proyecto: <b>409</b>.<span class="donde">InversionesController.Reservar()</span></li>
-    <li data-nodo="n-ef" tabindex="0"><b>Se guarda.</b> <code>Inversion.Reservar(...)</code> crea la reserva con vencimiento a los 30 minutos y <code>db.SaveChangesAsync()</code> hace el <code>INSERT</code> en la tabla <code>Inversiones</code>.<span class="donde">Models/Investments/Inversion.cs · Data/AppDbContext.cs</span></li>
+    <li data-nodo="n-ef" tabindex="0"><b>Se guarda.</b> <code>Inversion.Reservar(...)</code> crea la reserva con vencimiento a los 30 minutos (el valor sale de <code>appsettings.json</code> → <code>Plazos</code>) y <code>db.SaveChangesAsync()</code> hace el <code>INSERT</code> en la tabla <code>Inversiones</code>.<span class="donde">Models/Investments/Inversion.cs · Data/AppDbContext.cs</span></li>
     <li data-nodo="n-sql" tabindex="0"><b>SQL Server guarda la fila</b> con sus claves foráneas al proyecto y al usuario.<span class="donde">tabla Inversiones</span></li>
     <li data-nodo="n-web" tabindex="0"><b>Vuelve la respuesta.</b> <b>201 Created</b> con la inversión en JSON. La web lee su <code>id</code> y navega a <code>/inversiones/{id}/contrato</code>.<span class="donde">Invertir.jsx · navegar(...)</span></li>
   </ol>
@@ -699,7 +701,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
       <tr><td>¿Dónde está la fórmula del simulador?</td><td><code>Models/Simulation/ConfiguracionEscenario.cs</code> → <code>Calcular()</code></td></tr>
       <tr><td>¿Dónde se calcula el cupo libre?</td><td><code>Services/Investments/GestorInversiones.cs</code> → <code>CuposAsync()</code></td></tr>
       <tr><td>¿Dónde se valida el monto mínimo?</td><td><code>InversionesController.Reservar()</code></td></tr>
-      <tr><td>¿Cuánto dura la reserva y dónde se define?</td><td>30 minutos, <code>Inversion.MinutosReserva</code></td></tr>
+      <tr><td>¿Cuánto dura la reserva y dónde se define?</td><td>30 minutos, en <code>appsettings.json</code> → <code>Plazos:MinutosReserva</code> (lo valida <code>Configuration/Opciones.cs</code>)</td></tr>
       <tr><td>¿Dónde se calcula la participación?</td><td><code>Inversion.ConfirmarPago()</code></td></tr>
       <tr><td>¿Quién libera las reservas vencidas?</td><td><code>Services/Investments/VencimientoReservas.cs</code> (cada minuto) y también al tocar la inversión</td></tr>
       <tr><td>¿Dónde está el texto del contrato?</td><td><code>Models/Investments/ContratoInversion.cs</code></td></tr>
@@ -707,8 +709,43 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
       <tr><td>¿Dónde se crean las cuentas de admin y analista?</td><td><code>Data/SemillaDatos.cs</code> con los datos de <code>appsettings.Development.json</code></td></tr>
       <tr><td>¿Dónde se manda el token en la web?</td><td><code>apps/web/src/api.js</code> → <code>pedir()</code></td></tr>
       <tr><td>¿Dónde está el «Ver como» del Administrador?</td><td><code>componentes.jsx</code> → <code>VistaPorRol</code></td></tr>
+      <tr><td>¿Dónde cambio una regla sin programar?</td><td><code>apps/api/appsettings.json</code>; qué reglas están ahí y cuáles no, en la <a href="#cifras">sección 8</a></td></tr>
+      <tr><td>¿Dónde veo o edito los datos directamente?</td><td>En SQL Server, base <code>P11</code>: tablas y consultas en la <a href="#base-datos">sección 12</a></td></tr>
     </tbody>
   </table></div>
+
+  <h3>¿Por qué existe…? Lo que no sale de un RF del sprint</h3>
+  <p class="texto">El repositorio sirve a tres materias, así que tiene piezas que no vienen del backlog de Proyecto de Sistemas. Cada una tiene un motivo concreto:</p>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Pieza</th><th>Dónde</th><th>Por qué existe</th><th>¿Funciona?</th></tr></thead>
+    <tbody>
+      <tr><td>Pestañas del Sprint 3 (ronda, compra, traslado, avance, incidencias, expediente, liquidación)</td><td><code>apps/web/src/pages/operations</code>, <code>closing</code></td><td>Pedido del docente de Proyecto de Sistemas: que cada caso de uso del diagrama tenga su pestaña desde ya. Son maquetas navegables.</td><td><span class="chip chip-ocre">Ejemplo</span> leen <code>datosEjemplo.js</code> y no guardan nada</td></tr>
+      <tr><td>Administrador con acceso a todo, «Ver como», eliminar usuarios, bitácora</td><td><code>AdminUsuariosController</code>, <code>AdminBitacoraController</code>, <code>VistaPorRol</code></td><td>Corrección del docente: el Administrador está conectado a todos los casos de uso del diagrama. Eliminar cuentas (solo sin actividad) le da una función propia; la bitácora cubre RNF-03.</td><td><span class="chip chip-ok">Con API</span></td></tr>
+      <tr><td>CRUD completo de proyectos (<code>PUT</code>, <code>DELETE</code>, historial) y Swagger</td><td><code>ProyectosController</code>, <code>/swagger</code></td><td>Rúbrica de Programación Web 3 (API integradora).</td><td><span class="chip chip-ok">Con API</span></td></tr>
+      <tr><td>Canal de Telegram</td><td><code>Services/Notifications/CanalTelegram.cs</code></td><td>Ilustra el patrón Bridge (Ingeniería de Software): un mismo aviso por otro canal sin tocar el aviso. Idea futura.</td><td><span class="chip">En construcción</span> probado, pero no registrado en <code>Program.cs</code></td></tr>
+      <tr><td>Liquidación: Composite y Strategy</td><td><code>Models/Settlements/</code></td><td>Patrones de Ingeniería de Software; es el dominio de RF-23 adelantado.</td><td><span class="chip chip-ocre">Sprint 3</span> clases con pruebas, sin tabla, sin endpoint y sin pantalla conectada</td></tr>
+      <tr><td>Expediente: Builder</td><td><code>Models/Dossiers/</code></td><td>Patrón Builder (Ingeniería de Software) para RF-22.</td><td><span class="chip chip-ocre">Sprint 3</span> igual que la liquidación</td></tr>
+      <tr><td>Selector de estilos (Pampa verde / Cuero y madera)</td><td><code>estilo.js</code>, <code>estilos.css</code></td><td>Empate en la votación del equipo sobre el estilo visual.</td><td><span class="chip chip-ok">Sí</span></td></tr>
+      <tr><td>Portafolio</td><td><code>PortafolioController</code>, <code>/portafolio</code></td><td>El criterio de RF-16 dice «la participación aparece en el portafolio con su constancia». Lo que agrega RF-26 (avance y resultados de cada proyecto) es del Sprint 3.</td><td><span class="chip chip-ok">Con API</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Los diagramas y el código</h3>
+  <p class="texto">Cada diagrama UML de <code>docs/diagramas/uml/</code> usa los mismos nombres que el código, así que de un diagrama se llega directo al archivo:</p>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Diagrama</th><th>Qué muestra</th><th>Dónde se ve en el código</th></tr></thead>
+    <tbody>
+      <tr><td>Casos de uso (D1)</td><td>Los 17 CU y sus actores; el Administrador conectado a todos</td><td><code>apps/web/src/casosDeUso.js</code>: una pestaña por CU, mismo nombre y orden</td></tr>
+      <tr><td>Actividad</td><td>El flujo de cada CU con sus decisiones</td><td>Los <code>if</code> de cada controlador y las respuestas 400 / 409</td></tr>
+      <tr><td>Secuencia y Colaboración</td><td>Los mensajes entre la app, el servidor, las clases, la base y los servicios externos</td><td>El controlador del CU (por ejemplo <code>InversionesController</code>) y las clases que llama</td></tr>
+      <tr><td>Clases (4 hojas)</td><td>El dominio y los patrones; «planificada» = todavía sin código (Sprint 3)</td><td><code>apps/api/Models/</code> y <code>apps/api/Services/</code></td></tr>
+      <tr><td>Objetos</td><td>Una inversión pagada con los datos de la demo</td><td>Las filas de <code>Inversiones</code> y <code>Proyectos</code> en SQL Server</td></tr>
+      <tr><td>Estados EST-3</td><td>Ciclo del proyecto; «Observar» es una flecha de vuelta a Borrador, no un estado</td><td><code>enum EstadoProyecto</code> y <code>Models/Projects/States/EstadoFicha.cs</code></td></tr>
+      <tr><td>Estados EST-4</td><td>Ciclo de la inversión: Reservada, Firmada, Pagada, Vencida, Rechazada</td><td><code>enum EstadoInversion</code> en <code>Models/Investments/Inversion.cs</code></td></tr>
+      <tr><td>Componentes y Despliegue</td><td>Las piezas y dónde corren, con su tecnología</td><td><code>apps/api</code>, <code>apps/web</code> y <code>docker-compose.yml</code></td></tr>
+    </tbody>
+  </table></div>
+  <p class="texto">La pantalla puede mostrar un texto más amable que el estado. Por ejemplo, para <code>Reservada</code> dice «Cupo reservado». Esas traducciones están en <code>apps/web/src/api.js</code> → <code>textoEstadoInversion</code>.</p>
 </section>
 
 <!-- ============================ 6. CÓDIGO ============================ -->
@@ -789,7 +826,7 @@ public class InversionesController(AppDbContext db, GestorInversiones gestor, Ot
         if (req.MontoBs &gt; cupo.LibreBs)
             return Conflict(new Respuesta($"El monto supera el cupo disponible: quedan …"));    // 409
 
-        var inversion = Inversion.Reservar(proyecto.Id, usuario.Id, req.MontoBs, gestor.Ahora);
+        var inversion = Inversion.Reservar(proyecto.Id, usuario.Id, req.MontoBs, gestor.Ahora, gestor.MinutosReserva);
         db.Inversiones.Add(inversion);
         await db.SaveChangesAsync(ct);
         return CreatedAtAction(nameof(Obtener), new { id = inversion.Id }, InversionDto.Desde(inversion, proyecto)); // 201
@@ -809,7 +846,7 @@ public class InversionesController(AppDbContext db, GestorInversiones gestor, Ot
 
 public class Inversion
 {
-    public const int MinutosReserva = 30;                                // RF-13
+    public DateTimeOffset ReservadaHasta { get; set; }                   // RF-13: creada + 30 min (appsettings → Plazos)
     public EstadoInversion Estado { get; private set; } = EstadoInversion.Reservada;
 
     public void FirmarContrato(string version, string correo, DateTimeOffset ahora)   // RF-14
@@ -948,6 +985,26 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
     <li>Prepara el escenario (un proyecto publicado y un inversionista verificado), hace el pedido real y comprueba la respuesta con <code>Assert</code>.</li>
     <li>El nombre de la prueba dice qué demuestra; se lee como el criterio de aceptación de la ERS.</li>
   </ul>
+
+  <h3>A tener en cuenta al leer el código</h3>
+  <div class="rejilla-2">
+    <div class="tarjeta"><span class="etiqueta">El método más largo</span><h4><code>InversionesController.Reservar</code></h4>
+      <p>Es el caso especial: reúne seis validaciones en orden (identidad verificada, proyecto publicado, ronda abierta, monto mínimo, cupo libre y una sola reserva en curso), cada una con su respuesta 400, 404 o 409. Los demás controladores son cortos.</p>
+      <p>Una mejora posible es llevar esas reglas a una cadena de requisitos, como ya hace <code>RequisitosEnvio</code> para enviar un proyecto a evaluación.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Una decisión, cinco archivos</span><h4>Cómo seguir la evaluación del analista</h4>
+      <p>Los patrones reparten la lógica. Para leer qué pasa al observar, rechazar o aprobar, conviene seguir este orden:</p>
+      <ol>
+        <li><code>EvaluacionProyectosController.Decidir</code> arma el comando;</li>
+        <li><code>ComandosProyecto.cs</code>: el comando de cada decisión;</li>
+        <li><code>GestorCicloProyecto</code> lo ejecuta y guarda <code>HistorialProyectos</code>;</li>
+        <li><code>States/EstadoFicha.cs</code> decide si la transición vale;</li>
+        <li><code>ObservadoresProyecto.cs</code> avisa por correo.</li>
+      </ol></div>
+    <div class="tarjeta"><span class="etiqueta">Texto fijo</span><h4>«Reservar cupo por 30 min»</h4>
+      <p>Los 30 minutos se configuran en <code>appsettings.json</code> → <code>Plazos</code>, pero la web tiene el 30 escrito en dos lugares: el botón de <code>Invertir.jsx</code> y el largo de la barra de <code>CuentaRegresiva</code> (<code>componentes.jsx</code>, <code>totalMinutos = 30</code>). Si se cambia el plazo, la reserva y los minutos que muestra la cuenta regresiva se ajustan solos, porque usan la hora que manda la API; el texto del botón y la proporción de la barra no. No se esperaba que el plazo cambiara seguido, y corregirlo es un cambio chico: que la API devuelva los minutos y la pantalla los muestre.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Idiomas</span><h4>Carpetas en inglés, código en español</h4>
+      <p>Las carpetas siguen la convención de ASP.NET y de React, igual que los proyectos de Programación Web 3: <code>Controllers</code>, <code>Models</code>, <code>Dtos</code>, <code>Data</code>, <code>Services</code>, <code>pages</code>. Las clases, los métodos y los archivos de la web están en español, para que se lean con las palabras del negocio y de la ERS.</p></div>
+  </div>
 </section>
 
 <!-- ============================ 7. CASOS DE USO ============================ -->
@@ -1297,7 +1354,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
 <section class="seccion" id="cifras">
   <p class="eyebrow">Sección 8</p>
   <h2>Cifras y reglas clave</h2>
-  <div class="breve"><strong>En breve</strong><p>Son los números que más se preguntan. Casi todos se pueden cambiar sin tocar código, en <code>apps/api/appsettings.json</code>; los del Sprint 2 están como constantes en el dominio.</p></div>
+  <div class="breve"><strong>En breve</strong><p>Son los números que más se preguntan. Casi todos se cambian sin tocar código, en <code>apps/api/appsettings.json</code>. Solo quedan en el código la revisión de reservas cada minuto y la versión del contrato.</p></div>
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Regla</th><th>Valor</th><th>Requerimiento</th><th>Dónde se define</th></tr></thead>
     <tbody>
@@ -1310,13 +1367,24 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
       <tr><td>Tamaño de archivos</td><td class="num">hasta 5 MB; imagen de al menos 1 KB</td><td>RF-03, RF-05</td><td><code>Archivos</code></td></tr>
       <tr><td>Cifrado de archivos</td><td class="num">AES-256-GCM</td><td>RNF-02</td><td><code>AlmacenCifrado</code></td></tr>
       <tr><td>Plazo del proyecto</td><td class="num">1 a 120 meses</td><td>RF-07</td><td><code>ProyectoEntradaDto</code></td></tr>
-      <tr><td>Duración de la ronda</td><td class="num">30 días desde la publicación</td><td>RF-10, RF-17</td><td><code>DatosPublicacion.DiasRonda</code></td></tr>
-      <tr><td>Reserva del cupo</td><td class="num">30 min</td><td>RF-13</td><td><code>Inversion.MinutosReserva</code></td></tr>
-      <tr><td>Revisión de reservas vencidas</td><td class="num">cada 1 min</td><td>RF-15</td><td><code>VencimientoReservas</code></td></tr>
+      <tr><td>Duración de la ronda</td><td class="num">30 días desde la publicación</td><td>RF-10, RF-17</td><td><code>Plazos</code></td></tr>
+      <tr><td>Reserva del cupo</td><td class="num">30 min</td><td>RF-13</td><td><code>Plazos</code></td></tr>
+      <tr><td>Revisión de reservas vencidas</td><td class="num">cada 1 min</td><td>RF-15</td><td><code>VencimientoReservas</code> (en el código)</td></tr>
       <tr><td>Versión del contrato</td><td class="num">1.0 (2026-11)</td><td>RF-14</td><td><code>ContratoInversion.Version</code></td></tr>
       <tr><td>Inversión mínima típica</td><td class="num">Bs 100 (la fija cada proyecto)</td><td>RF-13</td><td>ficha del proyecto</td></tr>
     </tbody>
   </table></div>
+
+  <h3>Cómo se cambia cada una</h3>
+  <div class="rejilla-2">
+    <div class="tarjeta"><span class="etiqueta">Sin programar</span><h4>Las que están en <code>appsettings.json</code></h4>
+      <p>Secciones <code>ReglasSeguridad</code>, <code>Otp</code>, <code>Jwt</code>, <code>Verificacion</code>, <code>Archivos</code> y <code>Plazos</code> (la reserva de 30 minutos y la ronda de 30 días). Se edita el número y se reinicia la API.</p>
+      <p>Al arrancar, <code>Configuration/Opciones.cs</code> revisa cada valor con <code>[Range]</code>. Si alguien pone, por ejemplo, 50 intentos (el máximo es 20), la API <b>no arranca</b> y dice qué valor está mal. Así un error de tipeo no queda escondido hasta que un usuario lo sufre.</p>
+      <p>Para cambiar un valor solo en una máquina, sin tocar el archivo del repositorio: <code>dotnet user-secrets set "Otp:MinutosVigencia" "15"</code>.</p></div>
+    <div class="tarjeta"><span class="etiqueta">Hay que programar</span><h4>Las constantes del código</h4>
+      <p>La revisión de reservas vencidas cada minuto (<code>VencimientoReservas.cs</code>) y la versión del contrato (<code>ContratoInversion.Version</code>) son valores escritos en el código. Ningún archivo impide cambiarlos: hay que editar el <code>.cs</code> y volver a compilar.</p>
+      <p>Hasta el 24/11 la reserva y la ronda también eran constantes. Se pasaron a <code>Plazos</code> porque figuran en el Excel y conviene poder ajustarlos sin programar.</p></div>
+  </div>
 </section>
 
 <!-- ============================ 9. PATRONES ============================ -->
@@ -1433,9 +1501,99 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
   </table></div>
 </section>
 
-<!-- ============================ 12. PRÁCTICA ============================ -->
-<section class="seccion" id="practica">
+<!-- ============================ 12. BASE DE DATOS ============================ -->
+<section class="seccion" id="base-datos">
   <p class="eyebrow">Sección 12</p>
+  <h2>La base de datos por dentro</h2>
+  <div class="breve"><strong>En breve</strong><p>Todo lo que la web muestra sale de SQL Server, base <code>P11</code>. Lo normal es que solo la API toque la base. Pero se puede abrir con cualquier cliente de SQL Server para ver los datos en vivo, o para cambiar algo que la interfaz no deja tocar. Los estados se guardan como <b>texto</b> (<code>'Borrador'</code>, <code>'Reservada'</code>), así que una consulta se entiende con solo leerla.</p></div>
+
+  <h3>Cómo abrirla</h3>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Dato</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Servidor</td><td><code>localhost,1433</code> (o el puerto de <code>P11_PUERTO_SQL</code> en el <code>.env</code>)</td></tr>
+      <tr><td>Usuario y clave</td><td><code>sa</code> y la de <code>P11_SQL_CLAVE</code> en el <code>.env</code></td></tr>
+      <tr><td>Base</td><td><code>P11</code></td></tr>
+      <tr><td>Certificado</td><td>Marcar «confiar en el certificado del servidor» (<code>TrustServerCertificate</code>)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="texto">Sirve cualquier cliente: SQL Server Management Studio (Windows), DBeaver, una extensión de base de datos de VS Code, o la consola dentro del contenedor:</p>
+  <div class="codigo"><div class="codigo-cabecera"><span>Terminal</span><span>bash</span></div>
+<pre><code class="language-bash">docker exec -it p11-sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -I -d P11
+# pide la clave; cada consulta termina con una línea que dice GO</code></pre></div>
+  <p class="nota">En <code>sqlcmd</code> va <code>-I</code>. Sin esa opción, los <code>UPDATE</code> fallan con un error de <code>QUOTED_IDENTIFIER</code> por los índices de Identity. Los clientes gráficos ya la traen activada.</p>
+
+  <h3>Las tablas</h3>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Tabla</th><th>Qué guarda</th><th>Columnas que más se miran</th><th>RF</th></tr></thead>
+    <tbody>
+      <tr><td><code>AspNetUsers</code></td><td>Cuentas (tabla de Identity con columnas propias)</td><td><code>Email</code>, <code>Ci</code>, <code>EstadoVerificacion</code>, <code>AccessFailedCount</code>, <code>LockoutEnd</code>, <code>EmailConfirmed</code></td><td>RF-01 a RF-04</td></tr>
+      <tr><td><code>AspNetRoles</code>, <code>AspNetUserRoles</code></td><td>Los cuatro roles y qué rol tiene cada cuenta</td><td><code>Name</code>; <code>UserId</code> + <code>RoleId</code></td><td>RF-06</td></tr>
+      <tr><td><code>CodigosOtp</code></td><td>Códigos enviados, solo su hash</td><td><code>Proposito</code>, <code>ExpiraEn</code>, <code>Intentos</code>, <code>UsadoEn</code></td><td>RNF-01</td></tr>
+      <tr><td><code>HistorialVerificaciones</code></td><td>Cada cambio del estado de verificación</td><td><code>EstadoAnterior</code>, <code>EstadoNuevo</code>, <code>Responsable</code>, <code>Motivo</code>, <code>Fecha</code></td><td>RF-04</td></tr>
+      <tr><td><code>Documentos</code></td><td>CI, selfie, RUNSA, título o contrato; el archivo está cifrado en disco y aquí solo su nombre</td><td><code>Tipo</code>, <code>Estado</code>, <code>RevisadoPor</code>, <code>Motivo</code></td><td>RF-03, RF-05</td></tr>
+      <tr><td><code>Proyectos</code></td><td>La ficha, su estado y los datos de publicación</td><td><code>Nombre</code>, <code>Estado</code>, <code>LineaProductiva</code>, <code>MontoRequeridoBs</code>, <code>MontoMinimoBs</code>, <code>NivelRiesgo</code>, <code>CierreRondaEn</code></td><td>RF-07 a RF-11</td></tr>
+      <tr><td><code>HistorialProyectos</code></td><td>La bitácora de cada decisión sobre un proyecto</td><td><code>Accion</code>, <code>EstadoAnterior</code>, <code>EstadoNuevo</code>, <code>Responsable</code>, <code>Motivo</code></td><td>RF-09, RNF-03</td></tr>
+      <tr><td><code>Inversiones</code></td><td>Reserva, firma, pago y participación</td><td><code>Estado</code>, <code>MontoBs</code>, <code>ReservadaHasta</code>, <code>ContratoAceptadoEn</code>, <code>ParticipacionPct</code>, <code>CodigoConstancia</code></td><td>RF-13 a RF-16</td></tr>
+      <tr><td><code>__EFMigrationsHistory</code></td><td>Qué migraciones ya se aplicaron</td><td><code>MigrationId</code></td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p class="texto"><b>Valores posibles de los estados</b>, escritos exactamente así:</p>
+  <ul class="texto">
+    <li><code>Proyectos.Estado</code>: <code>Borrador</code>, <code>EnRevision</code>, <code>Rechazado</code>, <code>EnFinanciamiento</code>. «Observado» no es un estado: el proyecto vuelve a <code>Borrador</code> con el texto en <code>Observaciones</code>.</li>
+    <li><code>Inversiones.Estado</code>: <code>Reservada</code>, <code>Firmada</code>, <code>Pagada</code>, <code>Vencida</code>, <code>Rechazada</code>.</li>
+    <li><code>AspNetUsers.EstadoVerificacion</code>: <code>Pendiente</code>, <code>EnRevision</code>, <code>Verificado</code>, <code>Rechazado</code>.</li>
+    <li><code>Documentos.Estado</code>: <code>Pendiente</code>, <code>Aprobado</code>, <code>Rechazado</code>.</li>
+  </ul>
+  <p class="nota nota-peligro">Un estado mal escrito (<code>'Publicado'</code>, <code>'borrador'</code>) rompe la lectura de esa fila: la API responde con error 500 hasta que se corrige. El texto tiene que ser uno de la lista, con mayúsculas y sin tildes.</p>
+
+  <h3>Consultas para mirar</h3>
+  <div class="codigo"><div class="codigo-cabecera"><span>SQL Server</span><span>sql</span></div>
+<pre><code class="language-sql">-- Proyectos y su estado
+SELECT Nombre, Estado, LineaProductiva, MontoRequeridoBs, MontoMinimoBs, CierreRondaEn FROM Proyectos;
+
+-- Bitácora de los proyectos, de lo más nuevo a lo más viejo
+SELECT p.Nombre, h.Accion, h.EstadoAnterior, h.EstadoNuevo, h.Responsable, h.Motivo, h.Fecha
+FROM HistorialProyectos h JOIN Proyectos p ON p.Id = h.ProyectoId
+ORDER BY h.Fecha DESC;
+
+-- Inversiones con su inversionista
+SELECT u.Email, p.Nombre, i.Estado, i.MontoBs, i.ReservadaHasta, i.ParticipacionPct, i.CodigoConstancia
+FROM Inversiones i
+JOIN AspNetUsers u ON u.Id = i.InversionistaId
+JOIN Proyectos p ON p.Id = i.ProyectoId;
+
+-- Cuentas: verificación y bloqueo
+SELECT Email, EstadoVerificacion, AccessFailedCount, LockoutEnd FROM AspNetUsers;</code></pre></div>
+
+  <h3>Cambios que se ven en vivo en la web</h3>
+  <p class="texto">Después de cada cambio, recargar la pantalla en la web.</p>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Para…</th><th>Consulta</th><th>Qué pasa en la web</th></tr></thead>
+    <tbody>
+      <tr><td>Vencer una reserva sin esperar 30 min</td><td><code>UPDATE Inversiones SET ReservadaHasta = DATEADD(MINUTE, -1, SYSDATETIMEOFFSET()) WHERE Estado IN ('Reservada','Firmada');</code></td><td>El cupo se libera al instante. En menos de un minuto el servicio de fondo la pasa a <code>Vencida</code> y llega el correo a Mailpit (RF-15).</td></tr>
+      <tr><td>Desbloquear una cuenta</td><td><code>UPDATE AspNetUsers SET LockoutEnd = NULL, AccessFailedCount = 0 WHERE Email = '…';</code></td><td>Vuelve a poder iniciar sesión antes de los 15 minutos.</td></tr>
+      <tr><td>Verificar una cuenta sin pasar por el analista</td><td><code>UPDATE AspNetUsers SET EstadoVerificacion = 'Verificado' WHERE Email = '…';</code></td><td>Ya puede invertir o enviar proyectos.</td></tr>
+      <tr><td>Aprobar los documentos de un productor</td><td><code>UPDATE Documentos SET Estado = 'Aprobado' WHERE UsuarioId = (SELECT Id FROM AspNetUsers WHERE Email = '…');</code></td><td>Su proyecto ya puede ir a evaluación.</td></tr>
+      <tr><td>Cambiar la meta o el mínimo de un proyecto</td><td><code>UPDATE Proyectos SET MontoMinimoBs = 500 WHERE Nombre = '…';</code></td><td>El catálogo y la pantalla «Invertir» muestran el valor nuevo.</td></tr>
+      <tr><td>Devolver un proyecto a borrador</td><td><code>UPDATE Proyectos SET Estado = 'Borrador' WHERE Nombre = '…';</code></td><td>El productor vuelve a poder editarlo y reenviarlo.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="texto">Para probar sin miedo, se envuelve el cambio en una transacción: <code>BEGIN TRAN;</code> … <code>SELECT</code> para mirar … <code>ROLLBACK;</code> deshace todo.</p>
+
+  <h3>Lo que se saltea al editar a mano</h3>
+  <p class="texto">Desde la web, cada cambio pasa por las reglas del dominio. El <b>State</b> revisa que la transición valga, el <b>Command</b> escribe una fila en <code>HistorialProyectos</code> y los <b>Observers</b> mandan el correo. Un <code>UPDATE</code> directo no pasa por la API, así que <b>no deja bitácora, no avisa y no revisa reglas</b>. Por ejemplo, puede publicar un proyecto sin riesgos cargados.</p>
+  <p class="texto">Por eso, editar a mano es una tarea de mantenimiento y no un camino del sistema. Si hiciera falta que también esos cambios queden registrados, SQL Server ofrece dos caminos:</p>
+  <ul class="texto">
+    <li><b>Tablas temporales</b> (<i>system-versioned</i>): SQL Server guarda sola cada versión anterior de la fila, con su fecha, venga el cambio de la API o de un cliente. EF Core las soporta con <code>IsTemporal()</code> y una migración. Es la opción más simple.</li>
+    <li><b>Trigger</b> de auditoría: un <code>AFTER UPDATE</code> que copia el valor anterior y el nuevo a una tabla de auditoría. Ojo: también se dispara con los cambios de la API, que ya escriben su propia bitácora, y quedarían duplicados.</li>
+  </ul>
+  <p class="texto">Ninguno de los dos está implementado.</p>
+</section>
+
+<!-- ============================ 13. PRÁCTICA ============================ -->
+<section class="seccion" id="practica">
+  <p class="eyebrow">Sección 13</p>
   <h2>Preguntas para practicar</h2>
   <div class="breve"><strong>En breve</strong><p>Piensa tu respuesta en voz alta y después ábrela para comparar. Si una respuesta usa una palabra que no conoces, búscala en <a href="#glosario">Palabras clave</a>.</p></div>
   <div class="filtros" id="filtro-preguntas" role="group" aria-label="Filtrar preguntas por tema">
@@ -1484,14 +1642,15 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
   </div>
 </section>
 
-<!-- ============================ 13. HISTORIAL ============================ -->
+<!-- ============================ 14. HISTORIAL ============================ -->
 <section class="seccion" id="historial">
-  <p class="eyebrow">Sección 13</p>
+  <p class="eyebrow">Sección 14</p>
   <h2>Historial de la guía</h2>
   <div class="breve"><strong>En breve</strong><p>La guía se actualiza con cada sprint. Cada cambio suma una fila aquí; la historia completa está en git (<code>git log -- docs/guia</code>).</p></div>
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Fecha</th><th>Cambio</th></tr></thead>
     <tbody>
+      <tr><td class="num">24/11/2026</td><td>En «Código clave», la nota «A tener en cuenta al leer el código». Sección nueva «La base de datos por dentro»: cómo abrirla, las tablas, los valores de cada estado, consultas para mirar y cambios en vivo, y lo que se saltea al editar a mano. En el mapa del repositorio, «¿Por qué existe…?» y «Los diagramas y el código»; en las cifras, cómo se cambia cada regla. La reserva y la ronda pasan a <code>appsettings.json</code> → <code>Plazos</code>, y los diagramas de Clases, Secuencia, Colaboración, Actividad y EST-4 quedan iguales al código del Sprint 2.</td></tr>
       <tr><td class="num">24/11/2026</td><td>Revisión del código: solo se eliminan cuentas sin actividad, la decisión del analista se valida y ClaimsExtensiones pasa a su propio archivo; 115 pruebas.</td></tr>
       <tr><td class="num">24/11/2026</td><td>Al día con el código: carpetas de la API en inglés (<code>Controllers</code>, <code>Dtos</code>, <code>Models</code>, <code>Services</code>, <code>Data</code>) y pruebas en <code>tests/api</code>; DTO en un archivo por tema (class lo que entra, record lo que sale); SQL Server en el <code>docker-compose.yml</code> con <code>.env</code>; Sprint 2 cerrado.</td></tr>
       <tr><td class="num">20/11/2026</td><td>Se suma el aporte de Matías: cuentas de prueba y dos proyectos en la semilla.</td></tr>
