@@ -14,7 +14,7 @@ Cada sprint tiene su carpeta, con un `README.md` (alcance, requerimiento → end
 
 | Archivo | Qué es |
 |---|---|
-| [`sprint-0/formato-proyecto.xlsx`](sprint-0/formato-proyecto.xlsx) | Plantilla «Formato Proyecto» llena: justificación, alcances, equipo, sprints y backlog ordenado por prioridad. Es la que se entregó. |
+| [`sprint-0/formato-proyecto.xlsx`](sprint-0/formato-proyecto.xlsx) | Plantilla «Formato Proyecto» llena: justificación, alcances, equipo, sprints y backlog ordenado por prioridad. Versión 1.2 (24/11/2026): la V1.1 de Sergio con los RF de los Sprints 1 y 2 terminados, estimaciones y el stack en herramientas; el historial de versiones está en la hoja «Requerimientos». |
 | [`sprint-0/formato-proyecto-plantilla.xlsx`](sprint-0/formato-proyecto-plantilla.xlsx) | La plantilla original de la cátedra, vacía |
 | [`sprint-0/propuesta-estimaciones.xlsx`](sprint-0/propuesta-estimaciones.xlsx) | Propuesta de puntos de historia para completar las estimaciones (no se entregó) |
 
@@ -24,7 +24,7 @@ Roles: Sergio (Scrum Master), Matías (Product Owner), Julio y Brandon (Desarrol
 
 | Archivo | Qué es |
 |---|---|
-| [`sprint-2/entrega-sprint-2.pdf`](sprint-2/entrega-sprint-2.pdf) | PDF entregado (APA): planificación del equipo (el Excel del Sprint 0 en tablas), diagrama de casos de uso (versión del docente), modelo de negocio propuesto y acceso al repositorio. Lo genera `_generador/build.py` en la carpeta `05_Entregas/04_Sprint2_MV2/` de DATOS. |
+| [`sprint-2/entrega-sprint-2.pdf`](sprint-2/entrega-sprint-2.pdf) | PDF de la entrega (APA), versión 2 del 24/11/2026: planificación del equipo (las hojas del Excel v1.2 tal cual), diagrama de casos de uso (versión del docente), modelo de negocio propuesto y acceso al repositorio. Lo genera `_generador/build.py --excel` en la carpeta `05_Entregas/04_Sprint2_MV2/` de DATOS; la versión del 20/11 queda ahí. |
 
 ## Evidencia de cada sprint
 

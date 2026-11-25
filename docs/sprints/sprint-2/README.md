@@ -1,6 +1,6 @@
 # Sprint 2 — MV2 (20/11/2026)
 
-**Alcance:** evaluación y publicación de proyectos (RF-09, RF-10), catálogo (RF-11), simulador de escenarios (RF-12) e inversión. La inversión comprende el cupo y la reserva (RF-13), el contrato con OTP (RF-14), el pago QR simulado (RF-15) y la asignación de la participación (RF-16). La regla del sprint es la del Sprint 1: cada RF tiene endpoint, pantalla y prueba.
+**Alcance:** validación de la ficha (RF-08), evaluación y publicación de proyectos (RF-09, RF-10), catálogo (RF-11), simulador de escenarios (RF-12) e inversión. La inversión comprende el cupo y la reserva (RF-13), el contrato con OTP (RF-14), el pago QR simulado (RF-15) y la asignación de la participación (RF-16). La regla del sprint es la del Sprint 1: cada RF tiene endpoint, pantalla y prueba.
 
 La explicación completa, con capturas, flujo y reglas de cada casilla, está en la [guía de estudio](../../guia/guia-de-estudio.html) (sección 7).
 
@@ -8,6 +8,7 @@ La explicación completa, con capturas, flujo y reglas de cada casilla, está en
 
 | Req. | Criterio de aceptación (ERS) | API | Pantalla web | Prueba automática |
 |---|---|---|---|---|
+| RF-08 | Una ficha incompleta o fuera de rango no se envía y se marcan los campos con error. | `POST /api/proyectos/{id}/enviar-revision`: eslabón `FichaCompleta` de `Services/Projects/RequisitosEnvio.cs`, que usa `ProyectoGanadero.Validar()` | `/proyectos` | `ProyectosTests` (`RF07_RF08_ficha_incompleta_no_se_guarda_y_marca_los_campos`) |
 | RF-09 | Observado: vuelve al productor con observaciones. Rechazado: guarda el motivo y no se publica. | `GET /api/analista/proyectos`, `POST /api/analista/proyectos/{id}/decision` | `/evaluacion`, `/evaluacion/:id` | `EvaluacionProyectosTests`, `CommandTests`, `ObserverTests` |
 | RF-10 | No se publica ningún proyecto sin riesgos y tres escenarios cargados. | La decisión «Aprobar» exige nivel de riesgo, riesgos y los supuestos de los escenarios (`DatosPublicacion`) | `/evaluacion/:id` | `EvaluacionProyectosTests`, `CommandTests`, `StateTests` |
 | RF-11 | Al filtrar solo aparecen los proyectos que cumplen el filtro. | `GET /api/catalogo?linea=&plazoMaximo=&minimoHasta=&zona=&riesgo=`, `GET /api/catalogo/{id}` | `/catalogo` | `CatalogoTests` |
@@ -16,12 +17,13 @@ La explicación completa, con capturas, flujo y reglas de cada casilla, está en
 | RF-14 | Sin aceptación no se habilita el pago; la evidencia no puede borrarse. | `GET /api/inversiones/{id}/contrato`, `POST …/contrato/codigo`, `POST …/contrato/firmar` | `/inversiones/:id/contrato` | `InversionesTests` |
 | RF-15 | Confirmado: sigue la asignación. Rechazado o vencido: cupo liberado y aviso enviado. | `POST /api/inversiones/{id}/pago`, `POST …/pago/confirmar`; servicio `VencimientoReservas` | `/inversiones/:id/pago` | `InversionesTests` |
 | RF-16 | Tras un pago confirmado la participación aparece en el portafolio con su constancia. | `GET /api/portafolio`, `GET /api/portafolio/{id}/constancia` | `/portafolio`, `/portafolio/:id` | `InversionesTests` |
+| RNF-06 | Ninguna pantalla muestra «garantizada» ni porcentajes sin advertencia. | `ConfiguracionEscenario.Advertencia` en cada simulación; cláusula 4 de `ContratoInversion.cs` | `/catalogo/:id` (simulador), `/inversiones/:id/contrato`, `/portafolio/:id` | `CatalogoTests` (`El_simulador_devuelve_tres_escenarios_con_sus_supuestos_y_la_advertencia`) |
 
-Resultado: `dotnet test` → **112 pruebas, 0 fallas**: 87 antes del sprint, 13 del CRUD (Sergio, Web 3) y 12 del Sprint 2. `npm run build` sin errores.
+Resultado: `dotnet test` → **112 pruebas, 0 fallas**: 87 antes del sprint, 13 del CRUD (Sergio, Web 3) y 12 del Sprint 2. `npm run build` sin errores. Con la revisión del 24/11 son **115**.
 
 ## Decisiones tomadas en el sprint
 
-- **Reserva de 30 minutos**, como dice la ERS (el plan del 18/11 decía 15). Una reserva vencida deja de ocupar cupo en el acto. El servicio de fondo `VencimientoReservas` la marca como «Vencida» cada minuto y avisa por correo.
+- **Reserva de 30 minutos**, como dice la ERS (el plan del 18/11 decía 15). Los 30 minutos y los 30 días de la ronda se cambian en `apps/api/appsettings.json` → `Plazos`, sin tocar código; `Configuration/Opciones.cs` no deja arrancar la API con un valor fuera de rango. Una reserva vencida deja de ocupar cupo en el acto. El servicio de fondo `VencimientoReservas` la marca como «Vencida» cada minuto y avisa por correo.
 - **RF-10 con datos reales.** La casilla provisional del checklist se reemplazó por el nivel de riesgo, el texto de riesgos y cuatro supuestos: rendimiento, costos, mortalidad y variación entre escenarios. Con ellos el simulador arma los tres escenarios.
 - **Fórmula provisional del simulador** (la definitiva es con el cliente, ERS RF-12): valor = monto × (1 + rendimiento − costos − mortalidad). El pesimista resta la variación al rendimiento y el optimista la suma.
 - **Pago QR simulado.** La API tiene los dos momentos de una pasarela real: generar el cobro y recibir la confirmación. El botón «Ya pagué, verificar» hace de pasarela, y «Simular pago rechazado» muestra el camino del rechazo.
