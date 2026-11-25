@@ -63,7 +63,7 @@ Las clases tienen el nombre que tienen en el código, en español y en PascalCas
 
 Estados:
 - **EST-3, ciclo del proyecto:** Borrador, En revisión técnica, Rechazado, En financiamiento. Los cuatro ya están en el código. Después vienen Cerrado sin fondos, En compra y traslado, En ejecución, Vendido, En liquidación y Liquidado.
-- **EST-4, participación:** Cupo reservado, Pendiente de pago, Activa, Cupo liberado.
+- **EST-4, participación:** Reservada, Firmada, Pagada, Vencida y Rechazada, con los mismos nombres que `enum EstadoInversion` (`Models/Investments/Inversion.cs`). Después vienen Aportes devueltos y Liquidada (Sprint 3).
 
 El OTP se usa en CU-01, CU-06 y CU-12. El inicio de sesión (CU-02) no lo usa: RF-02 bloquea la cuenta 15 minutos al 5.º intento fallido.
 

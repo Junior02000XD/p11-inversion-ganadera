@@ -17969,7 +17969,7 @@
                           "top": 857,
                           "width": 242,
                           "height": 13,
-                          "text": "Elegir pago QR o transferencia"
+                          "text": "Elegir pago QR (simulado)"
                         },
                         {
                           "_type": "LabelView",
@@ -21350,7 +21350,7 @@
                   "_parent": {
                     "$ref": "RSxL6zFEnC1vSSsHCkrl"
                   },
-                  "name": "Elegir pago QR o transferencia"
+                  "name": "Elegir pago QR (simulado)"
                 },
                 {
                   "_type": "UMLAction",

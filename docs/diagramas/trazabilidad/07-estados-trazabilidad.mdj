@@ -3224,7 +3224,7 @@
                           },
                           "font": "Arial;13;1",
                           "parentStyle": false,
-                          "text": "Cupo reservado",
+                          "text": "Reservada",
                           "horizontalAlignment": 2,
                           "verticalAlignment": 5
                         }
@@ -3270,7 +3270,7 @@
                           },
                           "font": "Arial;13;1",
                           "parentStyle": false,
-                          "text": "Pendiente de pago",
+                          "text": "Firmada",
                           "horizontalAlignment": 2,
                           "verticalAlignment": 5
                         }
@@ -3316,7 +3316,7 @@
                           },
                           "font": "Arial;13;1",
                           "parentStyle": false,
-                          "text": "Activa",
+                          "text": "Pagada",
                           "horizontalAlignment": 2,
                           "verticalAlignment": 5
                         }
@@ -3362,7 +3362,7 @@
                           },
                           "font": "Arial;13;1",
                           "parentStyle": false,
-                          "text": "Cupo liberado",
+                          "text": "Vencida",
                           "horizontalAlignment": 2,
                           "verticalAlignment": 5
                         }
@@ -3708,7 +3708,7 @@
                       "font": "Arial;13;0",
                       "parentStyle": false,
                       "visible": true,
-                      "text": "Pago rechazado o vencido / liberar cupo",
+                      "text": "Vence reserva [pasan 30 min] / liberar cupo",
                       "hostEdge": {
                         "$ref": "IAcwqHsumhBAim7n"
                       },
@@ -3716,7 +3716,8 @@
                       "alpha": -0.05919003892812036,
                       "distance": 236.66445128071095,
                       "left": 795,
-                      "top": 313
+                      "top": 313,
+                      "width": 283.8
                     }
                   ],
                   "font": "Arial;13;0",
@@ -3951,6 +3952,173 @@
                     "$ref": "FhJqWpuX/nq4U0JZ"
                   },
                   "points": "2288:146;2288:236"
+                },
+                {
+                  "_type": "UMLStateView",
+                  "_id": "iVfJ8yw94AAoQGYL",
+                  "_parent": {
+                    "$ref": "AAAAAaAABKN/MVU="
+                  },
+                  "model": {
+                    "$ref": "Asnq0q5rXSxUqeGs"
+                  },
+                  "font": "Arial;13;0",
+                  "left": 1300,
+                  "top": 500,
+                  "width": 175,
+                  "height": 56,
+                  "subViews": [
+                    {
+                      "_type": "UMLNameCompartmentView",
+                      "_id": "JTUQrDR38supdwix",
+                      "_parent": {
+                        "$ref": "iVfJ8yw94AAoQGYL"
+                      },
+                      "model": {
+                        "$ref": "Asnq0q5rXSxUqeGs"
+                      },
+                      "font": "Arial;13;0",
+                      "parentStyle": true,
+                      "subViews": [
+                        {
+                          "_type": "UMLNameLabelView",
+                          "_id": "Eu0n/BPMRiMfqaPg",
+                          "_parent": {
+                            "$ref": "JTUQrDR38supdwix"
+                          },
+                          "model": {
+                            "$ref": "Asnq0q5rXSxUqeGs"
+                          },
+                          "font": "Arial;13;1",
+                          "parentStyle": false,
+                          "text": "Rechazada",
+                          "horizontalAlignment": 2,
+                          "verticalAlignment": 5
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "_type": "UMLFinalStateView",
+                  "_id": "vA4m8efypik3rYDC",
+                  "_parent": {
+                    "$ref": "AAAAAaAABKN/MVU="
+                  },
+                  "model": {
+                    "$ref": "39snm5HcFHdWq1Z9"
+                  },
+                  "subViews": [],
+                  "font": "Arial;13;0",
+                  "left": 1560,
+                  "top": 515,
+                  "width": 20,
+                  "height": 20
+                },
+                {
+                  "_type": "UMLTransitionView",
+                  "_id": "9JhEANGgYZXXacyP",
+                  "_parent": {
+                    "$ref": "AAAAAaAABKN/MVU="
+                  },
+                  "model": {
+                    "$ref": "rpg1cKV2r2yW6czG"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "U5X34ij4yg757Efx",
+                      "_parent": {
+                        "$ref": "9JhEANGgYZXXacyP"
+                      },
+                      "model": {
+                        "$ref": "rpg1cKV2r2yW6czG"
+                      },
+                      "font": "Arial;13;0",
+                      "parentStyle": false,
+                      "visible": true,
+                      "text": "Pago rechazado / liberar cupo y avisar",
+                      "hostEdge": {
+                        "$ref": "9JhEANGgYZXXacyP"
+                      },
+                      "edgePosition": 1,
+                      "alpha": -4.71238898038469,
+                      "distance": 160.0,
+                      "width": 250.79999999999998
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "head": {
+                    "$ref": "iVfJ8yw94AAoQGYL"
+                  },
+                  "tail": {
+                    "$ref": "BdjsDnqJFEkWI+fJ"
+                  },
+                  "lineStyle": 1,
+                  "nameLabel": {
+                    "$ref": "U5X34ij4yg757Efx"
+                  },
+                  "points": "1182:147;1370:499"
+                },
+                {
+                  "_type": "UMLTransitionView",
+                  "_id": "aCmfShUPAeH8AvEG",
+                  "_parent": {
+                    "$ref": "AAAAAaAABKN/MVU="
+                  },
+                  "model": {
+                    "$ref": "RkxBJLVYaaNSDvhz"
+                  },
+                  "subViews": [
+                    {
+                      "_type": "EdgeLabelView",
+                      "_id": "ZUSvwTW+j8ptxHL/",
+                      "_parent": {
+                        "$ref": "aCmfShUPAeH8AvEG"
+                      },
+                      "model": {
+                        "$ref": "RkxBJLVYaaNSDvhz"
+                      },
+                      "font": "Arial;13;0",
+                      "parentStyle": false,
+                      "visible": true,
+                      "text": "",
+                      "hostEdge": {
+                        "$ref": "aCmfShUPAeH8AvEG"
+                      },
+                      "edgePosition": 1,
+                      "alpha": -4.71238898038469,
+                      "distance": 16.0
+                    }
+                  ],
+                  "font": "Arial;13;0",
+                  "head": {
+                    "$ref": "vA4m8efypik3rYDC"
+                  },
+                  "tail": {
+                    "$ref": "iVfJ8yw94AAoQGYL"
+                  },
+                  "lineStyle": 1,
+                  "nameLabel": {
+                    "$ref": "ZUSvwTW+j8ptxHL/"
+                  },
+                  "points": "1476:528;1559:528"
+                },
+                {
+                  "_type": "UMLNoteView",
+                  "_id": "nt+K+xoHWbQSI/6K",
+                  "_parent": {
+                    "$ref": "AAAAAaAABKN/MVU="
+                  },
+                  "font": "Arial;13;0",
+                  "parentStyle": false,
+                  "lineColor": "#111111",
+                  "fillColor": "#ffffff",
+                  "left": 1900,
+                  "top": 330,
+                  "width": 470,
+                  "height": 64,
+                  "text": "Estados del código (enum EstadoInversion, Inversion.cs):\nReservada, Firmada, Pagada, Vencida y Rechazada.\nAportes devueltos y Liquidada llegan con el Sprint 3."
                 }
               ]
             }
@@ -3978,7 +4146,7 @@
                   "_parent": {
                     "$ref": "AAAAAaAABKJ/MVU="
                   },
-                  "name": "Cupo reservado"
+                  "name": "Reservada"
                 },
                 {
                   "_type": "UMLState",
@@ -3986,7 +4154,7 @@
                   "_parent": {
                     "$ref": "AAAAAaAABKJ/MVU="
                   },
-                  "name": "Pendiente de pago"
+                  "name": "Firmada"
                 },
                 {
                   "_type": "UMLState",
@@ -3994,7 +4162,7 @@
                   "_parent": {
                     "$ref": "AAAAAaAABKJ/MVU="
                   },
-                  "name": "Activa"
+                  "name": "Pagada"
                 },
                 {
                   "_type": "UMLState",
@@ -4002,7 +4170,7 @@
                   "_parent": {
                     "$ref": "AAAAAaAABKJ/MVU="
                   },
-                  "name": "Cupo liberado"
+                  "name": "Vencida"
                 },
                 {
                   "_type": "UMLState",
@@ -4039,6 +4207,22 @@
                 {
                   "_type": "UMLFinalState",
                   "_id": "AAAAAaAABMJ/MVU=",
+                  "_parent": {
+                    "$ref": "AAAAAaAABKJ/MVU="
+                  },
+                  "name": "Fin"
+                },
+                {
+                  "_type": "UMLState",
+                  "_id": "Asnq0q5rXSxUqeGs",
+                  "_parent": {
+                    "$ref": "AAAAAaAABKJ/MVU="
+                  },
+                  "name": "Rechazada"
+                },
+                {
+                  "_type": "UMLFinalState",
+                  "_id": "39snm5HcFHdWq1Z9",
                   "_parent": {
                     "$ref": "AAAAAaAABKJ/MVU="
                   },
@@ -4204,7 +4388,7 @@
                       "_parent": {
                         "$ref": "AAAAAaAABNh/MVU="
                       },
-                      "name": "Pago rechazado o vencido",
+                      "name": "Vence reserva",
                       "kind": "signal"
                     }
                   ],
@@ -4217,7 +4401,8 @@
                       },
                       "name": "liberar cupo"
                     }
-                  ]
+                  ],
+                  "guard": "pasan 30 min"
                 },
                 {
                   "_type": "UMLTransition",
@@ -4325,6 +4510,54 @@
                   },
                   "target": {
                     "$ref": "AAAAAaAABMJ/MVU="
+                  }
+                },
+                {
+                  "_type": "UMLTransition",
+                  "_id": "rpg1cKV2r2yW6czG",
+                  "_parent": {
+                    "$ref": "AAAAAaAABKJ/MVU="
+                  },
+                  "source": {
+                    "$ref": "AAAAAaAABKp/MVU="
+                  },
+                  "target": {
+                    "$ref": "Asnq0q5rXSxUqeGs"
+                  },
+                  "triggers": [
+                    {
+                      "_type": "UMLEvent",
+                      "_id": "QsNw1r9AjJExmQw/",
+                      "_parent": {
+                        "$ref": "rpg1cKV2r2yW6czG"
+                      },
+                      "name": "Pago rechazado",
+                      "kind": "signal"
+                    }
+                  ],
+                  "guard": "",
+                  "effects": [
+                    {
+                      "_type": "UMLOpaqueBehavior",
+                      "_id": "eo1nE6gmnMzB94e5",
+                      "_parent": {
+                        "$ref": "rpg1cKV2r2yW6czG"
+                      },
+                      "name": "liberar cupo y avisar"
+                    }
+                  ]
+                },
+                {
+                  "_type": "UMLTransition",
+                  "_id": "RkxBJLVYaaNSDvhz",
+                  "_parent": {
+                    "$ref": "AAAAAaAABKJ/MVU="
+                  },
+                  "source": {
+                    "$ref": "Asnq0q5rXSxUqeGs"
+                  },
+                  "target": {
+                    "$ref": "39snm5HcFHdWq1Z9"
                   }
                 }
               ]
