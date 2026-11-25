@@ -15,6 +15,9 @@ internal static class Fichas
     public static readonly DatosPublicacion Publicacion =
         new(NivelRiesgo.Medio, "Mortalidad, enfermedades o caída del precio de venta.", 22, 8, 2, 8);
 
+    /// <summary>Días que queda abierta la ronda al publicar (el valor de appsettings → Plazos).</summary>
+    public const int DiasRonda = 30;
+
     public static readonly DateTimeOffset Ahora = new(2026, 11, 20, 12, 0, 0, TimeSpan.Zero);
 
     public static ProyectoGanadero EnRevision()

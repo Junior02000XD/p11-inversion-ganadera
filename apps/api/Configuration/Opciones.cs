@@ -73,6 +73,14 @@ public class VerificacionOptions
     [Range(0.0, 1.0)] public double PuntajeSimulado { get; set; } = 0.92;
 }
 
+/// <summary>Plazos de la inversión: la reserva del cupo (RF-13) y la ronda de financiamiento (RF-10, RF-17).</summary>
+public class PlazosOptions
+{
+    public const string Seccion = "Plazos";
+    [Range(5, 1440)] public int MinutosReserva { get; set; } = 30;
+    [Range(1, 180)] public int DiasRonda { get; set; } = 30;
+}
+
 /// <summary>Bot de Telegram para el canal de avisos (todavía no hay usuarios con chat vinculado).</summary>
 public class TelegramOptions
 {

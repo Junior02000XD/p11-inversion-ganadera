@@ -18,9 +18,6 @@ public class ReglaInversionException(string mensaje) : InvalidOperationException
 /// </summary>
 public class Inversion
 {
-    /// <summary>RF-13: la reserva del cupo dura 30 minutos.</summary>
-    public const int MinutosReserva = 30;
-
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid ProyectoId { get; set; }
     public Guid InversionistaId { get; set; }
@@ -42,14 +39,17 @@ public class Inversion
     public decimal? ParticipacionKg { get; private set; }
     public string? CodigoConstancia { get; private set; }
 
-    /// <summary>Crea la reserva (RF-13). Las validaciones de mínimo y cupo las hace quien llama.</summary>
-    public static Inversion Reservar(Guid proyectoId, Guid inversionistaId, decimal montoBs, DateTimeOffset ahora) => new()
+    /// <summary>
+    /// Crea la reserva (RF-13), que vence a los <paramref name="minutosReserva"/> minutos (30 en appsettings → Plazos).
+    /// Las validaciones de mínimo y cupo las hace quien llama.
+    /// </summary>
+    public static Inversion Reservar(Guid proyectoId, Guid inversionistaId, decimal montoBs, DateTimeOffset ahora, int minutosReserva) => new()
     {
         ProyectoId = proyectoId,
         InversionistaId = inversionistaId,
         MontoBs = montoBs,
         CreadaEn = ahora,
-        ReservadaHasta = ahora.AddMinutes(MinutosReserva),
+        ReservadaHasta = ahora.AddMinutes(minutosReserva),
     };
 
     /// <summary>Ocupa cupo si ya está pagada o si la reserva sigue vigente (RF-13).</summary>

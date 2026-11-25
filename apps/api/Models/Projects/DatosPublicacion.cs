@@ -13,9 +13,6 @@ public record DatosPublicacion(
     decimal? MortalidadPct,
     decimal? VariacionPct)
 {
-    /// <summary>Cuánto dura la ronda de financiamiento desde que se publica (el cierre es del Sprint 3, RF-17).</summary>
-    public const int DiasRonda = 30;
-
     /// <summary>RF-10: sin riesgos y sin los supuestos de los tres escenarios no se publica.</summary>
     public string? Incumplido()
     {

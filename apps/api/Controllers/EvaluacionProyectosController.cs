@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using P11.Api.Configuration;
 using P11.Api.Dtos;
 using P11.Api.Data;
 using P11.Api.Models;
@@ -14,7 +16,8 @@ namespace P11.Api.Controllers;
 [ApiController]
 [Route("api/analista/proyectos")]
 [Authorize(Roles = $"{Roles.Analista},{Roles.Administrador}")]
-public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto ciclo, TimeProvider reloj) : ControllerBase
+public class EvaluacionProyectosController(
+    AppDbContext db, GestorCicloProyecto ciclo, TimeProvider reloj, IOptions<PlazosOptions> plazos) : ControllerBase
 {
     /// <summary>Proyectos por estado para el analista, por defecto los que esperan evaluación (RF-09).</summary>
     [HttpGet]
@@ -70,7 +73,7 @@ public class EvaluacionProyectosController(AppDbContext db, GestorCicloProyecto 
             DecisionProyecto.Observar => new ObservarProyecto(id, analista, texto),
             DecisionProyecto.Rechazar => new RechazarProyecto(id, analista, texto),
             DecisionProyecto.Aprobar => new AprobarYPublicarProyecto(id, analista, texto.Length > 0 ? texto : "Aprobado en evaluación técnica.",
-                req.ADatosPublicacion(), reloj.GetUtcNow()),
+                req.ADatosPublicacion(), reloj.GetUtcNow(), plazos.Value.DiasRonda),
             _ => null,
         };
         if (comando is null) return BadRequest(new Respuesta("La decisión debe ser Aprobar, Observar o Rechazar."));

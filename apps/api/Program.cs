@@ -36,6 +36,7 @@ AgregarOpciones<OtpOptions>(OtpOptions.Seccion);
 AgregarOpciones<JwtOptions>(JwtOptions.Seccion);
 AgregarOpciones<CorreoOptions>(CorreoOptions.Seccion);
 AgregarOpciones<VerificacionOptions>(VerificacionOptions.Seccion);
+AgregarOpciones<PlazosOptions>(PlazosOptions.Seccion);
 AgregarOpciones<ArchivosOptions>(ArchivosOptions.Seccion)
     .Validate(o => ArchivosOptions.EsClaveAes256(o.ClaveBase64), "Archivos:ClaveBase64 debe ser una clave AES-256 en base64 (32 bytes).");
 

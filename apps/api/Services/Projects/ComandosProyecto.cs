@@ -41,9 +41,10 @@ public record RechazarProyecto(Guid ProyectoId, string Responsable, string Motiv
 /// Analista (RF-10): aprueba y publica con los riesgos y los supuestos de los tres escenarios.
 /// Si falta alguno, el proyecto no cambia (lo valida el propio proyecto).
 /// </summary>
-public record AprobarYPublicarProyecto(Guid ProyectoId, string Responsable, string Motivo, DatosPublicacion Datos, DateTimeOffset Ahora)
+public record AprobarYPublicarProyecto(
+    Guid ProyectoId, string Responsable, string Motivo, DatosPublicacion Datos, DateTimeOffset Ahora, int DiasRonda)
     : ComandoProyecto(ProyectoId, Responsable, Motivo)
 {
     public override string Accion => "Aprobar y publicar";
-    public override void Ejecutar(ProyectoGanadero proyecto) => proyecto.AprobarYPublicar(Datos, Ahora);
+    public override void Ejecutar(ProyectoGanadero proyecto) => proyecto.AprobarYPublicar(Datos, Ahora, DiasRonda);
 }

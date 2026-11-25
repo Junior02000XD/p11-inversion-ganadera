@@ -82,7 +82,7 @@ public class InversionesController(
             return Conflict(new Respuesta("Ya tienes una reserva en curso en este proyecto: termínala o espera a que venza."));
 
         // Si dos personas reservan a la vez puede pasarse del cupo por unos bolivianos; con pocos usuarios se acepta.
-        var inversion = Inversion.Reservar(proyecto.Id, usuario.Id, req.MontoBs, gestor.Ahora);
+        var inversion = Inversion.Reservar(proyecto.Id, usuario.Id, req.MontoBs, gestor.Ahora, gestor.MinutosReserva);
         db.Inversiones.Add(inversion);
         await db.SaveChangesAsync(ct);
         return CreatedAtAction(nameof(Obtener), new { id = inversion.Id }, InversionDto.Desde(inversion, proyecto));

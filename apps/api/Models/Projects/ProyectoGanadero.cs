@@ -59,8 +59,9 @@ public abstract class ProyectoGanadero
     /// <summary>
     /// RF-10: el estado decide si se puede publicar (solo desde revisión técnica) y después se exigen
     /// los riesgos y los supuestos de los tres escenarios. Si falta algo, no cambia nada.
+    /// La ronda queda abierta <paramref name="diasRonda"/> días (30 en appsettings → Plazos; el cierre es RF-17).
     /// </summary>
-    public void AprobarYPublicar(DatosPublicacion datos, DateTimeOffset ahora)
+    public void AprobarYPublicar(DatosPublicacion datos, DateTimeOffset ahora, int diasRonda)
     {
         var siguiente = EstadoActual.AprobarYPublicar();
         if (datos.Incumplido() is { } motivo) throw new TransicionInvalidaException(motivo);
@@ -73,7 +74,7 @@ public abstract class ProyectoGanadero
         MortalidadPct = datos.MortalidadPct;
         VariacionPct = datos.VariacionPct;
         PublicadoEn = ahora;
-        CierreRondaEn = ahora.AddDays(DatosPublicacion.DiasRonda);
+        CierreRondaEn = ahora.AddDays(diasRonda);
     }
 
     /// <summary>

@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using P11.Api.Configuration;
 using P11.Api.Data;
 using P11.Api.Models.Investments;
 using P11.Api.Services.Notifications;
@@ -16,9 +18,13 @@ public record CupoProyecto(decimal MetaBs, decimal RecaudadoBs, decimal Reservad
 /// Reglas de inversión que necesitan la base: cuánto cupo queda y qué hacer con las reservas vencidas.
 /// Las reglas de una inversión sola (firmar, pagar) están en la entidad <see cref="Inversion"/>.
 /// </summary>
-public class GestorInversiones(AppDbContext db, ICanalAviso canal, TimeProvider reloj, ILogger<GestorInversiones> log)
+public class GestorInversiones(
+    AppDbContext db, ICanalAviso canal, TimeProvider reloj, IOptions<PlazosOptions> plazos, ILogger<GestorInversiones> log)
 {
     public DateTimeOffset Ahora => reloj.GetUtcNow();
+
+    /// <summary>RF-13: cuánto dura la reserva del cupo (appsettings → Plazos).</summary>
+    public int MinutosReserva => plazos.Value.MinutosReserva;
 
     /// <summary>El cupo de varios proyectos de una vez (el catálogo los muestra todos juntos).</summary>
     public async Task<Dictionary<Guid, CupoProyecto>> CuposAsync(IReadOnlyCollection<(Guid Id, decimal MetaBs)> proyectos, CancellationToken ct)
@@ -48,7 +54,7 @@ public class GestorInversiones(AppDbContext db, ICanalAviso canal, TimeProvider 
         if (!inversion.Vencio(Ahora)) return false;
         inversion.Vencer();
         await db.SaveChangesAsync(ct);
-        await AvisarLiberacionAsync(inversion, $"pasaron los {Inversion.MinutosReserva} minutos de la reserva sin que se confirmara el pago.", ct);
+        await AvisarLiberacionAsync(inversion, $"pasaron los {MinutosReserva} minutos de la reserva sin que se confirmara el pago.", ct);
         return true;
     }
 
