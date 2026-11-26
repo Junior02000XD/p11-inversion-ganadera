@@ -47,7 +47,7 @@ export default function Invertir() {
       <form onSubmit={reservar} className="formulario">
         <Campo
           etiqueta="Monto (Bs)"
-          ayuda={`Mínimo ${formatoBs(proyecto.minimoBs)} · Cupo disponible ${formatoBs(proyecto.cupoLibreBs)}`}
+          ayuda={`Mínimo ${formatoBs(proyecto.minimoBs)} · Falta reunir ${formatoBs(proyecto.cupoLibreBs)}, no puedes pasar de ahí`}
           error={errorMonto}
         >
           <input type="number" min="1" step="0.01" placeholder="1000" value={monto} onChange={(e) => setMonto(e.target.value)} />

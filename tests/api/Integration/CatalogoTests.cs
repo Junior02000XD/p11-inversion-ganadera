@@ -68,6 +68,48 @@ public class CatalogoTests(ApiFactory f) : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task El_inversionista_puede_simular_con_sus_propios_supuestos()
+    {
+        var id = await PasosInversion.ProyectoPublicado(f, "Engorde A Medida");
+        var (inv, _) = await PasosInversion.InversionistaVerificado(f);
+
+        // Cambia rendimiento y mortalidad; costos (8 %) y variación (8 %) quedan como los cargó el analista.
+        var r = await inv.PostAsJsonAsync($"/api/catalogo/{id}/simulacion", new { montoBs = 1000, rendimientoPct = 30, mortalidadPct = 10 });
+        var simulacion = await r.Content.ReadFromJsonAsync<JsonElement>();
+
+        var escenarios = simulacion.GetProperty("escenarios").EnumerateArray()
+            .Select(e => (e.GetProperty("tipo").GetString(), e.GetProperty("mortalidadPct").GetDecimal(), e.GetProperty("valorEstimadoBs").GetDecimal()))
+            .ToList();
+        Assert.Equal([("Pesimista", 10m, 1040m), ("Esperado", 10m, 1120m), ("Optimista", 10m, 1200m)], escenarios);
+        Assert.True(simulacion.GetProperty("supuestosPropios").GetBoolean());
+        Assert.Contains("supuestos elegidos por ti", simulacion.GetProperty("advertencia").GetString());
+    }
+
+    [Fact]
+    public async Task Enviar_los_mismos_supuestos_del_analista_no_cuenta_como_propios()
+    {
+        var id = await PasosInversion.ProyectoPublicado(f, "Engorde Igual");
+        var (inv, _) = await PasosInversion.InversionistaVerificado(f);
+
+        var r = await inv.PostAsJsonAsync($"/api/catalogo/{id}/simulacion",
+            new { montoBs = 1000, rendimientoPct = 22, costosPct = 8, mortalidadPct = 2, variacionPct = 8 });
+
+        Assert.False((await r.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("supuestosPropios").GetBoolean());
+    }
+
+    [Theory]
+    [InlineData("rendimientoPct", 400)]
+    [InlineData("mortalidadPct", -1)]
+    [InlineData("costosPct", 101)]
+    public async Task Un_supuesto_fuera_de_rango_responde_400(string supuesto, decimal valor)
+    {
+        var id = await PasosInversion.ProyectoPublicado(f, "Engorde Rango");
+        var (inv, _) = await PasosInversion.InversionistaVerificado(f);
+        var cuerpo = new Dictionary<string, decimal> { ["montoBs"] = 1000, [supuesto] = valor };
+        Assert.Equal(HttpStatusCode.BadRequest, (await inv.PostAsJsonAsync($"/api/catalogo/{id}/simulacion", cuerpo)).StatusCode);
+    }
+
+    [Fact]
     public async Task Simular_con_monto_cero_responde_400()
     {
         var id = await PasosInversion.ProyectoPublicado(f, "Engorde Cero");

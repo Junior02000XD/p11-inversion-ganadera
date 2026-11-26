@@ -5,23 +5,27 @@ import { Aviso, Campo, Tarjeta } from '../../componentes'
 import { ADMINISTRADOR, PRODUCTOR } from '../../roles'
 import { useSesion } from '../../sesion'
 
-// Cada campo numérico se describe con { clave, etiqueta, paso?, placeholder? }.
+// Cada campo numérico se describe con { clave, etiqueta, ayuda, paso?, placeholder? }.
+// `ayuda` es la línea en letra chica que explica para qué sirve el dato.
 // `clave` es el nombre que espera la API; `paso` es el step del input (1 = solo enteros).
 
 const comunes = [
   {
     clave: 'montoRequeridoBs',
     etiqueta: 'Monto requerido (Bs)',
+    ayuda: 'Lo que pides a los inversionistas. Es la meta de financiamiento que se muestra en el catálogo.',
     placeholder: '100000',
   },
   {
     clave: 'montoMinimoBs',
     etiqueta: 'Inversión mínima (Bs)',
+    ayuda: 'Lo menos que puede poner un inversionista. No puede superar el monto requerido.',
     placeholder: '100',
   },
   {
     clave: 'plazoMeses',
     etiqueta: 'Plazo (meses)',
+    ayuda: 'Desde que se reúne el dinero hasta la venta y la liquidación a los inversionistas.',
     paso: '1',
     placeholder: '10',
   },
@@ -33,18 +37,26 @@ const porLinea = {
     {
       clave: 'cantidadAnimales',
       etiqueta: 'Cabezas de ganado',
+      ayuda: 'Cuántos animales se compran o se engordan con este proyecto.',
       paso: '1',
       placeholder: '120',
     },
     {
       clave: 'pesoInicialKg',
       etiqueta: 'Peso inicial promedio (kg)',
+      ayuda: 'Peso promedio de cada animal al empezar.',
       placeholder: '180',
     },
-    { clave: 'pesoMetaKg', etiqueta: 'Peso meta (kg)', placeholder: '420' },
+    {
+      clave: 'pesoMetaKg',
+      etiqueta: 'Peso meta (kg)',
+      ayuda: 'Peso promedio con que se venderá cada animal. Debe ser mayor al inicial.',
+      placeholder: '420',
+    },
     {
       clave: 'costosEstimadosBs',
       etiqueta: 'Costos estimados (Bs)',
+      ayuda: 'Gasto de todo el ciclo: alimento, sanidad, mano de obra y flete. Solo lo ve el analista, para juzgar si el monto requerido es razonable.',
       placeholder: '30000',
     },
   ],
@@ -52,13 +64,20 @@ const porLinea = {
     {
       clave: 'vacasEnOrdeno',
       etiqueta: 'Vacas en ordeño',
+      ayuda: 'Vacas que dan leche hoy en el predio.',
       paso: '1',
       placeholder: '30',
     },
-    { clave: 'litrosPorDia', etiqueta: 'Litros por día', placeholder: '450' },
+    {
+      clave: 'litrosPorDia',
+      etiqueta: 'Litros por día',
+      ayuda: 'Producción total del tambo en un día, sumando todas las vacas.',
+      placeholder: '450',
+    },
     {
       clave: 'precioLitroBs',
       etiqueta: 'Precio del litro (Bs)',
+      ayuda: 'Precio al que vendes hoy el litro a la planta o al acopiador.',
       placeholder: '4.20',
     },
   ],
@@ -135,7 +154,7 @@ export default function NuevoProyecto() {
   }
 
   const input = (c) => (
-    <Campo key={c.clave} etiqueta={c.etiqueta} error={campos[pascal(c.clave)]}>
+    <Campo key={c.clave} etiqueta={c.etiqueta} ayuda={c.ayuda} error={campos[pascal(c.clave)]}>
       <input
         type="number"
         inputMode="decimal"
@@ -194,7 +213,7 @@ export default function NuevoProyecto() {
             ))}
           </div>
         </Campo>
-        <Campo etiqueta="Nombre del proyecto" error={campos.Nombre}>
+        <Campo etiqueta="Nombre del proyecto" ayuda="Así lo verán los inversionistas en el catálogo." error={campos.Nombre}>
           <input
             placeholder={linea === 'Engorde' ? 'Engorde Chiquitania 2026' : 'Tambo San Juan'}
             value={nombre}

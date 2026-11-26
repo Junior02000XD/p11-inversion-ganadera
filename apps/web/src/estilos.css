@@ -322,6 +322,15 @@ textarea[readonly] { background: var(--fondo); color: var(--tenue); }
 .datos-total dt { color: var(--texto); font-weight: 600; }
 .progreso { height: 10px; border-radius: 999px; background: var(--fondo); border: 1px solid var(--borde); overflow: hidden; }
 .progreso div { height: 100%; background: var(--destacado); }
+.progreso-negativo div { background: var(--peligro); }
+.tabla .progreso { margin-top: 6px; max-width: 160px; }
+.control-supuesto { display: grid; grid-template-columns: 1fr 96px; gap: 12px; align-items: center; }
+.control-supuesto input[type='range'] { min-height: 0; padding: 0; border: 0; background: transparent; accent-color: var(--acento); }
+.acciones-supuestos { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.pasos { display: flex; flex-direction: column; gap: 12px; }
+.paso { border: 1px solid var(--borde); border-radius: var(--radio); padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; }
+.paso-titulo { margin: 0; font-weight: 600; font-size: 0.95rem; color: var(--acento); }
+.paso-inactivo { opacity: 0.55; }
 .qr {
   align-self: center; width: 200px; height: 200px; border-radius: 8px;
   background: repeating-conic-gradient(var(--texto) 0 25%, var(--superficie) 0 50%) 0 0 / 20px 20px;

@@ -42,7 +42,7 @@ export default function Catalogo() {
         <Campo etiqueta="Plazo máximo (meses)">
           <input type="number" min="1" placeholder="12" value={filtros.plazoMaximo} onChange={cambiar('plazoMaximo')} />
         </Campo>
-        <Campo etiqueta="Monto mínimo hasta (Bs)">
+        <Campo etiqueta="Inversión mínima hasta (Bs)" ayuda="Solo proyectos en los que puedes entrar con este monto.">
           <input type="number" min="1" placeholder="500" value={filtros.minimoHasta} onChange={cambiar('minimoHasta')} />
         </Campo>
         <Campo etiqueta="Zona">
@@ -68,11 +68,11 @@ export default function Catalogo() {
               <span className={`chip chip-${p.nivelRiesgo}`}>Riesgo {p.nivelRiesgo?.toLowerCase()}</span>
             </div>
             <div className="tenue">
-              {textoLinea(p.linea)} · {p.ubicacion} · {p.plazoMeses} meses · mínimo {formatoBs(p.minimoBs)}
+              {textoLinea(p.linea)} · {p.ubicacion} · {p.plazoMeses} meses · inversión mínima {formatoBs(p.minimoBs)}
             </div>
             <Progreso porcentaje={p.porcentajeFinanciado} />
             <div className="tenue">
-              {formatoBs(p.recaudadoBs)} de {formatoBs(p.metaBs)} · Cupo libre {formatoBs(p.cupoLibreBs)} · Cierra {formatoFecha(p.cierreRondaEn)}
+              Reunido {formatoBs(p.recaudadoBs)} de {formatoBs(p.metaBs)} · Falta reunir {formatoBs(p.cupoLibreBs)} · Recibe inversiones hasta {formatoFecha(p.cierreRondaEn)}
             </div>
             <Link className="boton boton-secundario" to={`/catalogo/${p.id}`}>
               Ver y simular

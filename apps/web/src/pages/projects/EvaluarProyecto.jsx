@@ -14,8 +14,18 @@ const puntos = ['Documentos del predio verificados', 'Registro RUNSA vigente', '
 // RF-10: supuestos del escenario esperado. El simulador (RF-12) arma con ellos los tres escenarios.
 const supuestos = [
   { clave: 'rendimientoPct', etiqueta: 'Rendimiento esperado (%)', ayuda: 'Ganancia bruta sobre lo invertido, en todo el plazo.', placeholder: '22' },
-  { clave: 'costosPct', etiqueta: 'Costos y comisión (%)', placeholder: '8' },
-  { clave: 'mortalidadPct', etiqueta: 'Pérdida por mortalidad (%)', placeholder: '2' },
+  {
+    clave: 'costosPct',
+    etiqueta: 'Costos y comisión (%)',
+    ayuda: 'Gastos del ciclo y comisión de la plataforma, como parte de lo invertido. Sirven de guía los costos estimados de la ficha.',
+    placeholder: '8',
+  },
+  {
+    clave: 'mortalidadPct',
+    etiqueta: 'Pérdida por mortalidad (%)',
+    ayuda: 'Parte del valor que se pierde por animales que mueren o se enferman.',
+    placeholder: '2',
+  },
   { clave: 'variacionPct', etiqueta: 'Variación entre escenarios (%)', ayuda: 'Cuánto baja (pesimista) o sube (optimista) el rendimiento.', placeholder: '8' },
 ]
 
@@ -88,7 +98,7 @@ export default function EvaluarProyecto() {
       : [
           ['Cabezas', p.cantidadAnimales],
           ['Peso inicial → meta', `${p.pesoInicialKg} → ${p.pesoMetaKg} kg`],
-          ['Costos estimados', formatoBs(p.costosEstimadosBs)],
+          ['Costos estimados del ciclo (los declara el productor)', formatoBs(p.costosEstimadosBs)],
         ]),
   ]
 
@@ -103,7 +113,7 @@ export default function EvaluarProyecto() {
           </label>
         ))}
         <h2>Para publicar: riesgos y escenarios</h2>
-        <Campo etiqueta="Nivel de riesgo">
+        <Campo etiqueta="Nivel de riesgo" ayuda="Lo ve el inversionista en el catálogo. Bajo: ganado sano, predio en regla y supuestos conservadores. Medio: algún factor que vigilar (clima, precio). Alto: varios factores o poca experiencia del productor.">
           <select value={nivelRiesgo} onChange={(e) => setNivelRiesgo(e.target.value)}>
             <option value="">Elegir…</option>
             <option value="Bajo">Bajo</option>

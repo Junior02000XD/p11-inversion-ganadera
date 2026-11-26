@@ -3,6 +3,12 @@ import { Link, useNavigate } from 'react-router'
 import { api, ErrorApi, mensajeDe } from '../../api'
 import { Aviso, Campo, Tarjeta } from '../../componentes'
 
+// Qué hace cada rol, para elegir con conocimiento (se muestra como ayuda bajo «Soy»).
+const textoRol = {
+  Inversionista: 'Aportas dinero a proyectos ganaderos publicados y recibes tu parte del resultado al venderse el ganado.',
+  Productor: 'Tienes el ganado y el predio: postulas tu proyecto para conseguir financiamiento. Si te equivocas de rol, el administrador puede cambiarlo.',
+}
+
 /** RF-01: registro de inversionista o productor; al terminar se envía un OTP al correo (mockup 01a). */
 export default function Registro() {
   const navegar = useNavigate()
@@ -44,14 +50,14 @@ export default function Registro() {
           <Campo etiqueta="Celular" error={campos.Celular}>
             <input required inputMode="tel" placeholder="+591 7xxxxxxx" value={datos.celular} onChange={(e) => setDatos({ ...datos, celular: e.target.value.replace(/[\s-]/g, '') })} autoComplete="tel" />
           </Campo>
-          <Campo etiqueta="CI" error={campos.Ci}>
+          <Campo etiqueta="CI" ayuda="Solo números. Si tu carnet tiene complemento, va después de un guion: 1234567-1B." error={campos.Ci}>
             <input required placeholder="1234567" value={datos.ci} onChange={cambiar('ci')} />
           </Campo>
         </div>
         <Campo etiqueta="Contraseña" error={campos.Contrasena} ayuda="Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo.">
           <input type="password" required minLength={8} value={datos.contrasena} onChange={cambiar('contrasena')} autoComplete="new-password" />
         </Campo>
-        <Campo etiqueta="Soy" error={campos.Rol}>
+        <Campo etiqueta="Soy" ayuda={textoRol[datos.rol]} error={campos.Rol}>
           <select value={datos.rol} onChange={cambiar('rol')}>
             <option value="Inversionista">Inversionista</option>
             <option value="Productor">Productor</option>

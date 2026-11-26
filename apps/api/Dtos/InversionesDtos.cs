@@ -19,6 +19,12 @@ public class ReservaRequest
     public decimal MontoBs { get; set; }
 }
 
+/// <summary>RF-14: pedir el código para firmar. Solo se envía si ya aceptó el contrato y los riesgos.</summary>
+public class CodigoContratoRequest
+{
+    public bool AceptaRiesgos { get; set; }
+}
+
 /// <summary>RF-14: aceptar el contrato con el código OTP que llegó por correo.</summary>
 public class FirmaContratoRequest
 {

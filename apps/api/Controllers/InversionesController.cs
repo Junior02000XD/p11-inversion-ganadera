@@ -100,15 +100,17 @@ public class InversionesController(
             proyecto.Riesgos, inversion.MontoBs, inversion.ReservadaHasta);
     }
 
-    /// <summary>RF-14: envía al correo el código OTP para firmar el contrato.</summary>
+    /// <summary>RF-14: envía al correo el código OTP para firmar el contrato. 400 si todavía no aceptó el contrato y los riesgos.</summary>
     [HttpPost("{id:guid}/contrato/codigo")]
     [ProducesResponseType<Respuesta>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Respuesta>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<Respuesta>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<Respuesta>(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<Respuesta>> EnviarCodigo(Guid id, CancellationToken ct)
+    public async Task<ActionResult<Respuesta>> EnviarCodigo(Guid id, CodigoContratoRequest req, CancellationToken ct)
     {
         var (inversion, _) = await BuscarAsync(id, ct);
         if (inversion is null) return NoEncontrada();
+        if (!req.AceptaRiesgos) return BadRequest(new Respuesta(MensajeSinAceptar));
         if (await gestor.VencerSiCorrespondeAsync(inversion, ct)) return Conflict(new Respuesta(ReservaVencidaException.Mensaje));
         if (inversion.Estado != EstadoInversion.Reservada) return Conflict(new Respuesta("El contrato de esta inversión ya está firmado."));
 
@@ -130,7 +132,7 @@ public class InversionesController(
     {
         var (inversion, proyecto) = await BuscarAsync(id, ct);
         if (inversion is null || proyecto is null) return NoEncontrada();
-        if (!req.AceptaRiesgos) return BadRequest(new Respuesta("Debes aceptar el contrato y los riesgos para continuar."));
+        if (!req.AceptaRiesgos) return BadRequest(new Respuesta(MensajeSinAceptar));
         if (await gestor.VencerSiCorrespondeAsync(inversion, ct)) return Conflict(new Respuesta(ReservaVencidaException.Mensaje));
 
         var resultado = await otp.ValidarAsync(User.IdUsuario(), PropositoOtp.FirmarContrato, req.Codigo, ct);
@@ -228,6 +230,8 @@ public class InversionesController(
         var proyectos = await db.Proyectos.Where(p => ids.Contains(p.Id)).ToDictionaryAsync(p => p.Id, ct);
         return lista.Select(i => InversionDto.Desde(i, proyectos[i.ProyectoId])).ToList();
     }
+
+    private const string MensajeSinAceptar = "Debes aceptar el contrato y los riesgos para continuar.";
 
     private NotFoundObjectResult NoEncontrada() => NotFound(new Respuesta("No encontramos esa inversión."));
 }

@@ -15,10 +15,10 @@ export default function CierreProyecto() {
   return (
     <Tarjeta titulo="Cierre del proyecto" subtitulo="Engorde Chiquitania 2026">
       <form onSubmit={enviar} className="formulario">
-        <Campo etiqueta="Venta total (Bs)">
+        <Campo etiqueta="Venta total (Bs)" ayuda="Lo que se cobró por todo el ganado vendido, según la factura.">
           <input type="number" min="0" placeholder="130.000" />
         </Campo>
-        <Campo etiqueta="Costos (Bs)">
+        <Campo etiqueta="Costos reales del ciclo (Bs)" ayuda="Lo que de verdad se gastó (alimento, sanidad, mano de obra, flete). Se descuenta de la venta antes de repartir. No son los costos estimados de la ficha: aquellos eran una previsión.">
           <input type="number" min="0" placeholder="62.000" />
         </Campo>
         <Campo etiqueta="Factura de venta">

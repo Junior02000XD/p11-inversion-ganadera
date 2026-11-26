@@ -62,7 +62,7 @@ public class CatalogoController(AppDbContext db, GestorInversiones inversiones) 
         return ProyectoCatalogoDto.Desde(proyecto, await inversiones.CupoAsync(proyecto.Id, proyecto.MontoRequeridoBs, ct));
     }
 
-    /// <summary>RF-12: tres escenarios para el monto indicado, con sus supuestos y la advertencia de RNF-06.</summary>
+    /// <summary>RF-12: tres escenarios para el monto indicado, con los supuestos del analista o los que elija el inversionista.</summary>
     [HttpPost("{id:guid}/simulacion")]
     [ProducesResponseType<SimulacionDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -72,10 +72,15 @@ public class CatalogoController(AppDbContext db, GestorInversiones inversiones) 
         var proyecto = await Publicados().FirstOrDefaultAsync(p => p.Id == id, ct);
         if (proyecto is null) return NotFound(new Respuesta("Ese proyecto no está en el catálogo."));
 
-        var escenarios = SimuladorEscenarios.Simular(proyecto, req.MontoBs)
+        var supuestos = new SupuestosSimulacion(req.RendimientoPct, req.CostosPct, req.MortalidadPct, req.VariacionPct);
+        var escenarios = SimuladorEscenarios.Simular(proyecto, req.MontoBs, supuestos)
             .Select(e => new EscenarioDto(e.Tipo, e.RendimientoPct, e.CostosPct, e.MortalidadPct, e.ValorEstimadoBs, e.ResultadoBs(req.MontoBs)))
             .ToList();
-        return new SimulacionDto(proyecto.Id, req.MontoBs, proyecto.MontoMinimoBs, escenarios, ConfiguracionEscenario.Advertencia, proyecto.Riesgos);
+        var propios = SimuladorEscenarios.SonPropios(proyecto, supuestos);
+        var advertencia = propios
+            ? ConfiguracionEscenario.Advertencia + " Calculado con supuestos elegidos por ti, no con los del analista."
+            : ConfiguracionEscenario.Advertencia;
+        return new SimulacionDto(proyecto.Id, req.MontoBs, proyecto.MontoMinimoBs, escenarios, propios, advertencia, proyecto.Riesgos);
     }
 
     private IQueryable<ProyectoGanadero> Publicados() => db.Proyectos.Where(p => p.Estado == EstadoProyecto.EnFinanciamiento);

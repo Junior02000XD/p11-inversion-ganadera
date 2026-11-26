@@ -10,11 +10,26 @@ namespace P11.Api.Dtos;
 
 // ---- Entrada ----
 
-/// <summary>Monto que el inversionista quiere simular.</summary>
+/// <summary>
+/// Monto que el inversionista quiere simular y, si quiere probar otros, sus propios supuestos (en %).
+/// Un supuesto que no se envía toma el valor que cargó el analista al publicar.
+/// </summary>
 public class SimulacionRequest
 {
     [Range(1, 1_000_000_000, ErrorMessage = "Indica un monto mayor a 0.")]
     public decimal MontoBs { get; set; }
+
+    [Range(-100, 300, ErrorMessage = "El rendimiento debe estar entre −100 % y 300 %.")]
+    public decimal? RendimientoPct { get; set; }
+
+    [Range(0, 100, ErrorMessage = "Los costos deben estar entre 0 % y 100 %.")]
+    public decimal? CostosPct { get; set; }
+
+    [Range(0, 100, ErrorMessage = "La mortalidad debe estar entre 0 % y 100 %.")]
+    public decimal? MortalidadPct { get; set; }
+
+    [Range(0, 100, ErrorMessage = "La variación debe estar entre 0 % y 100 %.")]
+    public decimal? VariacionPct { get; set; }
 }
 
 // ---- Salida ----
@@ -79,11 +94,15 @@ public record EscenarioDto(
     decimal ValorEstimadoBs,
     decimal ResultadoBs);
 
-/// <summary>RF-12: tres escenarios con sus supuestos y la advertencia de que no son garantizados (RNF-06).</summary>
+/// <summary>
+/// RF-12: tres escenarios con sus supuestos y la advertencia de que no son garantizados (RNF-06).
+/// SupuestosPropios indica que el inversionista cambió alguno de los supuestos del analista.
+/// </summary>
 public record SimulacionDto(
     Guid ProyectoId,
     decimal MontoBs,
     decimal MinimoBs,
     IReadOnlyList<EscenarioDto> Escenarios,
+    bool SupuestosPropios,
     string Advertencia,
     string? Riesgos);

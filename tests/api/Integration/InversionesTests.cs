@@ -30,7 +30,7 @@ public class InversionesTests(ApiFactoryConReloj f) : IClassFixture<ApiFactoryCo
         var contrato = await inv.GetFromJsonAsync<JsonElement>($"/api/inversiones/{id}/contrato");
         Assert.Contains("NO está garantizada", contrato.GetProperty("texto").GetString());
 
-        (await inv.PostAsync($"/api/inversiones/{id}/contrato/codigo", null)).EnsureSuccessStatusCode();
+        (await inv.PostAsJsonAsync($"/api/inversiones/{id}/contrato/codigo", new { aceptaRiesgos = true })).EnsureSuccessStatusCode();
         Assert.Contains(f.Correo.Para(correo), c => c.Cuerpo.Contains("firmar el contrato"));
         var codigo = Pasos.UltimoOtp(f, correo);
 
@@ -85,6 +85,20 @@ public class InversionesTests(ApiFactoryConReloj f) : IClassFixture<ApiFactoryCo
     }
 
     [Fact]
+    public async Task Sin_aceptar_el_contrato_no_se_envia_el_codigo_para_firmar()
+    {
+        var proyecto = await PasosInversion.ProyectoPublicado(f, "Engorde Sin Aceptar");
+        var (inv, correo) = await PasosInversion.InversionistaVerificado(f);
+        var reserva = await inv.PostAsJsonAsync("/api/inversiones", new { proyectoId = proyecto, montoBs = 1000 });
+        var id = (await reserva.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
+
+        var r = await inv.PostAsJsonAsync($"/api/inversiones/{id}/contrato/codigo", new { aceptaRiesgos = false });
+
+        Assert.Equal(HttpStatusCode.BadRequest, r.StatusCode);
+        Assert.DoesNotContain(f.Correo.Para(correo), c => c.Cuerpo.Contains("firmar el contrato"));
+    }
+
+    [Fact]
     public async Task Una_reserva_ocupa_cupo_y_al_vencer_lo_libera_y_avisa()
     {
         // Esta prueba adelanta el reloj: usa su propia API para no afectar a las demás.
@@ -95,7 +109,7 @@ public class InversionesTests(ApiFactoryConReloj f) : IClassFixture<ApiFactoryCo
 
         var reserva = await uno.PostAsJsonAsync("/api/inversiones", new { proyectoId = proyecto, montoBs = 1_500 });
         var id = (await reserva.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
-        (await uno.PostAsync($"/api/inversiones/{id}/contrato/codigo", null)).EnsureSuccessStatusCode();
+        (await uno.PostAsJsonAsync($"/api/inversiones/{id}/contrato/codigo", new { aceptaRiesgos = true })).EnsureSuccessStatusCode();
 
         // Mientras la reserva sigue vigente, solo quedan 500.
         Assert.Equal(HttpStatusCode.Conflict,

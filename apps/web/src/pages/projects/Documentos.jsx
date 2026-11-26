@@ -13,6 +13,13 @@ const tipos = {
   ContratoAlquiler: 'Contrato de alquiler',
 }
 
+// Para qué sirve cada documento del predio (se muestra como ayuda bajo «Tipo de documento»).
+const ayudaTipo = {
+  Runsa: 'Registro Único Nacional de Sanidad Agropecuaria, del SENASAG. Prueba que el predio y su ganado están registrados.',
+  TituloPropiedad: 'Prueba que el predio es tuyo. Si lo alquilas, sube el contrato de alquiler en su lugar.',
+  ContratoAlquiler: 'Si el predio no es tuyo: el contrato vigente que te permite usarlo durante todo el plazo del proyecto.',
+}
+
 /** RF-05: documentos del productor y del predio (mockup 03b). */
 export default function Documentos() {
   // El administrador ve las cargas de todos los productores; subir es del productor (los documentos son de su predio).
@@ -75,7 +82,7 @@ export default function Documentos() {
 
       {!esAdmin && (
         <form onSubmit={subir} className="formulario">
-          <Campo etiqueta="Tipo de documento">
+          <Campo etiqueta="Tipo de documento" ayuda={ayudaTipo[tipo]}>
             <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
               {Object.entries(tipos).map(([k, v]) => (
                 <option key={k} value={k}>

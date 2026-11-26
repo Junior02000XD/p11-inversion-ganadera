@@ -9,14 +9,18 @@ public record EscenarioSimulado(TipoEscenario Tipo, decimal RendimientoPct, deci
     public decimal ResultadoBs(decimal montoBs) => ValorEstimadoBs - montoBs;
 }
 
+/// <summary>Supuestos que elige el inversionista, en %. Los que quedan en null toman el valor del analista.</summary>
+public record SupuestosSimulacion(decimal? RendimientoPct, decimal? CostosPct, decimal? MortalidadPct, decimal? VariacionPct);
+
 /// <summary>
 /// RF-12: arma los tres escenarios con los supuestos que cargó el analista al publicar (RF-10).
 /// Usa el Prototype: una configuración base con los supuestos del escenario esperado, que se clona
 /// para el pesimista (rendimiento − variación) y el optimista (rendimiento + variación).
+/// El inversionista puede reemplazar cualquiera de esos supuestos para probar otros casos.
 /// </summary>
 public static class SimuladorEscenarios
 {
-    public static IReadOnlyList<EscenarioSimulado> Simular(ProyectoGanadero proyecto, decimal montoBs)
+    public static IReadOnlyList<EscenarioSimulado> Simular(ProyectoGanadero proyecto, decimal montoBs, SupuestosSimulacion? propios = null)
     {
         var baseConfig = new ConfiguracionEscenario
         {
@@ -25,12 +29,12 @@ public static class SimuladorEscenarios
             MontoInversionBs = montoBs,
             PlazoMeses = proyecto.PlazoMeses,
         };
-        baseConfig.Supuestos["rendimiento"] = (proyecto.RendimientoPct ?? 0) / 100;
-        baseConfig.Supuestos["costos"] = (proyecto.CostosPct ?? 0) / 100;
-        baseConfig.Supuestos["mortalidad"] = (proyecto.MortalidadPct ?? 0) / 100;
+        baseConfig.Supuestos["rendimiento"] = (propios?.RendimientoPct ?? proyecto.RendimientoPct ?? 0) / 100;
+        baseConfig.Supuestos["costos"] = (propios?.CostosPct ?? proyecto.CostosPct ?? 0) / 100;
+        baseConfig.Supuestos["mortalidad"] = (propios?.MortalidadPct ?? proyecto.MortalidadPct ?? 0) / 100;
         if (proyecto.Riesgos is not null) baseConfig.Riesgos.Add(proyecto.Riesgos);
 
-        return PreparadorEscenarios.Preparar(baseConfig, (proyecto.VariacionPct ?? 0) / 100)
+        return PreparadorEscenarios.Preparar(baseConfig, (propios?.VariacionPct ?? proyecto.VariacionPct ?? 0) / 100)
             .Select(c => new EscenarioSimulado(
                 c.Tipo,
                 c.Supuestos["rendimiento"] * 100,
@@ -39,4 +43,11 @@ public static class SimuladorEscenarios
                 c.Calcular().ValorEstimadoBs))
             .ToList();
     }
+
+    /// <summary>True si alguno de los supuestos enviados difiere del que cargó el analista.</summary>
+    public static bool SonPropios(ProyectoGanadero proyecto, SupuestosSimulacion propios) =>
+        Difiere(propios.RendimientoPct, proyecto.RendimientoPct) || Difiere(propios.CostosPct, proyecto.CostosPct)
+        || Difiere(propios.MortalidadPct, proyecto.MortalidadPct) || Difiere(propios.VariacionPct, proyecto.VariacionPct);
+
+    private static bool Difiere(decimal? propio, decimal? analista) => propio is not null && propio != (analista ?? 0);
 }

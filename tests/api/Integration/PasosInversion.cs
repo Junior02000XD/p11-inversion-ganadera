@@ -92,7 +92,7 @@ public static class PasosInversion
         var reserva = await c.PostAsJsonAsync("/api/inversiones", new { proyectoId = proyecto, montoBs = monto });
         reserva.EnsureSuccessStatusCode();
         var id = (await reserva.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
-        (await c.PostAsync($"/api/inversiones/{id}/contrato/codigo", null)).EnsureSuccessStatusCode();
+        (await c.PostAsJsonAsync($"/api/inversiones/{id}/contrato/codigo", new { aceptaRiesgos = true })).EnsureSuccessStatusCode();
         (await c.PostAsJsonAsync($"/api/inversiones/{id}/contrato/firmar",
             new { aceptaRiesgos = true, codigo = Pasos.UltimoOtp(f, correo) })).EnsureSuccessStatusCode();
         return id;
