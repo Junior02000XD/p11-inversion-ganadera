@@ -431,7 +431,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
     <div class="tarjeta termino"><h4>Ruta</h4><p>La dirección de una pantalla en la web: <code>/catalogo</code>, <code>/inversiones/:id/contrato</code>. Las define <code>main.jsx</code>.</p><p class="analogia">El número de oficina dentro del edificio.</p></div>
     <div class="tarjeta termino"><h4>Proxy de Vite</h4><p>En desarrollo, la web corre en el puerto 5173 y la API en el 7080. Vite reenvía todo lo que empieza con <code>/api</code> a la API, así el navegador cree que es un solo sitio.</p><p class="analogia">La recepcionista que pasa la llamada al interno correcto.</p></div>
     <div class="tarjeta termino"><h4>Swagger / OpenAPI</h4><p>Página que lista todos los endpoints de la API y permite probarlos («Try it out»). En <code>/swagger</code>.</p><p class="analogia">El menú del restaurante, con la opción de pedir una probadita.</p></div>
-    <div class="tarjeta termino"><h4>Prueba automática</h4><p>Código que usa el sistema y verifica el resultado. <b>Unitaria</b>: prueba una clase sola. <b>De integración</b>: levanta la API entera y le hace pedidos reales. En P11 hay 115.</p><p class="analogia">El control de calidad que revisa cada lote antes de salir.</p></div>
+    <div class="tarjeta termino"><h4>Prueba automática</h4><p>Código que usa el sistema y verifica el resultado. <b>Unitaria</b>: prueba una clase sola. <b>De integración</b>: levanta la API entera y le hace pedidos reales. En P11 hay 121.</p><p class="analogia">El control de calidad que revisa cada lote antes de salir.</p></div>
     <div class="tarjeta termino"><h4>Patrón de diseño</h4><p>Solución conocida y con nombre a un problema que se repite al programar (State, Command, Prototype…). Ver la sección 9.</p><p class="analogia">Una receta clásica: no la inventas, la adaptas.</p></div>
     <div class="tarjeta termino"><h4>Docker / contenedor</h4><p>Forma de correr programas (SQL Server, Mailpit) ya configurados, sin instalarlos a mano.</p><p class="analogia">Un contenedor de barco: llega cerrado y funciona igual en cualquier puerto.</p></div>
     <div class="tarjeta termino"><h4>Mailpit</h4><p>Buzón falso para desarrollo: atrapa todos los correos de la API (OTP, avisos) y los muestra en <code>http://localhost:8025</code>. No envía nada de verdad.</p><p class="analogia">Un buzón de práctica.</p></div>
@@ -656,7 +656,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
           </details>
           <details><summary><b>Configuration/</b> <span class="desc">opciones validadas al arrancar, documento de Swagger, claves de desarrollo</span></summary></details>
         </details>
-        <details><summary><b>tests/api/</b> <span class="desc">115 pruebas automáticas, en un proyecto aparte (dotnet test tests/api)</span></summary>
+        <details><summary><b>tests/api/</b> <span class="desc">121 pruebas automáticas, en un proyecto aparte (dotnet test tests/api)</span></summary>
           <div class="hoja">Integration/ <span class="desc">levantan la API entera: AutenticacionTests, VerificacionTests, ProyectosTests, EvaluacionProyectosTests, CatalogoTests <span class="chip chip-ok">Sprint 2</span>, InversionesTests <span class="chip chip-ok">Sprint 2</span>…</span></div>
           <div class="hoja">Patterns/ <span class="desc">una prueba por patrón de diseño</span></div>
         </details>
@@ -921,18 +921,20 @@ public sealed class EnRevisionTecnica : EstadoFicha
   <h3>7. El simulador (Prototype)</h3>
   <div class="codigo"><div class="codigo-cabecera"><code>Services/Simulation/SimuladorEscenarios.cs</code> y <code>Models/Simulation/ConfiguracionEscenario.cs</code><span>C#</span></div>
 <pre><code class="language-csharp">var baseConfig = new ConfiguracionEscenario { ProyectoId = proyecto.Id, MontoInversionBs = montoBs, … };
-baseConfig.Supuestos["rendimiento"] = proyecto.RendimientoPct / 100;   // los cargó el analista
-baseConfig.Supuestos["costos"]      = proyecto.CostosPct / 100;
-baseConfig.Supuestos["mortalidad"]  = proyecto.MortalidadPct / 100;
+// Cada supuesto: el que eligió el inversionista o, si no mandó ninguno, el del analista
+baseConfig.Supuestos["rendimiento"] = (propios?.RendimientoPct ?? proyecto.RendimientoPct) / 100;
+baseConfig.Supuestos["costos"]      = (propios?.CostosPct      ?? proyecto.CostosPct) / 100;
+baseConfig.Supuestos["mortalidad"]  = (propios?.MortalidadPct  ?? proyecto.MortalidadPct) / 100;
 
 // Clona la base tres veces: pesimista (rendimiento − variación), esperado, optimista (+ variación)
-PreparadorEscenarios.Preparar(baseConfig, proyecto.VariacionPct / 100)
+PreparadorEscenarios.Preparar(baseConfig, (propios?.VariacionPct ?? proyecto.VariacionPct) / 100)
     .Select(c =&gt; c.Calcular());
 
 // En ConfiguracionEscenario.Calcular():
 // valor = monto × (1 + rendimiento − costos − mortalidad)</code></pre></div>
   <ul class="explica">
     <li>Se arma una configuración base y se <b>clona</b> para cada escenario; cada copia tiene sus propios supuestos y la base no cambia.</li>
+    <li>El inversionista puede mover los cuatro supuestos con deslizadores. Lo que no manda queda como lo cargó el analista; si cambió alguno, la respuesta trae <code>supuestosPropios = true</code> y la advertencia lo dice.</li>
     <li>Cada resultado lleva la advertencia «Estimación, no rentabilidad garantizada» (RNF-06).</li>
     <li>La fórmula es provisional: la ERS dice que la definitiva se acuerda con el cliente.</li>
   </ul>
@@ -956,7 +958,7 @@ PreparadorEscenarios.Preparar(baseConfig, proyecto.VariacionPct / 100)
   }
 
   return (
-    &lt;Campo etiqueta="Monto (Bs)" ayuda={`Mínimo … · Cupo disponible …`} error={errorMonto}&gt;
+    &lt;Campo etiqueta="Monto (Bs)" ayuda={`Mínimo … · Falta reunir …`} error={errorMonto}&gt;
       &lt;input type="number" value={monto} onChange={(e) =&gt; setMonto(e.target.value)} /&gt;
     &lt;/Campo&gt;
   )
@@ -1145,7 +1147,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
         <tr><td>Cabezas de ganado</td><td>Entre 1 y 100.000</td><td>«Indica la cantidad de animales…»</td></tr>
         <tr><td>Peso inicial promedio (kg)</td><td>Mayor a 0, hasta 2.000</td><td>«Indica el peso inicial promedio…»</td></tr>
         <tr><td>Peso meta (kg)</td><td><b>Mayor que el peso inicial</b>, hasta 2.000</td><td>«El peso meta debe ser mayor al inicial.»</td></tr>
-        <tr><td>Costos estimados (Bs)</td><td>Mayor a 0</td><td>«Indica los costos estimados.»</td></tr>
+        <tr><td>Costos estimados (Bs)</td><td>Mayor a 0. Gasto de todo el ciclo (alimento, sanidad, mano de obra, flete). <b>No es la meta</b>: la meta es el monto requerido. Solo lo ve el analista, para juzgar si lo pedido es razonable</td><td>«Indica los costos estimados.»</td></tr>
         <tr><td colspan="3" style="background:var(--hundido)"><b>Solo lechería</b></td></tr>
         <tr><td>Vacas en ordeño</td><td>Entre 1 y 100.000</td><td>«Indica las vacas en ordeño…»</td></tr>
         <tr><td>Litros por día</td><td>Mayor a 0</td><td>«Indica los litros por día.»</td></tr>
@@ -1217,7 +1219,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
     <div class="capturas">
       <figure class="captura"><button type="button"><img src="capturas/18-catalogo.jpg" alt="Catálogo de proyectos" loading="lazy"></button><figcaption><b>18.</b> Catálogo: riesgo, avance de la ronda, cupo libre y cierre.</figcaption></figure>
       <figure class="captura"><button type="button"><img src="capturas/19-catalogo-filtrado.jpg" alt="Catálogo filtrado" loading="lazy"></button><figcaption><b>19.</b> Filtrado por línea Engorde y plazo de hasta 10 meses.</figcaption></figure>
-      <figure class="captura"><button type="button"><img src="capturas/20-simulador.jpg" alt="Simulador con tres escenarios" loading="lazy"></button><figcaption><b>20.</b> Simulador: tres escenarios con sus supuestos y la advertencia.</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/20-simulador.jpg" alt="Simulador con tres escenarios" loading="lazy"></button><figcaption><b>20.</b> Simulador con supuestos cambiados por el inversionista: tres escenarios, aviso y advertencia.</figcaption></figure>
       <figure class="captura"><button type="button"><img src="capturas/32-celular-catalogo.jpg" alt="Catálogo en celular" loading="lazy"></button><figcaption><b>32.</b> El mismo catálogo en un celular.</figcaption></figure>
     </div>
     <h4>Filtros del catálogo (RF-11)</h4>
@@ -1226,14 +1228,14 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
       <tbody>
         <tr><td>Línea</td><td>de esa línea (Engorde o Lechería)</td><td><code>linea</code></td></tr>
         <tr><td>Plazo máximo (meses)</td><td>que duran ese plazo o menos</td><td><code>plazoMaximo</code></td></tr>
-        <tr><td>Monto mínimo hasta (Bs)</td><td>cuya inversión mínima no supera ese monto («¿en cuáles puedo entrar con Bs 500?»)</td><td><code>minimoHasta</code></td></tr>
+        <tr><td>Inversión mínima hasta (Bs)</td><td>cuya inversión mínima no supera ese monto («¿en cuáles puedo entrar con Bs 500?»)</td><td><code>minimoHasta</code></td></tr>
         <tr><td>Zona</td><td>cuya ubicación contiene ese texto, sin importar mayúsculas</td><td><code>zona</code></td></tr>
         <tr><td>Riesgo</td><td>con ese nivel de riesgo</td><td><code>riesgo</code></td></tr>
       </tbody>
     </table></div>
     <p class="texto">Los filtros se combinan y los aplica la API: <code>GET /api/catalogo?linea=Engorde&amp;plazoMaximo=10</code>. Solo aparecen proyectos <b>En financiamiento</b>; un borrador nunca se ve (404 si se pide por su id).</p>
     <h4>El simulador (RF-12), con un ejemplo</h4>
-    <p class="texto">Con los supuestos que cargó el analista, el valor al final del plazo es <b>monto × (1 + rendimiento − costos − mortalidad)</b>. El pesimista resta la variación al rendimiento y el optimista la suma. Cambia los números para practicar:</p>
+    <p class="texto">El simulador arranca con los supuestos que cargó el analista, y el inversionista los mueve con deslizadores (rendimiento, mortalidad, costos y variación) para ver qué pasa si el negocio sale mejor o peor. Los escenarios se recalculan solos, un aviso indica que los supuestos son propios y «Volver a los del analista» los restablece. El valor al final del plazo es <b>monto × (1 + rendimiento − costos − mortalidad)</b>. El pesimista resta la variación al rendimiento y el optimista la suma. Cambia los números para practicar:</p>
     <div class="mini" id="mini-sim">
       <label for="sim-monto">Monto (Bs)<input id="sim-monto" type="number" value="1000" min="1"></label>
       <label for="sim-rend">Rendimiento %<input id="sim-rend" type="number" value="22" step="0.1"></label>
@@ -1261,7 +1263,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
     <p class="texto">Es el corazón del Sprint 2. En cuatro pasos: <b>reservar</b> el cupo por 30 minutos, <b>firmar</b> el contrato con un código OTP, <b>pagar</b> con QR (simulado) y <b>recibir</b> la participación con su constancia.</p>
     <div class="capturas">
       <figure class="captura"><button type="button"><img src="capturas/21-invertir-bajo-el-minimo.jpg" alt="Monto bajo el mínimo" loading="lazy"></button><figcaption><b>21.</b> Monto bajo el mínimo: muestra el cupo disponible (RF-13).</figcaption></figure>
-      <figure class="captura"><button type="button"><img src="capturas/22-contrato-con-otp.jpg" alt="Contrato con OTP" loading="lazy"></button><figcaption><b>22.</b> Contrato, cuenta regresiva de la reserva y código OTP (RF-14).</figcaption></figure>
+      <figure class="captura"><button type="button"><img src="capturas/22-contrato-con-otp.jpg" alt="Contrato con OTP" loading="lazy"></button><figcaption><b>22.</b> Contrato por pasos: ① aceptar, que habilita el envío del código; ② firmar con el OTP (RF-14).</figcaption></figure>
       <figure class="captura"><button type="button"><img src="capturas/23-pago-qr.jpg" alt="Pago con QR" loading="lazy"></button><figcaption><b>23.</b> Pago con QR simulado, con referencia y tiempo restante (RF-15).</figcaption></figure>
       <figure class="captura"><button type="button"><img src="capturas/24-constancia.jpg" alt="Constancia de participación" loading="lazy"></button><figcaption><b>24.</b> Constancia: participación en %, kg y datos del contrato (RF-16).</figcaption></figure>
       <figure class="captura"><button type="button"><img src="capturas/25-portafolio.jpg" alt="Portafolio" loading="lazy"></button><figcaption><b>25.</b> Portafolio con la participación y el total invertido.</figcaption></figure>
@@ -1290,8 +1292,8 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
     <ol class="pasos">
       <li><b>Reservar.</b> Desde el simulador o la pestaña «Invertir» elige el monto. <span class="donde">POST /api/inversiones → 201, estado Reservada, vence a los 30 min</span></li>
       <li><b>Leer el contrato.</b> Ve el texto con su versión y los riesgos, y la cuenta regresiva. <span class="donde">GET /api/inversiones/{id}/contrato</span></li>
-      <li><b>Pedir el código.</b> «Enviarme el código por correo». <span class="donde">POST /api/inversiones/{id}/contrato/codigo</span></li>
-      <li><b>Firmar.</b> Marca «Leí y acepto» y escribe el código. Se guarda quién, cuándo y qué versión aceptó. <span class="donde">POST /api/inversiones/{id}/contrato/firmar → Firmada</span></li>
+      <li><b>Aceptar y pedir el código</b> (paso ①). Marca «Leí y acepto»: recién ahí se habilita «Enviarme el código por correo». La API también lo exige. <span class="donde">POST /api/inversiones/{id}/contrato/codigo { aceptaRiesgos: true }</span></li>
+      <li><b>Firmar</b> (paso ②, aparece cuando llegó el código). Escribe el código; la casilla queda bloqueada. Se guarda quién, cuándo y qué versión aceptó. <span class="donde">POST /api/inversiones/{id}/contrato/firmar → Firmada</span></li>
       <li><b>Pagar.</b> Se genera el QR con una referencia única; vence junto con la reserva. <span class="donde">POST /api/inversiones/{id}/pago</span></li>
       <li><b>Confirmación de la pasarela</b> (simulada con «Ya pagué, verificar»). Aprobado: <b>Pagada</b>, participación y constancia. «Simular pago rechazado»: <b>Rechazada</b> y cupo liberado. <span class="donde">POST /api/inversiones/{id}/pago/confirmar</span></li>
       <li><b>Constancia y portafolio.</b> Llega por correo y se ve en «Consultar portafolio». <span class="donde">GET /api/portafolio · GET /api/portafolio/{id}/constancia</span></li>
@@ -1307,7 +1309,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
         <tr><td>Monto (Bs)</td><td>Mayor a 0 y <b>al menos el mínimo</b> del proyecto</td><td>400 bajo la casilla: «El mínimo para invertir es … Cupo disponible: …»</td></tr>
         <tr><td>Cupo</td><td>El monto no puede superar el cupo libre</td><td>409 «El monto supera el cupo disponible: quedan …»</td></tr>
         <tr><td>Una reserva a la vez</td><td>No dos reservas en curso en el mismo proyecto</td><td>409 «Ya tienes una reserva en curso…»</td></tr>
-        <tr><td>Aceptar el contrato</td><td>Casilla «Leí y acepto» obligatoria</td><td>400 «Debes aceptar el contrato y los riesgos…»</td></tr>
+        <tr><td>Aceptar el contrato</td><td>Casilla «Leí y acepto» obligatoria para pedir el código y para firmar</td><td>400 «Debes aceptar el contrato y los riesgos…»</td></tr>
         <tr><td>Código OTP</td><td>6 dígitos, 10 minutos, 3 intentos (RNF-01)</td><td>400 «El código no es correcto.» / «…venció» / «Agotaste los intentos.»</td></tr>
         <tr><td>Pagar</td><td>Solo con el contrato firmado</td><td>409 «Primero acepta el contrato y los riesgos; sin eso no se habilita el pago.»</td></tr>
         <tr><td>Tiempo</td><td>Firmar y pagar dentro de los 30 minutos de la reserva</td><td>409 «Tu reserva venció y el cupo se liberó…», más un correo</td></tr>
@@ -1422,7 +1424,7 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
   <p class="eyebrow">Sección 10</p>
   <h2>Pruebas automáticas</h2>
   <div class="breve"><strong>En breve</strong><p>Una prueba automática es código que usa el sistema y comprueba el resultado. Las <b>de integración</b> levantan la API completa en memoria y le hacen pedidos HTTP reales, con una base de datos en memoria y un correo falso; no necesitan SQL Server. Las <b>de patrones</b> prueban una clase sola.</p></div>
-  <p class="texto">Se corren con <code>dotnet test tests/api</code>. Resultado actual: <b>115 pruebas, 0 fallas</b> (44 al cerrar el Sprint 1, 87 antes del Sprint 2, 13 más de Sergio para Programación Web 3, 12 del Sprint 2 y 3 de la revisión del 24/11: eliminar cuentas y decisión del analista).</p>
+  <p class="texto">Se corren con <code>dotnet test tests/api</code>. Resultado actual: <b>121 pruebas, 0 fallas</b> (44 al cerrar el Sprint 1, 87 antes del Sprint 2, 13 más de Sergio para Programación Web 3, 12 del Sprint 2, 3 de la revisión del 24/11: eliminar cuentas y decisión del analista, y 6 de las correcciones de la defensa: supuestos propios en el simulador y contrato aceptado antes del código).</p>
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Archivo</th><th class="num">Pruebas</th><th>Qué demuestra</th></tr></thead>
     <tbody>
@@ -1483,7 +1485,7 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
     <li>Contrato: pedir el código, leerlo en Mailpit, firmar.</li>
     <li>Pago QR: «Ya pagué, verificar» → constancia (1 %, 216 kg). Mostrar el portafolio y el correo con la constancia.</li>
     <li><b>Administrador</b>: entrar a «Invertir en un proyecto» o «Liquidar proyecto» y mostrar «Ver como»; abrir la bitácora.</li>
-    <li>Cerrar con <code>dotnet test tests/api</code>: 115 pruebas en verde.</li>
+    <li>Cerrar con <code>dotnet test tests/api</code>: 121 pruebas en verde.</li>
   </ol>
   <h3>Si algo falla</h3>
   <div class="tabla-scroll"><table class="tabla">
@@ -1638,7 +1640,7 @@ SELECT Email, EstadoVerificacion, AccessFailedCount, LockoutEnd FROM AspNetUsers
     <details class="pregunta" data-tema="patrones"><summary><span class="chip">Patrones</span>¿Cómo trabajan juntos State, Command y Observer al evaluar?</summary><div class="respuesta"><p>La decisión del analista se convierte en un <b>Command</b>. El gestor lo ejecuta: el <b>State</b> del proyecto decide si la transición vale (si no, 409), se guarda una fila en la bitácora y los <b>Observers</b> avisan al productor y a los analistas.</p></div></details>
     <details class="pregunta" data-tema="patrones"><summary><span class="chip">Patrones</span>¿Por qué no usaron Mediator en el flujo de inversión?</summary><div class="respuesta"><p>Porque reservar, firmar, pagar y asignar son pasos en secuencia de una sola entidad, no objetos que conversan entre sí. Alcanza con la entidad <code>Inversion</code> y un servicio; Mediator sumaría una capa sin resolver nada.</p></div></details>
     <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cómo prueban que una reserva vence sin esperar 30 minutos?</summary><div class="respuesta"><p>Con <code>FakeTimeProvider</code>: un reloj falso que la prueba adelanta 31 minutos. Como la API pide la hora a ese reloj, cree que pasó el tiempo. Lo usa <code>InversionesTests</code>.</p></div></details>
-    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cuántas pruebas hay y cómo se corren?</summary><div class="respuesta"><p>115, todas en verde. Se corren con <code>dotnet test tests/api</code> desde la raíz del repositorio. No necesitan SQL Server: usan una base en memoria.</p></div></details>
+    <details class="pregunta" data-tema="patrones"><summary><span class="chip">Pruebas</span>¿Cuántas pruebas hay y cómo se corren?</summary><div class="respuesta"><p>121, todas en verde. Se corren con <code>dotnet test tests/api</code> desde la raíz del repositorio. No necesitan SQL Server: usan una base en memoria.</p></div></details>
   </div>
 </section>
 
@@ -1651,6 +1653,7 @@ SELECT Email, EstadoVerificacion, AccessFailedCount, LockoutEnd FROM AspNetUsers
     <thead><tr><th>Fecha</th><th>Cambio</th></tr></thead>
     <tbody>
       <tr><td class="num">24/11/2026</td><td>En «Código clave», la nota «A tener en cuenta al leer el código». Sección nueva «La base de datos por dentro»: cómo abrirla, las tablas, los valores de cada estado, consultas para mirar y cambios en vivo, y lo que se saltea al editar a mano. En el mapa del repositorio, «¿Por qué existe…?» y «Los diagramas y el código»; en las cifras, cómo se cambia cada regla. La reserva y la ronda pasan a <code>appsettings.json</code> → <code>Plazos</code>, y los diagramas de Clases, Secuencia, Colaboración, Actividad y EST-4 quedan iguales al código del Sprint 2.</td></tr>
+      <tr><td class="num">25/11/2026</td><td>Correcciones de la defensa del Sprint 2: el inversionista mueve los supuestos del simulador; en el contrato, aceptar habilita el envío del código; ayudas en letra chica en la ficha del proyecto («Costos estimados» frente a «Monto requerido») y en el catálogo; 121 pruebas.</td></tr>
       <tr><td class="num">24/11/2026</td><td>Revisión del código: solo se eliminan cuentas sin actividad, la decisión del analista se valida y ClaimsExtensiones pasa a su propio archivo; 115 pruebas.</td></tr>
       <tr><td class="num">24/11/2026</td><td>Al día con el código: carpetas de la API en inglés (<code>Controllers</code>, <code>Dtos</code>, <code>Models</code>, <code>Services</code>, <code>Data</code>) y pruebas en <code>tests/api</code>; DTO en un archivo por tema (class lo que entra, record lo que sale); SQL Server en el <code>docker-compose.yml</code> con <code>.env</code>; Sprint 2 cerrado.</td></tr>
       <tr><td class="num">20/11/2026</td><td>Se suma el aporte de Matías: cuentas de prueba y dos proyectos en la semilla.</td></tr>

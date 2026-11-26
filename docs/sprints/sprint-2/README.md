@@ -12,14 +12,14 @@ La explicación completa, con capturas, flujo y reglas de cada casilla, está en
 | RF-09 | Observado: vuelve al productor con observaciones. Rechazado: guarda el motivo y no se publica. | `GET /api/analista/proyectos`, `POST /api/analista/proyectos/{id}/decision` | `/evaluacion`, `/evaluacion/:id` | `EvaluacionProyectosTests`, `CommandTests`, `ObserverTests` |
 | RF-10 | No se publica ningún proyecto sin riesgos y tres escenarios cargados. | La decisión «Aprobar» exige nivel de riesgo, riesgos y los supuestos de los escenarios (`DatosPublicacion`) | `/evaluacion/:id` | `EvaluacionProyectosTests`, `CommandTests`, `StateTests` |
 | RF-11 | Al filtrar solo aparecen los proyectos que cumplen el filtro. | `GET /api/catalogo?linea=&plazoMaximo=&minimoHasta=&zona=&riesgo=`, `GET /api/catalogo/{id}` | `/catalogo` | `CatalogoTests` |
-| RF-12 | Se muestran tres resultados y la advertencia de que no son garantizados. | `POST /api/catalogo/{id}/simulacion` (Prototype) | `/catalogo/:id` | `CatalogoTests`, `PrototypeTests` |
+| RF-12 | Se muestran tres resultados y la advertencia de que no son garantizados. El inversionista puede mover los supuestos. | `POST /api/catalogo/{id}/simulacion` (Prototype) | `/catalogo/:id` | `CatalogoTests`, `PrototypeTests` |
 | RF-13 | Sin cupo o bajo el mínimo: se rechaza mostrando el cupo disponible. Válido: se reserva y vence a los 30 min. | `POST /api/inversiones` (400 bajo el mínimo, 409 sin cupo) | `/inversiones`, `/inversiones/nueva/:proyectoId` | `InversionesTests` |
 | RF-14 | Sin aceptación no se habilita el pago; la evidencia no puede borrarse. | `GET /api/inversiones/{id}/contrato`, `POST …/contrato/codigo`, `POST …/contrato/firmar` | `/inversiones/:id/contrato` | `InversionesTests` |
 | RF-15 | Confirmado: sigue la asignación. Rechazado o vencido: cupo liberado y aviso enviado. | `POST /api/inversiones/{id}/pago`, `POST …/pago/confirmar`; servicio `VencimientoReservas` | `/inversiones/:id/pago` | `InversionesTests` |
 | RF-16 | Tras un pago confirmado la participación aparece en el portafolio con su constancia. | `GET /api/portafolio`, `GET /api/portafolio/{id}/constancia` | `/portafolio`, `/portafolio/:id` | `InversionesTests` |
 | RNF-06 | Ninguna pantalla muestra «garantizada» ni porcentajes sin advertencia. | `ConfiguracionEscenario.Advertencia` en cada simulación; cláusula 4 de `ContratoInversion.cs` | `/catalogo/:id` (simulador), `/inversiones/:id/contrato`, `/portafolio/:id` | `CatalogoTests` (`El_simulador_devuelve_tres_escenarios_con_sus_supuestos_y_la_advertencia`) |
 
-Resultado: `dotnet test` → **112 pruebas, 0 fallas**: 87 antes del sprint, 13 del CRUD (Sergio, Web 3) y 12 del Sprint 2. `npm run build` sin errores. Con la revisión del 24/11 son **115**.
+Resultado: `dotnet test` → **112 pruebas, 0 fallas**: 87 antes del sprint, 13 del CRUD (Sergio, Web 3) y 12 del Sprint 2. `npm run build` sin errores. Con la revisión del 24/11 son **115**, y con las [correcciones de la defensa](correcciones-defensa.md) del 25/11, **121**.
 
 ## Decisiones tomadas en el sprint
 
@@ -40,7 +40,7 @@ Requisitos: `docker compose up -d --wait` (SQL Server y Mailpit), la API y la we
 2. **Analista** (`analista@p11.local`): «Evaluar». Aprobar sin la variación → 409, no publica. Completar riesgos y supuestos → publicado. Mostrar el correo al productor en Mailpit.
 3. **Inversionista**: catálogo, filtrar por Engorde, abrir el proyecto y simular Bs 1.000 → 1.040 / 1.120 / 1.200 con la advertencia.
 4. «Invertir en este proyecto»: Bs 50 → error con el cupo disponible. Reservar Bs 1.000.
-5. Contrato: pedir el código, leerlo en Mailpit, firmar.
+5. Contrato: marcar «Leí y acepto» (sin eso no se envía el código), pedir el código, leerlo en Mailpit y firmar.
 6. Pago QR: «Ya pagué, verificar» → constancia (1 %, 216 kg). Mostrar el portafolio y el correo de la constancia.
 7. **Administrador**: «Ver como» en un CU con varios actores y la bitácora.
 8. `dotnet test` en verde.
@@ -53,5 +53,7 @@ Las 33 capturas del recorrido completo (Sprints 1 y 2, con la API y SQL Server r
 
 - Cierre de la ronda (RF-17), compra, traslado, avance, incidencias, expediente y liquidación: Sprint 3. Esas pantallas siguen con `datosEjemplo.js`.
 - Cliente Android: Sprint 3.
+
+Después de la defensa (25/11) se aplicaron las [correcciones del docente](correcciones-defensa.md): simulador con supuestos editables, contrato por pasos y ayudas en la ficha del proyecto.
 
 También se hizo en este sprint, fuera de los RF: la [corrección del ingeniero](correccion-pestanas-casos-de-uso.md) (pestañas = casos de uso, Administrador con acceso a todo) y el CRUD de proyectos de Programación Web 3.
