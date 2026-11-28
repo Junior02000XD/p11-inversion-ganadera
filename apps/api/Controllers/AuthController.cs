@@ -149,6 +149,7 @@ public class AuthController(
         {
             var roles = await usuarios.GetRolesAsync(usuario);
             var token = tokens.Emitir(usuario, roles);
+            Response.Headers.CacheControl = "no-store"; // que ningún caché guarde el token
             return Ok(new LoginResponse(token.Token, token.ExpiraEn, UsuarioActual.Desde(usuario, roles)));
         }
 

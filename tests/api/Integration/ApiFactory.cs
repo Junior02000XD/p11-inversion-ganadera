@@ -38,6 +38,7 @@ public class ApiFactory : WebApplicationFactory<Program>
     public CorreoEnMemoria Correo { get; } = new();
     public string CarpetaArchivos { get; } = Path.Combine(Path.GetTempPath(), "p11-pruebas-" + Guid.NewGuid().ToString("N"));
     public string ClaveArchivos { get; } = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+    public string ClaveJwt { get; } = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
     private readonly string _baseDatos = "p11-" + Guid.NewGuid();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -45,7 +46,7 @@ public class ApiFactory : WebApplicationFactory<Program>
         builder.UseEnvironment("Testing");
         builder.UseSetting("Archivos:ClaveBase64", ClaveArchivos);
         builder.UseSetting("Archivos:Carpeta", CarpetaArchivos);
-        builder.UseSetting("Jwt:ClaveFirma", "clave-de-firma-solo-para-pruebas-0123456789");
+        builder.UseSetting("Jwt:ClaveFirma", ClaveJwt);
         builder.UseSetting("Semilla:Usuarios:0:Nombre", "Admin Prueba");
         builder.UseSetting("Semilla:Usuarios:0:Correo", Admin);
         builder.UseSetting("Semilla:Usuarios:0:Contrasena", ClaveInterna);

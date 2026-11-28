@@ -33,7 +33,8 @@ OptionsBuilder<T> AgregarOpciones<T>(string seccion) where T : class =>
 
 AgregarOpciones<ReglasSeguridadOptions>(ReglasSeguridadOptions.Seccion);
 AgregarOpciones<OtpOptions>(OtpOptions.Seccion);
-AgregarOpciones<JwtOptions>(JwtOptions.Seccion);
+AgregarOpciones<JwtOptions>(JwtOptions.Seccion)
+    .Validate(o => JwtOptions.EsClaveDeFirmaValida(o.ClaveFirma), "Jwt:ClaveFirma debe ser una clave en base64 de al menos 32 bytes.");
 AgregarOpciones<CorreoOptions>(CorreoOptions.Seccion);
 AgregarOpciones<VerificacionOptions>(VerificacionOptions.Seccion);
 AgregarOpciones<PlazosOptions>(PlazosOptions.Seccion);
@@ -72,12 +73,19 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
         bearer.MapInboundClaims = false;
         bearer.TokenValidationParameters = new TokenValidationParameters
         {
+            ValidateIssuer = true,
             ValidIssuer = jwt.Emisor,
+            ValidateAudience = true,
             ValidAudience = jwt.Audiencia,
+            ValidateIssuerSigningKey = true,
             IssuerSigningKey = TokenJwtService.ClaveDeFirma(jwt),
+            RequireSignedTokens = true,
+            ValidAlgorithms = [SecurityAlgorithms.HmacSha256],
+            RequireExpirationTime = true,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
             RoleClaimType = TokenJwtService.ClaimRol,
             NameClaimType = TokenJwtService.ClaimCorreo,
-            ClockSkew = TimeSpan.FromSeconds(30),
         };
     });
 builder.Services.AddAuthorization();
@@ -128,7 +136,11 @@ if (!builder.Environment.IsEnvironment("Testing"))
 builder.Services.AddControllers()
     // Los enum viajan como texto ("Aprobar"); un número como 7 no se acepta y da 400.
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false)));
-builder.Services.AddOpenApi(o => o.AddDocumentTransformer<DocumentoOpenApi>());
+builder.Services.AddOpenApi(o =>
+{
+    o.AddDocumentTransformer<DocumentoOpenApi>();
+    o.AddOperationTransformer<CandadoOpenApi>(); // candado solo en las rutas con [Authorize]
+});
 
 var app = builder.Build();
 

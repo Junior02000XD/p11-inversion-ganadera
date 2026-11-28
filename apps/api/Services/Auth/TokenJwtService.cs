@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using P11.Api.Configuration;
@@ -33,5 +32,5 @@ public class TokenJwtService(IOptions<JwtOptions> opciones, TimeProvider reloj)
         return new TokenEmitido(new JwtSecurityTokenHandler().WriteToken(jwt), expira);
     }
 
-    public static SymmetricSecurityKey ClaveDeFirma(JwtOptions o) => new(Encoding.UTF8.GetBytes(o.ClaveFirma));
+    public static SymmetricSecurityKey ClaveDeFirma(JwtOptions o) => new(Convert.FromBase64String(o.ClaveFirma));
 }

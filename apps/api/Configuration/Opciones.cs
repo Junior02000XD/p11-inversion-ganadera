@@ -47,8 +47,15 @@ public class JwtOptions
     public const string Seccion = "Jwt";
     [Required] public string Emisor { get; set; } = "p11-api";
     [Required] public string Audiencia { get; set; } = "p11-clientes";
-    [Required, MinLength(32)] public string ClaveFirma { get; set; } = "";
+    /// <summary>Clave HMAC-SHA256 en base64, de al menos 32 bytes. Nunca en el repositorio.</summary>
+    [Required] public string ClaveFirma { get; set; } = "";
     [Range(5, 1440)] public int MinutosVigencia { get; set; } = 120;
+
+    public static bool EsClaveDeFirmaValida(string base64)
+    {
+        try { return Convert.FromBase64String(base64).Length >= 32; }
+        catch (FormatException) { return false; }
+    }
 }
 
 public class CorreoOptions

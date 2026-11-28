@@ -29,8 +29,6 @@ public sealed class DocumentoOpenApi : IOpenApiDocumentTransformer
             BearerFormat = "JWT",
             Description = "Token JWT que devuelve POST /api/auth/login (solo el token, sin «Bearer »).",
         };
-        documento.Security ??= [];
-        documento.Security.Add(new OpenApiSecurityRequirement { [new OpenApiSecuritySchemeReference(Esquema, documento)] = [] });
         return Task.CompletedTask;
     }
 }
