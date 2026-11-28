@@ -1,4 +1,11 @@
-# Guía de estudio del Proyecto 11
+# Guías del Proyecto 11
+
+Hay dos guías:
+
+- [`guia-de-estudio.html`](guia-de-estudio.html): el proyecto completo (abajo).
+- [`guia-api.html`](guia-api.html): solo la API. Explica cómo funcionan el JWT, los roles, EF Core, los DTO (class y record), los códigos HTTP, la configuración y las pruebas. También compara lo que usa el proyecto con lo visto en Programación Web 3 y trae preguntas para practicar. Las capturas están en [`capturas-api/`](capturas-api/) y salen de la API real con la base recién creada. Publicada en línea como [Guía de la API del Proyecto 11](https://claude.ai/artifact/69TGbxkHGVjBQ1FYJMnqSs). Es atemporal: no lleva fechas ni sprints. La lista de endpoints, la tabla «Visto en clase» y las preguntas están en el bloque «DATOS DE LA GUÍA» del `<script>` final. Para actualizarla, se corrige el HTML y se vuelve a publicar en la misma dirección.
+
+## Guía de estudio del Proyecto 11
 
 [`guia-de-estudio.html`](guia-de-estudio.html) explica el proyecto completo para estudiarlo en cualquier momento:
 
@@ -13,7 +20,7 @@ Se abre con doble clic en cualquier navegador. Las capturas están en [`capturas
 
 También está publicada en línea, para abrirla sin clonar el repositorio: [Guía del Proyecto 11](https://claude.ai/artifact/YAswddBodFh72SRUxs6HCc). Este HTML es la fuente y la versión en línea es una copia.
 
-## Cómo actualizarla
+### Cómo actualizarla
 
 1. Lo que cambia de sprint a sprint está en el bloque **«DATOS DE LA GUÍA»**, dentro del `<script>` al final del HTML:
    - el estado de cada sprint;
@@ -24,6 +31,6 @@ También está publicada en línea, para abrirla sin clonar el repositorio: [Gu�
    - 3, tecnologías;
    - 5, mapa del repositorio;
    - 10, pruebas: cuántas hay y en qué archivos;
-   - 11, cómo levantar la demo: `docker-compose.yml`, `.env` y la cadena de conexión.
+   - 11, cómo levantar la demo: `docker-compose.yml`, el `.env` opcional y la cadena de conexión.
 5. Sumar una fila en la sección «Historial de la guía».
 6. Volver a publicar la versión en línea **en la misma dirección**: no se crea una página nueva. Las capturas solo se vuelven a subir si cambian.

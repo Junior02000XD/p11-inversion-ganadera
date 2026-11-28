@@ -614,7 +614,7 @@ dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; borde
 
   <p class="texto">Abre cada carpeta para ver qué hay. Lo marcado con <span class="chip chip-ok">Sprint 2</span> se sumó en el Sprint 2.</p>
   <div class="arbol">
-    <details open><summary><b>p11-inversion-ganadera/</b> <span class="desc">raíz: README, P11.sln (abre la API y las pruebas juntas), docker-compose.yml (SQL Server y Mailpit), .env.example (plantilla de la clave), global.json (.NET 10)</span></summary>
+    <details open><summary><b>p11-inversion-ganadera/</b> <span class="desc">raíz: README, P11.sln (abre la API y las pruebas juntas), docker-compose.yml (SQL Server y Mailpit), .env.example (plantilla del .env opcional), global.json (.NET 10)</span></summary>
         <details open><summary><b>apps/api/</b> <span class="desc">la API (dotnet run)</span></summary>
           <div class="hoja">Program.cs <span class="desc">arranque: registra servicios, seguridad, base de datos y Swagger</span></div>
           <div class="hoja">appsettings.json <span class="desc">reglas configurables: 5 intentos, OTP de 6 dígitos y 10 min, JWT de 120 min, archivos de 5 MB</span></div>
@@ -1451,14 +1451,13 @@ public async Task Bajo_el_minimo_responde_400_y_sobre_el_cupo_409_mostrando_el_c
   <h3>Una sola vez por máquina</h3>
   <ol class="pasos">
     <li>Instalar .NET SDK 10, Node.js 20.19 o superior y Docker.</li>
-    <li>En la raíz, copiar <code>.env.example</code> como <code>.env</code> y poner en <code>P11_SQL_CLAVE</code> una clave para SQL Server (mínimo 8 caracteres, con mayúsculas, minúsculas, números y símbolos). El <code>.env</code> no se sube al repo.</li>
-    <li>Guardar la cadena de conexión sin subirla al repo: en <code>apps/api</code>, <code>dotnet user-secrets set "ConnectionStrings:Principal" "Server=localhost,1433;Database=P11;User Id=sa;Password=&lt;tu clave&gt;;TrustServerCertificate=True"</code></li>
     <li><code>dotnet dev-certs https --trust</code> (para el https local).</li>
+    <li>Nada más: no hay que crear archivos ni claves. El SQL Server del <code>docker-compose.yml</code> usa la clave de prueba <code>P11.Pruebas-2026</code>, la misma que trae <code>appsettings.Development.json</code>, y solo escucha en <code>127.0.0.1</code>. El <code>.env</code> es opcional: sirve para cambiar la clave o un puerto ocupado (paso a paso en el README, «Instalación en una máquina nueva»).</li>
   </ol>
   <h3>Cada vez (una terminal por comando, desde la raíz)</h3>
   <div class="codigo"><div class="codigo-cabecera"><span>Terminal</span><span>bash</span></div>
 <pre><code class="language-bash">docker compose up -d --wait                       # SQL Server (:1433) y Mailpit (:8025); espera a que estén listos
-cd apps/api &amp;&amp; dotnet run --launch-profile https   # API en https://localhost:7080
+dotnet run --project apps/api --launch-profile https   # API en https://localhost:7080
 cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      # web en http://localhost:5173</code></pre></div>
   <p class="texto">El <code>docker-compose.yml</code> levanta SQL Server 2022 (con un volumen, así los datos sobreviven al apagarlo) y Mailpit. <code>--wait</code> espera a que la base acepte conexiones: si la API arranca antes, falla. En Windows con SQL Server Express o Developer instalado, se levanta solo el correo con <code>docker compose up -d mailpit</code>. Para apagar todo: <code>docker compose stop</code>.</p>
   <h3>Cuentas</h3>
@@ -1492,9 +1491,8 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
     <thead><tr><th>Síntoma</th><th>Causa probable</th></tr></thead>
     <tbody>
       <tr><td>La web dice «No se pudo conectar con el servidor.»</td><td>La API no está corriendo o no está en el puerto 7080</td></tr>
-      <tr><td>La API no arranca por la base</td><td>SQL Server apagado (<code>docker compose up -d --wait</code>), o falta la cadena en <code>user-secrets</code></td></tr>
-      <tr><td><code>docker compose</code> dice «Falta P11_SQL_CLAVE»</td><td>No existe el <code>.env</code>: copiar <code>.env.example</code> y poner la clave</td></tr>
-      <tr><td>El puerto 1433 ya está ocupado</td><td>Otro SQL Server en la máquina: poner <code>P11_PUERTO_SQL=1434</code> en el <code>.env</code> y usar <code>localhost,1434</code> en la cadena de conexión</td></tr>
+      <tr><td>La API no arranca por la base</td><td>SQL Server apagado (<code>docker compose up -d --wait</code>). Si dice «Login failed for user 'sa'», hay una clave vieja en <code>.env</code> o en <code>user-secrets</code>: <code>dotnet user-secrets clear --project apps/api</code></td></tr>
+      <tr><td>El puerto 1433 ya está ocupado</td><td>Otro SQL Server en la máquina: crear un <code>.env</code> con <code>P11_PUERTO_SQL=1434</code> y guardar la cadena con <code>localhost,1434</code> en <code>user-secrets</code> (ver el README)</td></tr>
       <tr><td>No llega el OTP</td><td>Mailpit no está corriendo: <code>docker compose up -d --wait</code></td></tr>
       <tr><td>«Tu identidad todavía no está verificada»</td><td>El usuario no pasó por «Registrar cuenta y verificar identidad»</td></tr>
       <tr><td>El catálogo está vacío</td><td>Ningún proyecto fue aprobado por el analista todavía</td></tr>
@@ -1513,8 +1511,8 @@ cd apps/web &amp;&amp; npm install &amp;&amp; npm run dev                      #
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Dato</th><th>Valor</th></tr></thead>
     <tbody>
-      <tr><td>Servidor</td><td><code>localhost,1433</code> (o el puerto de <code>P11_PUERTO_SQL</code> en el <code>.env</code>)</td></tr>
-      <tr><td>Usuario y clave</td><td><code>sa</code> y la de <code>P11_SQL_CLAVE</code> en el <code>.env</code></td></tr>
+      <tr><td>Servidor</td><td><code>localhost,1433</code> (o el puerto de <code>P11_PUERTO_SQL</code>, si se cambió en el <code>.env</code>)</td></tr>
+      <tr><td>Usuario y clave</td><td><code>sa</code> y <code>P11.Pruebas-2026</code> (o la de <code>P11_SQL_CLAVE</code>, si se cambió en el <code>.env</code>)</td></tr>
       <tr><td>Base</td><td><code>P11</code></td></tr>
       <tr><td>Certificado</td><td>Marcar «confiar en el certificado del servidor» (<code>TrustServerCertificate</code>)</td></tr>
     </tbody>
@@ -1652,6 +1650,7 @@ SELECT Email, EstadoVerificacion, AccessFailedCount, LockoutEnd FROM AspNetUsers
   <div class="tabla-scroll"><table class="tabla">
     <thead><tr><th>Fecha</th><th>Cambio</th></tr></thead>
     <tbody>
+      <tr><td class="num">27/11/2026</td><td>Instalación sin configuración: el <code>.env</code> y user-secrets pasan a ser opcionales (sección 11 y «La base de datos por dentro»). La API tiene su propia guía: <code>docs/guia/guia-api.html</code>.</td></tr>
       <tr><td class="num">24/11/2026</td><td>En «Código clave», la nota «A tener en cuenta al leer el código». Sección nueva «La base de datos por dentro»: cómo abrirla, las tablas, los valores de cada estado, consultas para mirar y cambios en vivo, y lo que se saltea al editar a mano. En el mapa del repositorio, «¿Por qué existe…?» y «Los diagramas y el código»; en las cifras, cómo se cambia cada regla. La reserva y la ronda pasan a <code>appsettings.json</code> → <code>Plazos</code>, y los diagramas de Clases, Secuencia, Colaboración, Actividad y EST-4 quedan iguales al código del Sprint 2.</td></tr>
       <tr><td class="num">25/11/2026</td><td>Correcciones de la defensa del Sprint 2: el inversionista mueve los supuestos del simulador; en el contrato, aceptar habilita el envío del código; ayudas en letra chica en la ficha del proyecto («Costos estimados» frente a «Monto requerido») y en el catálogo; 121 pruebas.</td></tr>
       <tr><td class="num">24/11/2026</td><td>Revisión del código: solo se eliminan cuentas sin actividad, la decisión del analista se valida y ClaimsExtensiones pasa a su propio archivo; 115 pruebas.</td></tr>

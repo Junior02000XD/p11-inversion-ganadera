@@ -1,0 +1,1548 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Guía de la API del Proyecto 11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700&family=Source+Sans+3:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap">
+<!--
+  GUÍA DE LA API DEL PROYECTO 11 — cómo mantenerla
+  · Este archivo es la fuente: docs/guia/guia-api.html. Las capturas están en docs/guia/capturas-api/.
+  · La lista de endpoints, la tabla «Visto en clase» y las preguntas están en el bloque «DATOS DE LA GUÍA»,
+    en el <script> del final: si cambia un endpoint, se corrige ahí.
+  · Cada sección empieza con un recuadro «En breve» que repite lo mínimo para leerla sola.
+  · Es atemporal: sin fechas ni sprints en el texto. Lo que cambie con el código se corrige en su sección.
+-->
+<style>
+/* Layout: índice fijo a la izquierda y una columna de lectura; en celular, el índice se abre con un botón.
+   Colores: los tokens de la web del proyecto (estilo «Pampa verde»), los mismos de la guía de estudio. */
+:root {
+  --fondo: #f4f1e6;
+  --superficie: #fffdf6;
+  --hundido: #ebe5d2;
+  --texto: #2c3326;
+  --tenue: #646b59;
+  --borde: #ddd5bd;
+  --acento: #5c6e4a;
+  --acento-fuerte: #3d4a30;
+  --acento-suave: #e6ead8;
+  --destacado: #b8953c;
+  --ocre: #7c5d14;
+  --ocre-suave: #f3e5bd;
+  --peligro: #a12f2f;
+  --peligro-suave: #f8e4e2;
+  --ok: #46602f;
+  --ok-suave: #e2ead2;
+  --azul: #2f5a7a;
+  --azul-suave: #dfe9f1;
+  --codigo-fondo: #262c21;
+  --codigo-texto: #e9ebdf;
+  --codigo-clave: #d6b55c;
+  --codigo-texto2: #a9c08a;
+  --codigo-coment: #8f9884;
+  --codigo-tipo: #9cc3dd;
+  --sombra: 0 1px 2px rgb(60 70 40 / 0.08), 0 6px 18px rgb(60 70 40 / 0.08);
+  --fuente-texto: 'Source Sans 3', 'Segoe UI', Roboto, Arial, sans-serif;
+  --fuente-titulos: 'Bitter', Georgia, 'Times New Roman', serif;
+  --fuente-codigo: 'Source Code Pro', ui-monospace, Consolas, monospace;
+  --cabecera: #3d4a30;
+  --radio: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fondo: #151a12; --superficie: #1e251a; --hundido: #252d20; --texto: #e9ebdf; --tenue: #a3ab96; --borde: #343d2c;
+    --acento: #a9c08a; --acento-fuerte: #c9dbb0; --acento-suave: #2a3322; --destacado: #d6b55c; --ocre: #e0c06a; --ocre-suave: #352e18;
+    --peligro: #f0a29a; --peligro-suave: #3a1f1c; --ok: #b5cf94; --ok-suave: #26321d; --azul: #9cc3dd; --azul-suave: #1d2b36;
+    --codigo-fondo: #10140d; --sombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px rgb(0 0 0 / 0.25); --cabecera: #232b1d; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fondo: #151a12; --superficie: #1e251a; --hundido: #252d20; --texto: #e9ebdf; --tenue: #a3ab96; --borde: #343d2c;
+  --acento: #a9c08a; --acento-fuerte: #c9dbb0; --acento-suave: #2a3322; --destacado: #d6b55c; --ocre: #e0c06a; --ocre-suave: #352e18;
+  --peligro: #f0a29a; --peligro-suave: #3a1f1c; --ok: #b5cf94; --ok-suave: #26321d; --azul: #9cc3dd; --azul-suave: #1d2b36;
+  --codigo-fondo: #10140d; --sombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px rgb(0 0 0 / 0.25); --cabecera: #232b1d; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--fondo); color: var(--texto);
+  font-family: var(--fuente-texto); font-size: 17px; line-height: 1.6;
+}
+h1, h2, h3, h4 { font-family: var(--fuente-titulos); line-height: 1.2; text-wrap: balance; margin: 0; color: var(--texto); }
+h2 { font-size: 1.9rem; }
+h3 { font-size: 1.3rem; margin-top: 2rem; }
+h4 { font-size: 1.05rem; margin-top: 1.4rem; }
+p { margin: 0.6rem 0; }
+a { color: var(--acento); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--destacado); outline-offset: 2px;
+}
+code { font-family: var(--fuente-codigo); font-size: 0.86em; background: var(--hundido); padding: 0.08em 0.35em; border-radius: 5px; overflow-wrap: anywhere; }
+ul, ol { padding-left: 1.3rem; margin: 0.5rem 0; }
+li { margin: 0.25rem 0; }
+table { font-size: inherit; }
+img { max-width: 100%; }
+.tenue { color: var(--tenue); }
+
+/* ---- Cabecera ---- */
+.cabecera {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--cabecera); color: #f4f1e6;
+  padding-block: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 21; background: var(--cabecera); }
+.logo { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: #d9c48a; color: #3d4a30; font-weight: 700; font-size: 0.8rem; flex: 0 0 auto; }
+.cabecera-titulo { font-family: var(--fuente-titulos); font-weight: 700; font-size: 1.1rem; color: #f4f1e6; text-decoration: none; }
+.cabecera-sub { color: #d8dcc8; font-size: 0.9rem; }
+.cabecera .espacio { flex: 1; }
+.boton-indice { display: none; border: 1px solid #c9cfb6; background: transparent; color: #f4f1e6; border-radius: 999px; padding: 4px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; }
+
+/* ---- Marco: índice + contenido ---- */
+.marco { display: grid; grid-template-columns: 270px minmax(0, 1fr); align-items: start; }
+.indice {
+  position: sticky; top: 58px; max-height: calc(100vh - 58px); overflow-y: auto;
+  padding: 20px 12px 40px; background: var(--hundido); border-right: 1px solid var(--borde); align-self: stretch;
+}
+.indice p { margin: 4px 10px 8px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tenue); }
+.indice a { display: block; padding: 6px 10px; border-radius: 8px; color: var(--texto); text-decoration: none; font-size: 0.93rem; line-height: 1.3; border-left: 3px solid transparent; }
+.indice a:hover { background: var(--acento-suave); }
+.indice a.activo { border-left-color: var(--destacado); background: var(--acento-suave); font-weight: 600; }
+.indice a.sub { padding-left: 24px; font-size: 0.86rem; color: var(--tenue); }
+.indice .num { display: inline-block; min-width: 1.6em; color: var(--tenue); font-variant-numeric: tabular-nums; }
+
+main {
+  min-width: 0; padding-block: 28px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.columna { max-width: 900px; margin: 0 auto; }
+.seccion { padding-top: 26px; margin-top: 26px; border-top: 1px solid var(--borde); }
+.seccion:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+.eyebrow { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ocre); margin: 0 0 4px; }
+.lead { font-size: 1.12rem; color: var(--tenue); max-width: 65ch; }
+.texto { max-width: 68ch; }
+
+/* «En breve»: lo mínimo para leer la sección sin volver atrás */
+.breve {
+  margin: 14px 0 18px; padding: 12px 16px; border-radius: var(--radio);
+  background: var(--azul-suave); border: 1px solid color-mix(in srgb, var(--azul) 25%, transparent);
+}
+.breve strong:first-child { display: block; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--azul); margin-bottom: 2px; }
+.breve p { margin: 0.3rem 0; }
+
+.nota { padding: 10px 14px; border-radius: 10px; background: var(--ocre-suave); color: var(--texto); margin: 12px 0; }
+.nota-ok { background: var(--ok-suave); }
+.nota-peligro { background: var(--peligro-suave); }
+
+/* ---- Tarjetas y rejillas ---- */
+.rejilla { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); margin: 14px 0; }
+.rejilla-2 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin: 14px 0; }
+.tarjeta { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 14px 16px; min-width: 0; }
+.tarjeta h4 { margin-top: 0; }
+.tarjeta p { font-size: 0.95rem; }
+.tarjeta .etiqueta { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tenue); }
+.rol { border-top: 4px solid var(--acento); }
+.rol.productor { border-top-color: var(--destacado); }
+.rol.analista { border-top-color: var(--azul); }
+.rol.admin { border-top-color: var(--peligro); }
+
+.chip { display: inline-block; font-size: 0.76rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--hundido); color: var(--tenue); white-space: nowrap; vertical-align: middle; }
+.chip-ok { background: var(--ok-suave); color: var(--ok); }
+.chip-ocre { background: var(--ocre-suave); color: var(--ocre); }
+.chip-peligro { background: var(--peligro-suave); color: var(--peligro); }
+.chip-azul { background: var(--azul-suave); color: var(--azul); }
+
+/* ---- Tablas ---- */
+.tabla-scroll { overflow-x: auto; margin: 12px 0; border: 1px solid var(--borde); border-radius: var(--radio); background: var(--superficie); }
+.tabla { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+.tabla th { text-align: left; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--tenue); background: var(--hundido); padding: 8px 12px; white-space: nowrap; }
+.tabla td { padding: 8px 12px; border-top: 1px solid var(--borde); vertical-align: top; }
+.tabla td:first-child { font-weight: 600; }
+.tabla .centro { text-align: center; }
+.tabla .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.matriz td { text-align: center; font-weight: 400; }
+.matriz td:first-child { text-align: left; font-weight: 600; }
+.marca { color: var(--ok); font-weight: 700; }
+
+/* ---- Capturas ---- */
+.capturas { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); margin: 14px 0; }
+.capturas.una { grid-template-columns: minmax(0, 1fr); }
+figure { margin: 0; min-width: 0; }
+.captura button { display: block; width: 100%; padding: 0; border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; background: var(--superficie); cursor: zoom-in; }
+.captura img { display: block; width: 100%; height: 190px; object-fit: cover; object-position: top center; }
+.capturas.una .captura img { height: auto; max-height: 520px; }
+.captura figcaption { font-size: 0.86rem; color: var(--tenue); margin-top: 6px; line-height: 1.4; }
+.captura figcaption b { color: var(--texto); }
+dialog#visor { border: 0; padding: 0; background: transparent; max-width: min(1200px, 96vw); max-height: 94vh; }
+dialog#visor::backdrop { background: rgb(10 12 8 / 0.82); }
+dialog#visor img { display: block; max-width: 100%; max-height: 86vh; border-radius: 10px; margin: 0 auto; }
+dialog#visor p { color: #f4f1e6; text-align: center; margin: 8px 0 0; }
+dialog#visor button { position: absolute; top: 8px; right: 8px; border: 0; border-radius: 999px; background: #f4f1e6; color: #2c3326; font: inherit; font-weight: 700; padding: 4px 12px; cursor: pointer; }
+
+/* ---- Pasos numerados (un flujo real, el orden importa) ---- */
+.pasos { list-style: none; padding: 0; counter-reset: paso; display: grid; gap: 8px; }
+.pasos > li { counter-increment: paso; position: relative; padding: 10px 14px 10px 52px; background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; margin: 0; }
+.pasos > li::before { content: counter(paso); position: absolute; left: 12px; top: 10px; width: 28px; height: 28px; border-radius: 50%; background: var(--acento); color: var(--superficie); display: grid; place-items: center; font-weight: 700; font-size: 0.85rem; }
+.pasos > li.activo { border-color: var(--destacado); box-shadow: 0 0 0 2px var(--ocre-suave); }
+.pasos .donde { display: block; font-size: 0.85rem; color: var(--tenue); }
+.pasos-clic > li { cursor: pointer; }
+
+/* ---- Código ---- */
+.codigo { margin: 12px 0; border-radius: var(--radio); overflow: hidden; border: 1px solid var(--borde); background: var(--codigo-fondo); }
+.codigo-cabecera { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 6px 14px; background: var(--hundido); font-size: 0.82rem; color: var(--tenue); }
+.codigo-cabecera code { background: transparent; padding: 0; }
+.codigo pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
+.codigo pre code { background: transparent; padding: 0; font-size: 0.84rem; line-height: 1.55; color: var(--codigo-texto); overflow-wrap: normal; white-space: pre; }
+.hljs-keyword, .hljs-built_in, .hljs-literal { color: var(--codigo-clave); }
+.hljs-string, .hljs-template-string { color: var(--codigo-texto2); }
+.hljs-comment, .hljs-doctag { color: var(--codigo-coment); font-style: italic; }
+.hljs-title, .hljs-type, .hljs-class .hljs-title, .hljs-title.class_ { color: var(--codigo-tipo); }
+.hljs-number, .hljs-attr, .hljs-meta { color: #e8a87c; }
+.explica { margin: 0 0 18px; padding-left: 1.2rem; }
+.explica li { font-size: 0.95rem; }
+
+/* ---- Árbol del repositorio ---- */
+.arbol { font-family: var(--fuente-codigo); font-size: 0.9rem; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 10px 14px; }
+.arbol details { margin-left: 1rem; }
+.arbol > details { margin-left: 0; }
+.arbol summary { cursor: pointer; padding: 3px 0; list-style-position: outside; }
+.arbol summary b { color: var(--acento); }
+.arbol .hoja { margin: 2px 0 2px 1.9rem; }
+.arbol .desc { font-family: var(--fuente-texto); font-size: 0.9rem; color: var(--tenue); }
+
+/* ---- Diagramas SVG ---- */
+.diagrama { overflow-x: auto; margin: 14px 0; padding: 12px; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); }
+.diagrama svg { display: block; min-width: 640px; width: 100%; height: auto; }
+.d-caja { fill: var(--hundido); stroke: var(--borde); stroke-width: 1.5; }
+.d-caja.verde { fill: var(--acento-suave); stroke: var(--acento); }
+.d-caja.ocre { fill: var(--ocre-suave); stroke: var(--destacado); }
+.d-caja.azul { fill: var(--azul-suave); stroke: var(--azul); }
+.d-caja.roja { fill: var(--peligro-suave); stroke: var(--peligro); }
+.d-caja.prendida { stroke: var(--destacado); stroke-width: 3.5; }
+.d-titulo { fill: var(--texto); font-family: var(--fuente-titulos); font-weight: 700; font-size: 15px; }
+.d-texto { fill: var(--tenue); font-family: var(--fuente-texto); font-size: 12.5px; }
+.d-flecha { stroke: var(--tenue); stroke-width: 1.6; fill: none; }
+.d-etiqueta { fill: var(--ocre); font-family: var(--fuente-texto); font-size: 12px; font-weight: 600; }
+.d-punta { fill: var(--tenue); }
+
+/* ---- Glosario y práctica ---- */
+.buscador { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 12px 0; }
+.buscador input { flex: 1 1 240px; min-width: 0; font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); }
+.filtros { display: flex; gap: 6px; flex-wrap: wrap; }
+.filtros button { font: inherit; font-size: 0.88rem; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); cursor: pointer; }
+.filtros button[aria-pressed="true"] { background: var(--acento); border-color: var(--acento); color: var(--superficie); }
+.termino h4 { font-family: var(--fuente-texto); font-size: 1.02rem; font-weight: 700; }
+.termino .analogia { color: var(--tenue); font-size: 0.92rem; border-left: 3px solid var(--destacado); padding-left: 10px; margin-top: 6px; }
+.pregunta { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; margin: 8px 0; }
+.pregunta summary { cursor: pointer; padding: 10px 14px; font-weight: 600; }
+.pregunta summary .chip { margin-right: 6px; }
+.pregunta .respuesta { padding: 0 14px 12px 14px; border-top: 1px dashed var(--borde); }
+
+/* ---- Simulador de práctica ---- */
+.mini { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin: 12px 0; }
+.mini label { display: flex; flex-direction: column; font-size: 0.86rem; font-weight: 600; gap: 4px; }
+.mini input { font: inherit; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); min-width: 0; }
+.resultado-sim { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.resultado-sim div { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; padding: 10px 12px; }
+.resultado-sim b { display: block; font-family: var(--fuente-titulos); font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.resultado-sim span { font-size: 0.82rem; color: var(--tenue); }
+
+/* ---- Línea de tiempo de sprints ---- */
+.linea-tiempo { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 16px 0; }
+.hito { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; padding: 10px 12px; }
+.hito .fecha { font-size: 0.8rem; color: var(--tenue); font-variant-numeric: tabular-nums; }
+.hito strong { display: block; font-family: var(--fuente-titulos); }
+.hito p { font-size: 0.88rem; margin: 4px 0 6px; }
+.hito.actual { border-color: var(--destacado); box-shadow: 0 0 0 2px var(--ocre-suave); }
+
+.cu-bloque { margin-top: 30px; padding: 18px; background: var(--superficie); border: 1px solid var(--borde); border-radius: 16px; box-shadow: var(--sombra); }
+.cu-bloque > h3 { margin-top: 0; }
+.cu-meta { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 4px; }
+.cu-bloque .tabla-scroll { background: var(--fondo); }
+
+/* ---- Celular ---- */
+@media (max-width: 900px) {
+  .marco { grid-template-columns: minmax(0, 1fr); }
+  .boton-indice { display: inline-block; }
+  .cabecera-sub { display: none; }
+  .indice { display: none; position: fixed; top: 58px; left: 0; right: 0; bottom: 0; max-height: none; z-index: 15; border-right: 0; }
+  .indice.abierto { display: block; }
+  body { font-size: 16px; }
+  h2 { font-size: 1.55rem; }
+  .resultado-sim { grid-template-columns: minmax(0, 1fr); }
+  .cu-bloque { padding: 14px; }
+}
+
+/* ---- Agregados de la guía de la API ---- */
+.metodo { display: inline-block; min-width: 3.9em; text-align: center; font-family: var(--fuente-codigo); font-size: 0.74rem; font-weight: 600; padding: 1px 6px; border-radius: 6px; }
+.m-get { background: var(--azul-suave); color: var(--azul); }
+.m-post { background: var(--ok-suave); color: var(--ok); }
+.m-put { background: var(--ocre-suave); color: var(--ocre); }
+.m-delete { background: var(--peligro-suave); color: var(--peligro); }
+.ruta { font-family: var(--fuente-codigo); font-size: 0.86rem; white-space: nowrap; }
+.tabla td.ruta { font-weight: 400; }
+.grupo-endpoints { margin-top: 18px; }
+.grupo-endpoints h4 { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.grupo-endpoints h4 code { font-size: 0.8rem; }
+.codigo-http { font-family: var(--fuente-codigo); font-weight: 600; font-variant-numeric: tabular-nums; }
+.c2 { color: var(--ok); } .c4 { color: var(--ocre); } .c4r { color: var(--peligro); } .c5 { color: var(--peligro); }
+
+/* Comparación lado a lado */
+.versus th:nth-child(2), .versus th:nth-child(3) { width: 38%; }
+.versus td { font-weight: 400 !important; }
+.versus td:first-child { font-weight: 600 !important; }
+
+/* Decodificador de JWT */
+.jwt { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 14px 16px; margin: 14px 0; }
+.jwt label { font-size: 0.86rem; font-weight: 600; display: block; margin-bottom: 4px; }
+.jwt textarea { width: 100%; min-height: 92px; font-family: var(--fuente-codigo); font-size: 0.8rem; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--borde); background: var(--fondo); color: var(--texto); resize: vertical; overflow-wrap: anywhere; }
+.jwt-crudo { font-family: var(--fuente-codigo); font-size: 0.78rem; overflow-wrap: anywhere; line-height: 1.5; margin: 10px 0; padding: 8px 10px; border-radius: 10px; background: var(--hundido); }
+.jwt-crudo .p1 { color: var(--peligro); } .jwt-crudo .p2 { color: var(--azul); } .jwt-crudo .p3 { color: var(--ok); }
+.jwt-partes { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.jwt-partes > div { min-width: 0; border-radius: 10px; border: 1px solid var(--borde); padding: 8px 10px; background: var(--fondo); }
+.jwt-partes h5 { margin: 0 0 4px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.jwt-partes .t1 h5 { color: var(--peligro); } .jwt-partes .t2 h5 { color: var(--azul); } .jwt-partes .t3 h5 { color: var(--ok); }
+.jwt-partes pre { margin: 0; font-family: var(--fuente-codigo); font-size: 0.78rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.jwt-claims { font-size: 0.9rem; margin: 10px 0 0; }
+.jwt-claims dt { font-family: var(--fuente-codigo); font-weight: 600; font-size: 0.85rem; }
+.jwt-claims dd { margin: 0 0 6px 0; color: var(--tenue); }
+.jwt-aviso { font-size: 0.88rem; }
+
+/* Salida de terminal real */
+.terminal { margin: 12px 0; border-radius: var(--radio); overflow: hidden; border: 1px solid var(--borde); background: var(--codigo-fondo); }
+.terminal pre { margin: 0; padding: 12px 16px; overflow-x: auto; font-family: var(--fuente-codigo); font-size: 0.82rem; line-height: 1.5; color: var(--codigo-texto); }
+.terminal .prompt { color: var(--codigo-clave); }
+
+/* Visto en clase */
+.visto { font-weight: 700; font-size: 0.78rem; white-space: nowrap; }
+.tabla td .chip { margin: 1px 0; }
+</style>
+</head>
+<body>
+
+<header class="cabecera">
+  <span class="logo" aria-hidden="true">API</span>
+  <a class="cabecera-titulo" href="#inicio">Guía de la API · P11</a>
+  <span class="cabecera-sub">ASP.NET Core · EF Core · SQL Server · JWT</span>
+  <span class="espacio"></span>
+  <button class="boton-indice" id="boton-indice" type="button" aria-expanded="false" aria-controls="indice">Índice</button>
+</header>
+
+<div class="marco">
+<nav class="indice" id="indice" aria-label="Índice de la guía">
+  <p>Índice</p>
+  <a href="#inicio"><span class="num">0</span>Cómo usar esta guía</a>
+  <a href="#minuto"><span class="num">1</span>La API en un minuto</a>
+  <a href="#recorrido"><span class="num">2</span>Recorrido de una petición</a>
+  <a href="#estructura"><span class="num">3</span>Carpetas y Program.cs</a>
+  <a href="#jwt"><span class="num">4</span>Inicio de sesión y JWT</a>
+  <a href="#carrito"><span class="num">5</span>Comparación con el Carrito</a>
+  <a href="#roles"><span class="num">6</span>Roles y dueño del dato</a>
+  <a href="#endpoints"><span class="num">7</span>Todos los endpoints</a>
+  <a href="#codigos"><span class="num">8</span>Códigos HTTP</a>
+  <a href="#efcore"><span class="num">9</span>EF Core y la base de datos</a>
+  <a href="#dtos"><span class="num">10</span>DTO: class y record</a>
+  <a href="#validacion"><span class="num">11</span>Validación y errores</a>
+  <a href="#di"><span class="num">12</span>Inyección y configuración</a>
+  <a href="#openapi"><span class="num">13</span>Swagger y Scalar</a>
+  <a href="#seguridad"><span class="num">14</span>Más seguridad</a>
+  <a href="#pruebas"><span class="num">15</span>Pruebas automáticas</a>
+  <a href="#clase"><span class="num">16</span>Visto en clase y nuevo</a>
+  <a href="#patrones"><span class="num">17</span>Patrones en la API</a>
+  <a href="#web"><span class="num">18</span>La web que la usa</a>
+  <a href="#limites"><span class="num">19</span>Límites conocidos</a>
+  <a href="#practica"><span class="num">20</span>Preguntas para practicar</a>
+</nav>
+
+<main>
+<div class="columna">
+
+<!-- ============================ 0. INICIO ============================ -->
+<section class="seccion" id="inicio">
+  <p class="eyebrow">Proyecto 11 · Plataforma de inversión ganadera · Programación Web 3</p>
+  <h1 style="font-size: clamp(2rem, 5vw, 2.8rem);">Guía de la API</h1>
+  <p class="lead">Cómo está hecha la API del Proyecto 11, por qué se decidió cada cosa y en qué se parece y en qué se diferencia de lo practicado en clase. Para poder responder cualquier pregunta sobre la API mirando el código.</p>
+
+  <div class="rejilla-2">
+    <div class="tarjeta">
+      <p class="etiqueta">Cómo leerla</p>
+      <p>Cada sección empieza con un recuadro <b>En breve</b> que alcanza para leerla sola. Las capturas son de la API real corriendo con SQL Server y se agrandan con un clic. Los nombres de archivo apuntan al repositorio: <code>apps/api/…</code>.</p>
+    </div>
+    <div class="tarjeta">
+      <p class="etiqueta">Si tienes poco tiempo</p>
+      <p>Lee la <a href="#recorrido">2</a> (recorrido), la <a href="#jwt">4</a> (JWT), la <a href="#codigos">8</a> (códigos HTTP), la <a href="#dtos">10</a> (records) y la <a href="#clase">16</a> (qué es nuevo respecto a clase). Después practica con la <a href="#practica">20</a>.</p>
+    </div>
+  </div>
+  <p class="tenue">Para levantarla en tu máquina, sigue <a href="https://github.com/Junior02000XD/p11-inversion-ganadera#instalación-en-una-máquina-nueva">la instalación del README</a>: <code>docker compose up -d --wait</code> y <code>dotnet run --project apps/api --launch-profile https</code>, sin configurar nada más.</p>
+</section>
+
+<!-- ============================ 1. EN UN MINUTO ============================ -->
+<section class="seccion" id="minuto">
+  <p class="eyebrow">Sección 1</p>
+  <h2>La API en un minuto</h2>
+  <div class="breve"><strong>En breve</strong><p>Es una <b>Web API REST</b> en ASP.NET Core (.NET 10): recibe y devuelve JSON por HTTPS, guarda en <b>SQL Server</b> con <b>EF Core</b> y sabe quién llama gracias a un <b>token JWT</b>. La usan la web (React) y, más adelante, la app Android.</p></div>
+
+  <div class="rejilla">
+    <div class="tarjeta"><p class="etiqueta">Qué es</p><p>El programa del servidor que aplica las reglas del negocio: quién puede postular un proyecto, cuánto cupo queda, cuándo vence una reserva.</p></div>
+    <div class="tarjeta"><p class="etiqueta">Con qué está hecha</p><p>ASP.NET Core con controladores, EF Core + SQL Server, ASP.NET Core Identity (usuarios y contraseñas), JWT Bearer, OpenAPI con Swagger UI y Scalar.</p></div>
+    <div class="tarjeta"><p class="etiqueta">Dónde vive</p><p><code>apps/api/</code> (la API) y <code>tests/api/</code> (sus pruebas). <code>P11.sln</code> abre las dos en Visual Studio o Rider.</p></div>
+    <div class="tarjeta"><p class="etiqueta">Dónde se prueba</p><p>Swagger UI en <code>https://localhost:7080/swagger</code>, Scalar en <code>/scalar</code> y los correos de prueba en <code>http://localhost:8025</code>.</p></div>
+  </div>
+
+  <h3>Qué significa que sea REST</h3>
+  <ul class="texto">
+    <li><b>Recursos con URL propia</b>: <code>/api/proyectos</code> es la colección; <code>/api/proyectos/{id}</code>, uno; <code>/api/proyectos/{id}/historial</code>, un recurso relacionado.</li>
+    <li><b>El verbo HTTP dice la acción</b>: GET consulta, POST crea o ejecuta una acción, PUT reemplaza, DELETE elimina.</li>
+    <li><b>Sin estado en el servidor</b>: no hay sesión guardada. Cada petición trae su token y la API la resuelve sola. Por eso escala y por eso la app Android podrá usar la misma API.</li>
+    <li><b>El código de respuesta tiene significado</b>: 201 creado, 404 no existe, 409 choca con una regla (sección <a href="#codigos">8</a>).</li>
+  </ul>
+  <p class="texto">Las acciones que no son «crear, leer, cambiar o borrar» se modelan como POST a una sub-ruta con verbo: <code>POST /api/proyectos/{id}/enviar-revision</code> o <code>POST /api/inversiones/{id}/contrato/firmar</code>. Es la forma habitual de expresar una transición de estado en REST.</p>
+</section>
+
+<!-- ============================ 2. RECORRIDO ============================ -->
+<section class="seccion" id="recorrido">
+  <p class="eyebrow">Sección 2</p>
+  <h2>Recorrido de una petición</h2>
+  <div class="breve"><strong>En breve</strong><p>Cada petición pasa por una fila de <b>middlewares</b> en el orden en que están en <code>Program.cs</code>. Cualquiera puede cortarla y responder antes: la autenticación con 401, la autorización con 403, la validación del DTO con 400. Si llega al controlador, este usa servicios y EF Core, y devuelve un DTO que se convierte en JSON.</p></div>
+
+  <div class="diagrama" role="img" aria-label="Recorrido de una petición por la API">
+    <svg viewBox="0 0 1000 300" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="p1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <rect id="n-cliente" class="d-caja azul" x="10" y="50" width="145" height="100" rx="12"/>
+      <text class="d-titulo" x="82" y="88" text-anchor="middle">Cliente</text>
+      <text class="d-texto" x="82" y="110" text-anchor="middle">web o Swagger</text>
+      <text class="d-texto" x="82" y="128" text-anchor="middle">Bearer &lt;token&gt;</text>
+
+      <rect id="n-https" class="d-caja" x="177" y="50" width="145" height="100" rx="12"/>
+      <text class="d-titulo" x="249" y="88" text-anchor="middle">HTTPS</text>
+      <text class="d-texto" x="249" y="110" text-anchor="middle">UseHttpsRedirection</text>
+      <text class="d-texto" x="249" y="128" text-anchor="middle">http → https</text>
+
+      <rect id="n-auth" class="d-caja verde" x="344" y="50" width="145" height="100" rx="12"/>
+      <text class="d-titulo" x="416" y="88" text-anchor="middle">Autenticación</text>
+      <text class="d-texto" x="416" y="110" text-anchor="middle">UseAuthentication</text>
+      <text class="d-texto" x="416" y="128" text-anchor="middle">valida el JWT → User</text>
+
+      <rect id="n-autz" class="d-caja verde" x="511" y="50" width="145" height="100" rx="12"/>
+      <text class="d-titulo" x="583" y="88" text-anchor="middle">Autorización</text>
+      <text class="d-texto" x="583" y="110" text-anchor="middle">UseAuthorization</text>
+      <text class="d-texto" x="583" y="128" text-anchor="middle">[Authorize(Roles)]</text>
+
+      <rect id="n-ctrl" class="d-caja ocre" x="678" y="50" width="145" height="100" rx="12"/>
+      <text class="d-titulo" x="750" y="88" text-anchor="middle">Controlador</text>
+      <text class="d-texto" x="750" y="110" text-anchor="middle">[ApiController]</text>
+      <text class="d-texto" x="750" y="128" text-anchor="middle">valida el DTO</text>
+
+      <rect id="n-datos" class="d-caja ocre" x="845" y="50" width="145" height="100" rx="12"/>
+      <text class="d-titulo" x="917" y="88" text-anchor="middle">Dominio y datos</text>
+      <text class="d-texto" x="917" y="110" text-anchor="middle">servicios + EF Core</text>
+      <text class="d-texto" x="917" y="128" text-anchor="middle">SQL Server</text>
+
+      <path class="d-flecha" d="M155 100 H175" marker-end="url(#p1)"/>
+      <path class="d-flecha" d="M322 100 H342" marker-end="url(#p1)"/>
+      <path class="d-flecha" d="M489 100 H509" marker-end="url(#p1)"/>
+      <path class="d-flecha" d="M656 100 H676" marker-end="url(#p1)"/>
+      <path class="d-flecha" d="M823 100 H843" marker-end="url(#p1)"/>
+
+      <path class="d-flecha" d="M416 150 V172" />
+      <text class="d-etiqueta" x="416" y="190" text-anchor="middle">401 si falta o no vale</text>
+      <path class="d-flecha" d="M583 150 V172" />
+      <text class="d-etiqueta" x="583" y="190" text-anchor="middle">403 si el rol no sirve</text>
+      <path class="d-flecha" d="M750 150 V172" />
+      <text class="d-etiqueta" x="750" y="190" text-anchor="middle">400 si el DTO no valida</text>
+      <path class="d-flecha" d="M917 150 V172" />
+      <text class="d-etiqueta" x="917" y="190" text-anchor="middle">404 / 409 por reglas</text>
+
+      <path class="d-flecha" d="M917 205 V245 H84 V152" marker-end="url(#p1)"/>
+      <text class="d-texto" x="500" y="270" text-anchor="middle">Respuesta: código HTTP + DTO (record) convertido a JSON</text>
+    </svg>
+  </div>
+
+  <ol class="pasos pasos-clic" id="viaje">
+    <li tabindex="0" data-nodo="n-cliente"><b>El cliente arma la petición.</b> La web llama a <code>/api/...</code> y agrega la cabecera <code>Authorization: Bearer &lt;token&gt;</code> si hay sesión. <span class="donde">apps/web/src/api.js → pedir()</span></li>
+    <li tabindex="0" data-nodo="n-https"><b>HTTPS obligatorio.</b> Si llega por http, se redirige a https: el token y las contraseñas nunca viajan en claro. <span class="donde">Program.cs → app.UseHttpsRedirection()</span></li>
+    <li tabindex="0" data-nodo="n-auth"><b>Autenticación: ¿quién eres?</b> El middleware JwtBearer lee el token, revisa firma, emisor, audiencia y vencimiento, y arma <code>User</code> con sus claims. Si no hay token, sigue como anónimo; si el token es inválido y la ruta lo exige, responde 401. <span class="donde">Program.cs → AddJwtBearer + app.UseAuthentication()</span></li>
+    <li tabindex="0" data-nodo="n-autz"><b>Autorización: ¿puedes hacer esto?</b> Mira el <code>[Authorize(Roles = …)]</code> del controlador. Sin identidad, 401; con identidad pero sin el rol, 403. <span class="donde">Program.cs → app.UseAuthorization()</span></li>
+    <li tabindex="0" data-nodo="n-ctrl"><b>El controlador recibe el DTO ya validado.</b> Por <code>[ApiController]</code>, si el JSON no cumple los <code>[Required]</code>, <code>[Range]</code>, etc., ASP.NET responde 400 solo, sin entrar a la acción. <span class="donde">Controllers/*.cs</span></li>
+    <li tabindex="0" data-nodo="n-datos"><b>Reglas y base de datos.</b> La acción pide ayuda a servicios y a las clases del dominio (por ejemplo el <i>State</i> del proyecto) y guarda con <code>db.SaveChangesAsync()</code>. Una regla rota se traduce en 404 o 409. <span class="donde">Services/, Models/, Data/AppDbContext.cs</span></li>
+  </ol>
+  <p class="nota">El orden importa: <code>UseAuthentication()</code> va <b>antes</b> de <code>UseAuthorization()</code>, y las dos antes de <code>MapControllers()</code>. Si se invierten, la autorización corre sin saber quién es el usuario y todas las rutas protegidas dan 401.</p>
+</section>
+
+<!-- ============================ 3. ESTRUCTURA ============================ -->
+<section class="seccion" id="estructura">
+  <p class="eyebrow">Sección 3</p>
+  <h2>Carpetas y Program.cs</h2>
+  <div class="breve"><strong>En breve</strong><p>Las carpetas siguen el estilo de los proyectos de clase (<code>Controllers</code>, <code>Data</code>, <code>Dtos</code>, <code>Models</code>, <code>Services</code>), con los nombres de clases en español. <code>Program.cs</code> registra todo en dos partes: servicios (antes de <code>Build()</code>) y middlewares (después).</p></div>
+
+  <div class="arbol">
+    <details open><summary><b>apps/api/</b> <span class="desc">la API; P11.Api.csproj con los paquetes</span></summary>
+      <div class="hoja">Program.cs <span class="desc">arranque: servicios, JWT, OpenAPI y middlewares</span></div>
+      <details><summary><b>Configuration/</b> <span class="desc">clases de opciones y ajustes de arranque</span></summary>
+        <div class="hoja">Opciones.cs <span class="desc">JwtOptions, OtpOptions, PlazosOptions… (IOptions)</span></div>
+        <div class="hoja">ClavesDesarrollo.cs <span class="desc">genera las claves en App_Data la primera vez</span></div>
+        <div class="hoja">DocumentoOpenApi.cs · CandadoOpenApi.cs <span class="desc">título, esquema Bearer y candado de Swagger</span></div>
+        <div class="hoja">ErroresIdentity.cs <span class="desc">mensajes de Identity en español</span></div>
+      </details>
+      <details><summary><b>Controllers/</b> <span class="desc">un controlador por tema; cada método público es un endpoint</span></summary>
+        <div class="hoja">AuthController, ProyectosController, InversionesController, CatalogoController… <span class="desc">(sección 7)</span></div>
+      </details>
+      <details><summary><b>Data/</b> <span class="desc">EF Core</span></summary>
+        <div class="hoja">AppDbContext.cs <span class="desc">tablas y Fluent API</span></div>
+        <div class="hoja">SemillaDatos.cs <span class="desc">roles, usuarios y proyectos de prueba</span></div>
+        <div class="hoja">Migrations/ <span class="desc">historial del esquema</span></div>
+      </details>
+      <details><summary><b>Dtos/</b> <span class="desc">lo que entra (class) y lo que sale (record), un archivo por tema</span></summary></details>
+      <details><summary><b>Models/</b> <span class="desc">entidades y reglas del dominio</span></summary>
+        <div class="hoja">Usuario.cs, Enums.cs, Roles.cs <span class="desc">usuario de Identity con CI y verificación</span></div>
+        <div class="hoja">Projects/ <span class="desc">ProyectoGanadero (Engorde / Lechería), States/ con el State</span></div>
+        <div class="hoja">Investments/ <span class="desc">Inversion con sus transiciones</span></div>
+      </details>
+      <details><summary><b>Services/</b> <span class="desc">lógica reutilizable, agrupada por tema</span></summary>
+        <div class="hoja">Auth/ <span class="desc">TokenJwtService, OtpService, ClaimsExtensiones</span></div>
+        <div class="hoja">Investments/ <span class="desc">GestorInversiones, VencimientoReservas (servicio de fondo)</span></div>
+        <div class="hoja">Email/, Files/, Notifications/, Projects/, Verification/, Documents/, Simulation/</div>
+      </details>
+      <div class="hoja">appsettings.json · appsettings.Development.json <span class="desc">configuración (sin claves reales)</span></div>
+    </details>
+    <details><summary><b>tests/api/</b> <span class="desc">pruebas xUnit: Integration/ y Patterns/</span></summary></details>
+  </div>
+
+  <h3>Program.cs, por bloques</h3>
+  <div class="codigo">
+    <div class="codigo-cabecera"><code>apps/api/Program.cs</code><span>resumido</span></div>
+<pre><code class="language-csharp">var builder = WebApplication.CreateBuilder(args);
+
+// 1. En desarrollo, claves generadas solas (App_Data/claves-desarrollo.json)
+if (builder.Environment.IsDevelopment())
+    ClavesDesarrollo.Agregar(builder.Configuration, builder.Environment.ContentRootPath);
+
+// 2. Opciones validadas al arrancar: si falta algo, la API no levanta
+AgregarOpciones&lt;JwtOptions&gt;(JwtOptions.Seccion)
+    .Validate(o =&gt; JwtOptions.EsClaveDeFirmaValida(o.ClaveFirma), "…");
+
+// 3. Base de datos (en las pruebas la pone la fábrica de pruebas)
+builder.Services.AddDbContext&lt;AppDbContext&gt;(o =&gt;
+    o.UseSqlServer(builder.Configuration.GetConnectionString("Principal")));
+
+// 4. Identity: usuarios, roles, contraseñas con hash y bloqueo
+builder.Services.AddIdentityCore&lt;Usuario&gt;().AddRoles&lt;IdentityRole&lt;Guid&gt;&gt;()
+    .AddEntityFrameworkStores&lt;AppDbContext&gt;().AddSignInManager();
+
+// 5. JWT: cómo se valida el token que llega (sección 4)
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+builder.Services.AddAuthorization();
+
+// 6. Servicios propios (Scoped / Singleton) y el servicio de fondo
+builder.Services.AddScoped&lt;TokenJwtService&gt;();
+builder.Services.AddHostedService&lt;VencimientoReservas&gt;();
+
+// 7. Controladores: enums como texto; documento OpenAPI
+builder.Services.AddControllers().AddJsonOptions(…JsonStringEnumConverter…);
+builder.Services.AddOpenApi(…);
+
+var app = builder.Build();
+await PrepararBaseDeDatosAsync(app);   // migraciones + semilla
+
+if (app.Environment.IsDevelopment()) { app.MapOpenApi(); app.UseSwaggerUI(…); app.MapScalarApiReference(); }
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+app.Run();</code></pre>
+  </div>
+  <ul class="explica">
+    <li><b>Antes de <code>Build()</code></b> se llena el contenedor de servicios: qué clases existen y cómo se crean.</li>
+    <li><b>Después de <code>Build()</code></b> se arma el pipeline: el camino de la sección 2.</li>
+    <li><b><code>PrepararBaseDeDatosAsync</code></b> aplica las migraciones pendientes (<code>MigrateAsync</code>) y carga la semilla al arrancar. Por eso en una máquina nueva no hace falta <code>Update-Database</code>.</li>
+    <li>Swagger y Scalar se publican <b>solo en Development</b>: en producción no se expone el mapa de la API.</li>
+  </ul>
+</section>
+
+<!-- ============================ 4. JWT ============================ -->
+<section class="seccion" id="jwt">
+  <p class="eyebrow">Sección 4</p>
+  <h2>Inicio de sesión y JWT</h2>
+  <div class="breve"><strong>En breve</strong><p><b>Identity</b> comprueba correo y contraseña contra la base (con hash y bloqueo al 5.º intento). Si está bien, <b>TokenJwtService</b> firma un JWT con HS256 que dice quién es (<code>sub</code>), su correo y su rol, y vence en 120 minutos. El cliente lo manda en cada petición como <code>Authorization: Bearer …</code> y el middleware lo valida sin consultar la base.</p></div>
+
+  <div class="diagrama" role="img" aria-label="Diagrama de secuencia del inicio de sesión y de una petición con token">
+    <svg viewBox="0 0 920 580" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="p2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <rect class="d-caja azul" x="10" y="10" width="140" height="44" rx="10"/><text class="d-titulo" x="80" y="38" text-anchor="middle">Cliente</text>
+      <rect class="d-caja verde" x="190" y="10" width="140" height="44" rx="10"/><text class="d-titulo" x="260" y="38" text-anchor="middle">JwtBearer</text>
+      <rect class="d-caja ocre" x="380" y="10" width="140" height="44" rx="10"/><text class="d-titulo" x="450" y="38" text-anchor="middle">Controlador</text>
+      <rect class="d-caja" x="570" y="10" width="140" height="44" rx="10"/><text class="d-titulo" x="640" y="38" text-anchor="middle">Identity + BD</text>
+      <rect class="d-caja" x="760" y="10" width="150" height="44" rx="10"/><text class="d-titulo" x="835" y="38" text-anchor="middle">TokenJwtService</text>
+      <path class="d-flecha" d="M80 54 V565" stroke-dasharray="4 5"/>
+      <path class="d-flecha" d="M260 54 V565" stroke-dasharray="4 5"/>
+      <path class="d-flecha" d="M450 54 V565" stroke-dasharray="4 5"/>
+      <path class="d-flecha" d="M640 54 V565" stroke-dasharray="4 5"/>
+      <path class="d-flecha" d="M835 54 V565" stroke-dasharray="4 5"/>
+
+      <text class="d-etiqueta" x="20" y="78">Iniciar sesión (ruta pública)</text>
+      <path class="d-flecha" d="M80 100 H446" marker-end="url(#p2)"/><text class="d-texto" x="265" y="94" text-anchor="middle">POST /api/auth/login { correo, contrasena }</text>
+      <path class="d-flecha" d="M450 135 H636" marker-end="url(#p2)"/><text class="d-texto" x="545" y="129" text-anchor="middle">CheckPasswordSignInAsync</text>
+      <path class="d-flecha" d="M640 170 H454" stroke-dasharray="6 4" marker-end="url(#p2)"/><text class="d-texto" x="545" y="164" text-anchor="middle">correcto + roles</text>
+      <path class="d-flecha" d="M450 210 H831" marker-end="url(#p2)"/><text class="d-texto" x="640" y="204" text-anchor="middle">Emitir(usuario, roles)</text>
+      <path class="d-flecha" d="M835 245 H454" stroke-dasharray="6 4" marker-end="url(#p2)"/><text class="d-texto" x="640" y="239" text-anchor="middle">JWT firmado con HS256</text>
+      <path class="d-flecha" d="M450 285 H84" stroke-dasharray="6 4" marker-end="url(#p2)"/><text class="d-texto" x="265" y="279" text-anchor="middle">200 { token, expiraEn, usuario } · no-store</text>
+
+      <path class="d-flecha" d="M10 315 H910" stroke-dasharray="2 6"/>
+      <text class="d-etiqueta" x="20" y="340">En cada petición protegida</text>
+      <path class="d-flecha" d="M80 365 H256" marker-end="url(#p2)"/><text class="d-texto" x="168" y="359" text-anchor="middle">Bearer &lt;token&gt;</text>
+      <rect class="d-caja verde" x="185" y="380" width="150" height="48" rx="8"/>
+      <text class="d-texto" x="260" y="400" text-anchor="middle">firma, emisor,</text>
+      <text class="d-texto" x="260" y="418" text-anchor="middle">audiencia, vencimiento</text>
+      <path class="d-flecha" d="M260 450 H446" marker-end="url(#p2)"/><text class="d-texto" x="353" y="444" text-anchor="middle">User (sub, role)</text>
+      <path class="d-flecha" d="M450 485 H636" marker-end="url(#p2)"/><text class="d-texto" x="545" y="479" text-anchor="middle">datos de ese sub</text>
+      <path class="d-flecha" d="M450 520 H84" stroke-dasharray="6 4" marker-end="url(#p2)"/><text class="d-texto" x="265" y="514" text-anchor="middle">200 JSON, o 403 si el rol no sirve</text>
+      <path class="d-flecha" d="M260 552 H84" stroke-dasharray="6 4" marker-end="url(#p2)"/><text class="d-etiqueta" x="170" y="546" text-anchor="middle">401 si el token no vale</text>
+    </svg>
+  </div>
+
+  <h3>Qué lleva el token</h3>
+  <p class="texto">Un JWT son tres partes en base64url separadas por puntos: <b>cabecera</b> (algoritmo), <b>contenido</b> (los <i>claims</i>) y <b>firma</b>. El contenido se puede leer sin la clave: no es secreto, solo es <b>imposible de cambiar</b> sin invalidar la firma. Por eso no lleva la contraseña ni nada privado.</p>
+
+  <div class="jwt" id="jwt-demo">
+    <label for="jwt-entrada">Token de ejemplo (de un entorno de pruebas ya borrado; puedes pegar otro)</label>
+    <textarea id="jwt-entrada" spellcheck="false"></textarea>
+    <div class="jwt-crudo" id="jwt-crudo" aria-hidden="true"></div>
+    <div class="jwt-partes">
+      <div class="t1"><h5>Cabecera</h5><pre id="jwt-cabecera"></pre></div>
+      <div class="t2"><h5>Contenido (claims)</h5><pre id="jwt-contenido"></pre></div>
+      <div class="t3"><h5>Firma</h5><pre id="jwt-firma"></pre></div>
+    </div>
+    <p class="jwt-aviso tenue" id="jwt-aviso"></p>
+    <p class="tenue" style="font-size:.86rem">Se decodifica en esta misma página: el token no se envía a ningún lado. Verificar la firma necesita la clave, que solo tiene la API.</p>
+  </div>
+
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Claim</th><th>Valor</th><th>Para qué se usa</th></tr></thead>
+    <tbody>
+      <tr><td><code>sub</code></td><td>Id (Guid) del usuario</td><td>Saber de quién son los datos: <code>User.IdUsuario()</code> filtra proyectos e inversiones.</td></tr>
+      <tr><td><code>email</code></td><td>correo</td><td>Bitácora (quién hizo cada cambio) y <code>User.Identity.Name</code>.</td></tr>
+      <tr><td><code>role</code></td><td>Productor, Inversionista, Analista o Administrador</td><td><code>[Authorize(Roles = …)]</code> y <code>User.IsInRole(…)</code>.</td></tr>
+      <tr><td><code>jti</code></td><td>Guid nuevo en cada token</td><td>Identificador único del token (sirve para una lista de revocados, si algún día se agrega).</td></tr>
+      <tr><td><code>nbf</code> / <code>exp</code></td><td>desde / hasta (segundos Unix)</td><td>El middleware rechaza el token antes de <code>nbf</code> y después de <code>exp</code>.</td></tr>
+      <tr><td><code>iss</code> / <code>aud</code></td><td><code>p11-api</code> / <code>p11-clientes</code></td><td>Quién lo emitió y para quién: un token de otro sistema no sirve aunque tenga firma válida.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Cómo se emite</h3>
+  <div class="codigo">
+    <div class="codigo-cabecera"><code>apps/api/Services/Auth/TokenJwtService.cs</code></div>
+<pre><code class="language-csharp">public TokenEmitido Emitir(Usuario u, IEnumerable&lt;string&gt; roles)
+{
+    var expira = reloj.GetUtcNow().AddMinutes(_o.MinutosVigencia);   // 120 min (appsettings)
+    var claims = new List&lt;Claim&gt;
+    {
+        new(JwtRegisteredClaimNames.Sub, u.Id.ToString()),
+        new(JwtRegisteredClaimNames.Email, u.Email ?? ""),
+        new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+    };
+    claims.AddRange(roles.Select(r =&gt; new Claim(ClaimRol, r)));    // "role"
+
+    var credenciales = new SigningCredentials(ClaveDeFirma(_o), SecurityAlgorithms.HmacSha256);
+    var jwt = new JwtSecurityToken(_o.Emisor, _o.Audiencia, claims,
+        notBefore: reloj.GetUtcNow().UtcDateTime, expires: expira.UtcDateTime, signingCredentials: credenciales);
+    return new TokenEmitido(new JwtSecurityTokenHandler().WriteToken(jwt), expira);
+}
+
+// La clave se guarda en base64 y se usan sus bytes reales (32 o más)
+public static SymmetricSecurityKey ClaveDeFirma(JwtOptions o) =&gt; new(Convert.FromBase64String(o.ClaveFirma));</code></pre>
+  </div>
+
+  <h3>Cómo se valida</h3>
+  <div class="codigo">
+    <div class="codigo-cabecera"><code>apps/api/Program.cs</code></div>
+<pre><code class="language-csharp">bearer.MapInboundClaims = false;          // los claims quedan con su nombre corto: "sub", "role"
+bearer.TokenValidationParameters = new TokenValidationParameters
+{
+    ValidateIssuer = true,            ValidIssuer = jwt.Emisor,
+    ValidateAudience = true,          ValidAudience = jwt.Audiencia,
+    ValidateIssuerSigningKey = true,  IssuerSigningKey = TokenJwtService.ClaveDeFirma(jwt),
+    RequireSignedTokens = true,
+    ValidAlgorithms = [SecurityAlgorithms.HmacSha256],   // ni "none" ni otro algoritmo
+    RequireExpirationTime = true,     ValidateLifetime = true,
+    ClockSkew = TimeSpan.Zero,        // vence en el segundo exacto
+    RoleClaimType = TokenJwtService.ClaimRol,     // de dónde lee [Authorize(Roles)]
+    NameClaimType = TokenJwtService.ClaimCorreo,
+};</code></pre>
+  </div>
+  <ul class="explica">
+    <li><b>HS256 es simétrico</b>: la misma clave firma y verifica. Sirve porque la API es la única que emite y la única que valida. Si otro servicio tuviera que validar sin poder firmar, convendría RS256 (clave pública y privada).</li>
+    <li><b>La clave nunca está en el repositorio</b>. En desarrollo la genera <code>ClavesDesarrollo</code> en <code>App_Data/claves-desarrollo.json</code> (ignorado por git); fuera de desarrollo debe venir de user-secrets o de una variable de entorno, o la API no arranca (<code>ValidateOnStart</code>).</li>
+    <li><b>Validar no consulta la base</b>: por eso es rápido y por eso un token sigue valiendo hasta que vence aunque cambie el rol (ver <a href="#limites">19</a>).</li>
+    <li><b>120 minutos y no 15</b>: no hay refresh token, así que un token corto sacaría al usuario a mitad de una inversión (reserva de 30 min + contrato + pago). Se configura en <code>Jwt:MinutosVigencia</code>.</li>
+  </ul>
+
+  <h3>Probarlo en Swagger</h3>
+  <div class="capturas">
+    <figure class="captura"><button type="button"><img src="capturas-api/04-yo-sin-token-401.jpg" alt="GET /api/auth/yo sin token responde 401" loading="lazy"></button><figcaption><b>1.</b> <code>GET /api/auth/yo</code> sin token: <b>401</b>, sin cuerpo. Fíjate en el candado de la ruta.</figcaption></figure>
+    <figure class="captura"><button type="button"><img src="capturas-api/02-login-200-token.jpg" alt="Login correcto con token y Cache-Control no-store" loading="lazy"></button><figcaption><b>2.</b> Login correcto: <b>200</b> con <code>token</code>, <code>expiraEn</code> y el usuario. En las cabeceras, <code>cache-control: no-store</code>.</figcaption></figure>
+    <figure class="captura"><button type="button"><img src="capturas-api/03-boton-authorize.jpg" alt="Diálogo Authorize de Swagger con el token pegado" loading="lazy"></button><figcaption><b>3.</b> Botón <b>Authorize</b>: se pega solo el token; Swagger agrega «Bearer ».</figcaption></figure>
+    <figure class="captura"><button type="button"><img src="capturas-api/05-yo-con-token-200.jpg" alt="GET /api/auth/yo con token responde 200" loading="lazy"></button><figcaption><b>4.</b> La misma ruta con token: <b>200</b>. El curl muestra la cabecera <code>Authorization: Bearer …</code>.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============================ 5. CARRITO ============================ -->
+<section class="seccion" id="carrito">
+  <p class="eyebrow">Sección 5</p>
+  <h2>Comparación con la práctica del Carrito</h2>
+  <div class="breve"><strong>En breve</strong><p>La validación del token es <b>la misma</b> que en la guía de clase (firma, emisor, audiencia, vencimiento, solo HS256, sin margen de reloj). Lo que cambia es todo lo de alrededor: usuarios reales con Identity en vez de un usuario fijo en user-secrets, roles dentro del token y datos filtrados por usuario con <code>sub</code>.</p></div>
+
+  <div class="tabla-scroll"><table class="tabla versus">
+    <thead><tr><th>Tema</th><th>Carrito (práctica de clase)</th><th>Proyecto 11</th></tr></thead>
+    <tbody>
+      <tr><td>Paquete</td><td><code>Microsoft.AspNetCore.Authentication.JwtBearer</code> 10.0.x</td><td>El mismo, 10.0.x (coincide con <code>net10.0</code>).</td></tr>
+      <tr><td>Quién inicia sesión</td><td>Un usuario de prueba en user-secrets (<code>DemoAuth</code>), comparado con <code>FixedTimeEquals</code>. Solo en Development.</td><td>Usuarios reales en SQL Server con <b>ASP.NET Core Identity</b>: contraseña con hash, correo confirmado por OTP y bloqueo al 5.º intento. Funciona en cualquier entorno.</td></tr>
+      <tr><td>Servicio que emite</td><td><code>EmisorJwt</code>, singleton creado a mano en Program.cs.</td><td><code>TokenJwtService</code>, scoped, recibe <code>IOptions&lt;JwtOptions&gt;</code> y <code>TimeProvider</code> (reloj controlable en pruebas).</td></tr>
+      <tr><td>Claims</td><td><code>sub</code>, <code>jti</code>, <code>iat</code>.</td><td><code>sub</code> (Id), <code>email</code>, <code>jti</code> y un <code>role</code> por rol.</td></tr>
+      <tr><td>Vigencia</td><td>15 minutos.</td><td>120 minutos, configurable (no hay refresh token).</td></tr>
+      <tr><td>Clave</td><td>Base64 de 32 bytes en user-secrets; se valida el largo en Program.cs.</td><td>Igual: base64 de 32 bytes o más, validada al arrancar. En desarrollo se genera sola.</td></tr>
+      <tr><td>Validación del token</td><td>Issuer, Audience, SigningKey, solo HS256, Lifetime, <code>ClockSkew = 0</code>, <code>MapInboundClaims = false</code>.</td><td>La misma configuración, más <code>RoleClaimType</code> y <code>NameClaimType</code> para los roles.</td></tr>
+      <tr><td>Protección</td><td><code>[Authorize]</code> en el controlador del carrito.</td><td><code>[Authorize(Roles = "…")]</code> en cada controlador: además de «estar logueado», importa el rol.</td></tr>
+      <tr><td>Datos por usuario</td><td>Un carrito compartido; la guía deja «usar <code>sub</code> para filtrar» como siguiente paso.</td><td>Hecho: cada consulta filtra por <code>User.IdUsuario()</code> (el <code>sub</code>). Lo ajeno responde 404.</td></tr>
+      <tr><td>Swagger</td><td>Swashbuckle (<code>AddSwaggerGen</code>) + <code>SwaggerJwtOperationFilter</code>.</td><td><code>Microsoft.AspNetCore.OpenApi</code> + Swagger UI + Scalar; el candado lo pone <code>CandadoOpenApi</code>, la misma idea que el filtro de clase.</td></tr>
+      <tr><td>Respuesta del login</td><td><code>TokenRespuesta(AccessToken, ExpiresAtUtc)</code>, <code>Cache-Control: no-store</code>.</td><td><code>LoginResponse(Token, ExpiraEn, Usuario)</code>, también <code>no-store</code>. Los errores dicen intentos restantes (401), falta de OTP (403) o bloqueo (423).</td></tr>
+      <tr><td>Pruebas</td><td>A mano en Swagger.</td><td>Además, pruebas automáticas: firma alterada, otra clave, token vencido y otro emisor dan 401 (<code>tests/api/Integration/TokenJwtTests.cs</code>).</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ 6. ROLES ============================ -->
+<section class="seccion" id="roles">
+  <p class="eyebrow">Sección 6</p>
+  <h2>Roles y dueño del dato</h2>
+  <div class="breve"><strong>En breve</strong><p>Hay dos controles distintos. El <b>rol</b> decide a qué controlador entras (<code>[Authorize(Roles)]</code> → 403 si no corresponde). El <b>dueño</b> decide qué filas ves dentro: cada consulta se filtra por el <code>sub</code> del token, y lo que no es tuyo responde 404 como si no existiera.</p></div>
+
+  <div class="rejilla-2">
+    <div class="tarjeta rol"><p class="etiqueta">Inversionista</p><p>Catálogo, simulador, inversiones, portafolio, verificación de identidad. Se registra solo.</p></div>
+    <div class="tarjeta rol productor"><p class="etiqueta">Productor</p><p>Fichas de proyecto, documentos del predio, verificación de identidad. Se registra solo.</p></div>
+    <div class="tarjeta rol analista"><p class="etiqueta">Analista</p><p>Evaluar y publicar proyectos, revisar identidades y documentos. Lo crea la semilla o el administrador.</p></div>
+    <div class="tarjeta rol admin"><p class="etiqueta">Administrador</p><p>Usuarios, roles y bitácora; además entra a las rutas de analista, productor e inversionista (salvo enviar su propia verificación de identidad).</p></div>
+  </div>
+
+  <div class="codigo">
+    <div class="codigo-cabecera"><code>apps/api/Controllers/ProyectosController.cs</code></div>
+<pre><code class="language-csharp">[ApiController]
+[Route("api/proyectos")]
+[Authorize(Roles = $"{Roles.Productor},{Roles.Administrador}")]   // coma = cualquiera de los dos
+public class ProyectosController(AppDbContext db, …) : ControllerBase
+{
+    /// El productor ve solo los suyos; el administrador, todos.
+    private IQueryable&lt;ProyectoGanadero&gt; Visibles()
+    {
+        if (EsAdministrador) return db.Proyectos;
+        var productorId = User.IdUsuario();                           // el "sub" del token
+        return db.Proyectos.Where(p =&gt; p.ProductorId == productorId);
+    }
+}</code></pre>
+  </div>
+  <ul class="explica">
+    <li>Los nombres de los roles son constantes en <code>Models/Roles.cs</code>: un error de tipeo no compila, en vez de dejar una ruta sin acceso.</li>
+    <li>El id del dueño <b>sale del token, nunca del cuerpo</b> de la petición. Si viniera del JSON, cualquiera podría crear proyectos a nombre de otro.</li>
+    <li><b>404 y no 403 para lo ajeno</b>: así no se confirma que ese id existe. El 403 queda para «tu rol no puede usar esta ruta».</li>
+    <li>Un rol nuevo asignado por el administrador rige <b>desde el próximo inicio de sesión</b>, porque el rol viaja dentro del token.</li>
+  </ul>
+  <div class="capturas una">
+    <figure class="captura"><button type="button"><img src="capturas-api/06-productor-en-admin-403.jpg" alt="Un productor llama a /api/admin/usuarios y recibe 403" loading="lazy"></button><figcaption><b>403.</b> Un productor con token válido llama a <code>GET /api/admin/usuarios</code>: la identidad está bien, el rol no.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============================ 7. ENDPOINTS ============================ -->
+<section class="seccion" id="endpoints">
+  <p class="eyebrow">Sección 7</p>
+  <h2>Todos los endpoints</h2>
+  <div class="breve"><strong>En breve</strong><p>Once controladores, uno por tema. El <b>recurso principal</b> es <code>/api/proyectos</code> (CRUD completo) y su recurso relacionado es <code>/api/proyectos/{id}/historial</code>. Las rutas con <code>{id:guid}</code> solo aceptan un Guid: con otra cosa ni siquiera entran a la acción (404).</p></div>
+
+  <div id="tablas-endpoints"><!-- se llena con ENDPOINTS, en el script --></div>
+  <p class="tenue">Todas las rutas, salvo las de <code>/api/auth</code> que son públicas (registro, OTP, login), exigen token. La columna «Roles» es el <code>[Authorize(Roles = …)]</code> del controlador.</p>
+</section>
+
+<!-- ============================ 8. CÓDIGOS ============================ -->
+<section class="seccion" id="codigos">
+  <p class="eyebrow">Sección 8</p>
+  <h2>Códigos HTTP</h2>
+  <div class="breve"><strong>En breve</strong><p>2xx salió bien, 4xx el cliente pidió algo que no corresponde, 5xx falló el servidor. La API usa un código preciso para cada caso, para que la web sepa qué mostrar sin leer el texto del mensaje.</p></div>
+
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Código</th><th>Cuándo lo devuelve la API</th><th>Cómo se produce en el código</th></tr></thead>
+    <tbody>
+      <tr><td><span class="codigo-http c2">200 OK</span></td><td>Consulta o acción correcta con cuerpo.</td><td><code>return Ok(dto)</code> o <code>return dto</code> con <code>ActionResult&lt;T&gt;</code>.</td></tr>
+      <tr><td><span class="codigo-http c2">201 Created</span></td><td>Se creó algo: registro, proyecto, reserva, documento. Trae la cabecera <code>Location</code> con la URL nueva.</td><td><code>CreatedAtAction(nameof(Obtener), new { id }, dto)</code>.</td></tr>
+      <tr><td><span class="codigo-http c2">204 No Content</span></td><td>Se borró (proyecto en borrador, usuario sin actividad). Sin cuerpo.</td><td><code>return NoContent()</code>.</td></tr>
+      <tr><td><span class="codigo-http c4">400 Bad Request</span></td><td>Datos inválidos: falta un campo, fuera de rango, enum desconocido, monto bajo el mínimo.</td><td>Automático por <code>[ApiController]</code>, o <code>ModelState.AddModelError</code> + <code>ValidationProblem()</code>.</td></tr>
+      <tr><td><span class="codigo-http c4r">401 Unauthorized</span></td><td>No hay token, venció o no vale. En el login: correo o contraseña incorrectos.</td><td>El middleware JwtBearer; en el login, <code>Unauthorized(new LoginFallido(…))</code>.</td></tr>
+      <tr><td><span class="codigo-http c4r">403 Forbidden</span></td><td>El token vale pero el rol no alcanza. En el login: cuenta sin confirmar con OTP.</td><td><code>[Authorize(Roles)]</code>; en el login, <code>StatusCode(403, …)</code>.</td></tr>
+      <tr><td><span class="codigo-http c4">404 Not Found</span></td><td>No existe o no es tuyo.</td><td><code>NotFound(new Respuesta("No encontramos el proyecto."))</code>.</td></tr>
+      <tr><td><span class="codigo-http c4">409 Conflict</span></td><td>La petición está bien escrita pero choca con el estado actual: correo repetido, editar un proyecto que ya no es borrador, monto mayor que el cupo, pagar sin firmar.</td><td><code>Conflict(new Respuesta(…))</code>, casi siempre al atrapar <code>TransicionInvalidaException</code> o <code>ReglaInversionException</code>.</td></tr>
+      <tr><td><span class="codigo-http c4">415 Unsupported Media Type</span></td><td>El cuerpo no es JSON (falta <code>Content-Type: application/json</code>).</td><td>Automático por <code>[ApiController]</code>.</td></tr>
+      <tr><td><span class="codigo-http c4">422 Unprocessable Entity</span></td><td>Verificación de identidad con imágenes ilegibles: el formato está bien, el contenido no sirve.</td><td><code>VerificacionController.Enviar</code>.</td></tr>
+      <tr><td><span class="codigo-http c4r">423 Locked</span></td><td>Cuenta bloqueada 15 minutos tras 5 intentos fallidos (RF-02).</td><td><code>StatusCode(423, new LoginFallido(…, BloqueadoHasta))</code>.</td></tr>
+      <tr><td><span class="codigo-http c5">500</span></td><td>Error no previsto. Identity no pudo borrar un usuario.</td><td><code>Problem(…)</code> o una excepción no atrapada.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>400 contra 409</h3>
+  <p class="texto">Es la pregunta típica. <b>400</b>: el pedido está mal armado y estaría mal en cualquier momento (plazo de 200 meses). <b>409</b>: el pedido está bien, pero no se puede <i>ahora</i> por el estado del recurso (editar un proyecto que ya se envió a revisión). Mismo criterio para 401 contra 403: 401 es «no sé quién eres», 403 es «sé quién eres y no puedes».</p>
+
+  <div class="capturas">
+    <figure class="captura"><button type="button"><img src="capturas-api/07-proyecto-invalido-400.jpg" alt="POST /api/proyectos inválido responde 400 con errores por campo" loading="lazy"></button><figcaption><b>400.</b> Ficha con nombre vacío, monto 0 y plazo 200: <code>ValidationProblemDetails</code> con un error por campo.</figcaption></figure>
+    <figure class="captura"><button type="button"><img src="capturas-api/08-proyecto-creado-201.jpg" alt="POST /api/proyectos válido responde 201 con Location" loading="lazy"></button><figcaption><b>201.</b> Ficha correcta: estado <code>Borrador</code> y cabecera <code>location</code> con la URL del proyecto nuevo.</figcaption></figure>
+    <figure class="captura"><button type="button"><img src="capturas-api/09-registro-repetido-409.jpg" alt="Registro con un correo existente responde 409" loading="lazy"></button><figcaption><b>409.</b> Registro con un correo que ya existe.</figcaption></figure>
+    <figure class="captura"><button type="button"><img src="capturas-api/10-login-bloqueado-423.jpg" alt="Quinto intento fallido responde 423 con la hora de desbloqueo" loading="lazy"></button><figcaption><b>423.</b> Quinto intento fallido: bloqueada hasta la hora indicada.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============================ 9. EF CORE ============================ -->
+<section class="seccion" id="efcore">
+  <p class="eyebrow">Sección 9</p>
+  <h2>EF Core y la base de datos</h2>
+  <div class="breve"><strong>En breve</strong><p><code>AppDbContext</code> hereda de <code>IdentityDbContext</code>, así que la base tiene las tablas de Identity (<code>AspNetUsers</code>, <code>AspNetRoles</code>…) más las del negocio. El esquema se define con <b>Fluent API</b> en <code>OnModelCreating</code> y se versiona con <b>migraciones</b>, que la API aplica sola al arrancar.</p></div>
+
+  <div class="diagrama" role="img" aria-label="Modelo de datos: tablas y relaciones">
+    <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="p3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <rect class="d-caja" x="20" y="20" width="220" height="70" rx="10"/><text class="d-titulo" x="130" y="48" text-anchor="middle">CodigosOtp</text><text class="d-texto" x="130" y="70" text-anchor="middle">hash SHA-256, vence, intentos</text>
+      <rect class="d-caja" x="350" y="20" width="200" height="70" rx="10"/><text class="d-titulo" x="450" y="48" text-anchor="middle">Documentos</text><text class="d-texto" x="450" y="70" text-anchor="middle">archivo cifrado AES-256</text>
+      <rect class="d-caja ocre" x="650" y="20" width="230" height="70" rx="10"/><text class="d-titulo" x="765" y="48" text-anchor="middle">HistorialProyectos</text><text class="d-texto" x="765" y="70" text-anchor="middle">bitácora · borrado Restrict</text>
+      <rect class="d-caja" x="20" y="160" width="220" height="80" rx="10"/><text class="d-titulo" x="130" y="190" text-anchor="middle">AspNetRoles</text><text class="d-texto" x="130" y="212" text-anchor="middle">vía AspNetUserRoles</text><text class="d-texto" x="130" y="228" text-anchor="middle">4 roles</text>
+      <rect class="d-caja azul" x="350" y="160" width="200" height="80" rx="10"/><text class="d-titulo" x="450" y="190" text-anchor="middle">AspNetUsers</text><text class="d-texto" x="450" y="212" text-anchor="middle">Usuario: CI único,</text><text class="d-texto" x="450" y="228" text-anchor="middle">estado de verificación</text>
+      <rect class="d-caja ocre" x="650" y="160" width="230" height="80" rx="10"/><text class="d-titulo" x="765" y="190" text-anchor="middle">Proyectos</text><text class="d-texto" x="765" y="212" text-anchor="middle">una tabla, dos clases (TPH):</text><text class="d-texto" x="765" y="228" text-anchor="middle">LineaProductiva = Engorde | Lecheria</text>
+      <rect class="d-caja" x="20" y="310" width="220" height="70" rx="10"/><text class="d-titulo" x="130" y="338" text-anchor="middle">HistorialVerificaciones</text><text class="d-texto" x="130" y="360" text-anchor="middle">quién, cuándo y por qué</text>
+      <rect class="d-caja ocre" x="650" y="310" width="230" height="70" rx="10"/><text class="d-titulo" x="765" y="338" text-anchor="middle">Inversiones</text><text class="d-texto" x="765" y="360" text-anchor="middle">monto, estado, contrato, pago</text>
+      <path class="d-flecha" d="M240 200 H346" marker-end="url(#p3)"/>
+      <path class="d-flecha" d="M240 75 L372 158" marker-end="url(#p3)"/>
+      <path class="d-flecha" d="M240 335 L372 242" marker-end="url(#p3)"/>
+      <path class="d-flecha" d="M450 90 V156" marker-end="url(#p3)"/>
+      <path class="d-flecha" d="M650 200 H554" marker-end="url(#p3)"/><text class="d-etiqueta" x="602" y="192" text-anchor="middle">ProductorId</text>
+      <path class="d-flecha" d="M765 90 V156" marker-end="url(#p3)"/><text class="d-etiqueta" x="775" y="128">ProyectoId</text>
+      <path class="d-flecha" d="M765 310 V244" marker-end="url(#p3)"/><text class="d-etiqueta" x="775" y="282">ProyectoId</text>
+      <path class="d-flecha" d="M650 345 L520 244" marker-end="url(#p3)"/><text class="d-etiqueta" x="560" y="318" text-anchor="middle">InversionistaId</text>
+    </svg>
+  </div>
+  <p class="tenue">Las flechas van de la tabla con la clave foránea a la tabla referenciada. En naranja, las del negocio de inversión.</p>
+
+  <div class="terminal">
+<pre><span class="prompt">$ docker exec p11-sqlserver sqlcmd … -Q "tablas y filas"</span>    <span class="prompt"># base recién creada por la API</span>
+Tabla                    Filas
+__EFMigrationsHistory    2        ← migraciones aplicadas: Inicial y Sprint2Inversiones
+AspNetRoles              4
+AspNetUserRoles          5
+AspNetUsers              5
+CodigosOtp               1
+Documentos               0
+HistorialProyectos       0
+HistorialVerificaciones  0
+Inversiones              0
+Proyectos                4
+
+Nombre                    LineaProductiva  Estado    MontoRequeridoBs
+Engorde Chiquitania 2026  Engorde          Borrador  500000.00
+Tambo Warnes              Lecheria         Borrador  300000.00</pre>
+  </div>
+
+  <h3>Fluent API que conviene saber explicar</h3>
+  <div class="codigo">
+    <div class="codigo-cabecera"><code>apps/api/Data/AppDbContext.cs</code><span>fragmentos</span></div>
+<pre><code class="language-csharp">public class AppDbContext(DbContextOptions&lt;AppDbContext&gt; options)
+    : IdentityDbContext&lt;Usuario, IdentityRole&lt;Guid&gt;, Guid&gt;(options)      // tablas de Identity con Id Guid
+{
+    // Todas las columnas decimal con 2 decimales (bolivianos, kg, litros)
+    protected override void ConfigureConventions(ModelConfigurationBuilder c) =&gt;
+        c.Properties&lt;decimal&gt;().HavePrecision(18, 2);
+
+    protected override void OnModelCreating(ModelBuilder b)
+    {
+        base.OnModelCreating(b);                                          // primero lo de Identity
+        b.Entity&lt;Usuario&gt;(e =&gt;
+        {
+            e.HasIndex(u =&gt; u.Ci).IsUnique();                             // CI único
+            e.Property(u =&gt; u.EstadoVerificacion).HasConversion&lt;string&gt;(); // enum guardado como texto
+        });
+        b.Entity&lt;ProyectoGanadero&gt;(e =&gt;
+        {
+            e.HasDiscriminator&lt;string&gt;("LineaProductiva")                   // TPH: una tabla, dos clases
+                .HasValue&lt;ProyectoEngorde&gt;("Engorde").HasValue&lt;ProyectoLecheria&gt;("Lecheria");
+            e.HasOne&lt;Usuario&gt;().WithMany().HasForeignKey(p =&gt; p.ProductorId);
+        });
+        b.Entity&lt;HistorialProyecto&gt;(e =&gt;
+            e.HasOne&lt;ProyectoGanadero&gt;().WithMany().HasForeignKey(h =&gt; h.ProyectoId)
+             .OnDelete(DeleteBehavior.Restrict));                         // la bitácora no se borra en cascada
+    }
+}</code></pre>
+  </div>
+  <ul class="explica">
+    <li><b>Enums como texto</b> (<code>HasConversion&lt;string&gt;</code>): en la tabla se lee <code>EnRevision</code> en vez de <code>1</code>, y reordenar el enum no corrompe datos viejos.</li>
+    <li><b>TPH (<i>table per hierarchy</i>)</b>: <code>ProyectoEngorde</code> y <code>ProyectoLecheria</code> heredan de <code>ProyectoGanadero</code> y comparten la tabla <code>Proyectos</code>; la columna <code>LineaProductiva</code> dice cuál es. Las columnas de una sola línea quedan en NULL para la otra.</li>
+    <li><b>Relaciones sin propiedades de navegación</b>: <code>HasOne&lt;Usuario&gt;().WithMany()</code> crea la clave foránea sin agregar <code>proyecto.Productor</code>. Por eso el código no usa <code>Include</code>: busca lo que necesita por id.</li>
+    <li><b><code>Restrict</code> en vez de <code>Cascade</code></b>: borrar un proyecto o un usuario no puede llevarse puesta la bitácora ni las inversiones (RNF-03). Por eso, antes de borrar un borrador, el controlador borra a mano su historial, y un usuario con actividad no se puede eliminar (409).</li>
+    <li><b>Migraciones</b>: se crean con <code>dotnet ef migrations add Nombre -o Data/Migrations</code> desde <code>apps/api</code> y la API las aplica con <code>Database.MigrateAsync()</code> al arrancar. La tabla <code>__EFMigrationsHistory</code> recuerda cuáles ya se aplicaron.</li>
+    <li><b>Cambios y guardado</b>: el controlador modifica la entidad en memoria y llama a <code>SaveChangesAsync</code> una vez. EF Core arma un solo lote de SQL dentro de una transacción: o se guarda todo o nada.</li>
+  </ul>
+</section>
+
+<!-- ============================ 10. DTOs ============================ -->
+<section class="seccion" id="dtos">
+  <p class="eyebrow">Sección 10</p>
+  <h2>DTO: class para entrar, record para salir</h2>
+  <div class="breve"><strong>En breve</strong><p>Los records <b>también son DTO</b>; no es «record en vez de DTO». DTO es el papel (un objeto que solo transporta datos por la API) y <code>class</code> o <code>record</code> es la forma de escribirlo. Convención del proyecto: lo que <b>entra</b> es una <code>class</code> con validaciones; lo que <b>sale</b> es un <code>record</code>, corto e inmutable.</p></div>
+
+  <h3>Por qué existen los DTO</h3>
+  <ul class="texto">
+    <li><b>No exponer la entidad</b>: <code>Usuario</code> tiene <code>PasswordHash</code>, <code>SecurityStamp</code>, contador de intentos… Devolverlo tal cual filtraría eso.</li>
+    <li><b>Evitar el <i>over-posting</i></b>: si el POST recibiera la entidad, alguien podría mandar <code>"estado": "EnFinanciamiento"</code> y publicarse solo. El DTO de entrada solo tiene los campos que el usuario puede tocar.</li>
+    <li><b>Contrato estable</b>: se puede cambiar la base sin romper la web ni la app Android.</li>
+  </ul>
+
+  <h3>Qué es un record</h3>
+  <div class="rejilla-2">
+    <div class="codigo" style="margin:0">
+      <div class="codigo-cabecera"><span>Con class (como en clase)</span></div>
+<pre><code class="language-csharp">public class RespuestaClase
+{
+    public string Mensaje { get; set; } = "";
+}
+// new RespuestaClase { Mensaje = "Listo" }</code></pre>
+    </div>
+    <div class="codigo" style="margin:0">
+      <div class="codigo-cabecera"><span>Con record (en el proyecto)</span></div>
+<pre><code class="language-csharp">public record Respuesta(string Mensaje);
+// new Respuesta("Listo")</code></pre>
+    </div>
+  </div>
+  <p class="texto">Un <code>record</code> es una clase (tipo por referencia) para la que el compilador escribe lo repetitivo. Con la forma <b>posicional</b>, <code>record Respuesta(string Mensaje)</code>, genera:</p>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Qué genera</th><th>Qué significa</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td>Propiedades <code>init</code></td><td>Se asignan al crearlo y después no cambian (inmutable).</td><td><code>r.Mensaje = "x"</code> no compila.</td></tr>
+      <tr><td>Constructor</td><td>Con todos los parámetros, en orden.</td><td><code>new Respuesta("Listo")</code></td></tr>
+      <tr><td>Igualdad por valor</td><td>Dos records son iguales si sus datos son iguales (dos <code>class</code> solo si son el mismo objeto).</td><td><code>new Respuesta("a") == new Respuesta("a")</code> → <code>true</code></td></tr>
+      <tr><td><code>with</code></td><td>Copia cambiando algún dato, sin tocar el original.</td><td><code>var b = a with { Mensaje = "otro" };</code></td></tr>
+      <tr><td><code>ToString()</code></td><td>Muestra los datos; útil en logs y pruebas.</td><td><code>Respuesta { Mensaje = Listo }</code></td></tr>
+      <tr><td>Deconstrucción</td><td>Sacar los valores en variables.</td><td><code>var (mensaje) = r;</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Por qué la salida es record y la entrada class</h3>
+  <ul class="texto">
+    <li><b>Salida → record</b>: se crea una vez con todos sus datos y se serializa. Inmutable y en una línea; <code>LoginResponse(Token, ExpiraEn, Usuario)</code> se lee como la forma exacta del JSON. Igualdad por valor ayuda en las pruebas.</li>
+    <li><b>Entrada → class</b>: los atributos de validación (<code>[Required]</code>, <code>[Range]</code>, <code>[EmailAddress]</code>) se escriben arriba de cada propiedad y los mensajes quedan legibles. Con records posicionales los atributos van en los parámetros (como el <code>LoginSolicitud</code> del Carrito) y es fácil confundir dónde aplican. También permite valores por defecto, como <code>Aprobado = true</code>.</li>
+    <li>Las dos funcionan con <code>System.Text.Json</code>: el serializador usa el constructor del record y los <code>set</code> de la class.</li>
+  </ul>
+
+  <div class="codigo">
+    <div class="codigo-cabecera"><code>apps/api/Dtos/ProyectosDtos.cs</code><span>salida, resumido</span></div>
+<pre><code class="language-csharp">public record ProyectoDto(
+    Guid Id, LineaProductiva Linea, string Nombre, string Ubicacion,
+    decimal MontoRequeridoBs, decimal MontoMinimoBs, int PlazoMeses,
+    EstadoProyecto Estado, DateTimeOffset CreadoEn, /* … */)
+{
+    // Método de fábrica: convierte la entidad en el DTO en un solo lugar
+    public static ProyectoDto Desde(ProyectoGanadero p) =&gt; new(p.Id, p.Linea, p.Nombre, /* … */);
+}</code></pre>
+  </div>
+  <p class="texto">El mapeo entidad → DTO está en un método estático <code>Desde</code> dentro del record, en vez de un <code>Select(new …)</code> repetido en cada acción o una librería como AutoMapper. Si la entidad cambia, se corrige en un solo lugar.</p>
+  <p class="nota">Records ya aparecieron en la práctica del Carrito (<code>ItemCarritoRespuesta</code>, <code>LoginSolicitud</code>, <code>TokenRespuesta</code>), pero sin explicarlos. Lo que hay que saber decir: <b>«un record es una clase con igualdad por valor e inmutable por defecto; la usamos para las respuestas porque son datos que no cambian después de crearse»</b>.</p>
+</section>
+
+<!-- ============================ 11. VALIDACIÓN ============================ -->
+<section class="seccion" id="validacion">
+  <p class="eyebrow">Sección 11</p>
+  <h2>Validación y errores</h2>
+  <div class="breve"><strong>En breve</strong><p>Tres capas: los <b>atributos</b> del DTO (formato y rangos; 400 automático), las <b>reglas del dominio</b> que dependen de otros datos (en las clases del modelo y servicios; 400 o 409) y la <b>base</b> (índices únicos como último resguardo). Los errores de campos salen en el formato estándar <code>ValidationProblemDetails</code>; los demás, como <code>{ "mensaje": "…" }</code>.</p></div>
+
+  <div class="codigo">
+    <div class="codigo-cabecera"><code>apps/api/Controllers/InversionesController.cs</code><span>Reservar, resumido</span></div>
+<pre><code class="language-csharp">if (usuario?.EstadoVerificacion != EstadoVerificacion.Verificado)
+    return Conflict(new Respuesta("Tu identidad todavía no está verificada…"));        // 409: estado
+
+if (req.MontoBs &lt; proyecto.MontoMinimoBs)
+{
+    ModelState.AddModelError(nameof(req.MontoBs), $"El mínimo para invertir es {…}."); // 400 en el campo
+    return ValidationProblem(ModelState);
+}
+if (req.MontoBs &gt; cupo.LibreBs)
+    return Conflict(new Respuesta($"El monto supera el cupo disponible: quedan {…}.")); // 409: cupo</code></pre>
+  </div>
+  <ul class="explica">
+    <li><b><code>[ApiController]</code></b> hace tres cosas solo: responde 400 si el modelo no valida, lee el cuerpo como JSON sin poner <code>[FromBody]</code> y exige el <code>Content-Type</code> correcto (415).</li>
+    <li><b><code>ValidationProblemDetails</code></b> es el formato del RFC 9110 / RFC 7807: <code>type</code>, <code>title</code>, <code>status</code> y <code>errors</code> con una lista por campo. La web lo usa para pintar el error debajo de cada casilla.</li>
+    <li><b><code>ModelState.AddModelError</code></b> agrega a mano un error de campo que los atributos no pueden saber (el mínimo depende del proyecto), con el mismo formato que los automáticos.</li>
+    <li><b>Enums como texto</b>: <code>JsonStringEnumConverter(allowIntegerValues: false)</code> hace que se envíe <code>"Engorde"</code>; un <code>7</code> da 400 en vez de guardar un valor inexistente.</li>
+    <li><b>Excepciones del dominio → 409</b>: <code>ProyectoGanadero</code> e <code>Inversion</code> lanzan <code>TransicionInvalidaException</code> / <code>ReglaInversionException</code> si la acción no vale en su estado; el controlador las atrapa y responde 409 con el mensaje.</li>
+    <li><b>Mensajes que no revelan datos</b>: «Correo o contraseña incorrectos» sin decir cuál falló; reenviar el OTP responde igual exista o no la cuenta.</li>
+  </ul>
+
+  <div class="diagrama" role="img" aria-label="Estados de la ficha del proyecto y de la inversión">
+    <svg viewBox="0 0 900 370" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="p4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <text class="d-etiqueta" x="760" y="90">Ficha del proyecto</text>
+      <rect class="d-caja" x="20" y="60" width="140" height="50" rx="10"/><text class="d-titulo" x="90" y="90" text-anchor="middle">Borrador</text>
+      <rect class="d-caja azul" x="290" y="60" width="150" height="50" rx="10"/><text class="d-titulo" x="365" y="90" text-anchor="middle">En revisión</text>
+      <rect class="d-caja verde" x="570" y="60" width="170" height="50" rx="10"/><text class="d-titulo" x="655" y="90" text-anchor="middle">En financiamiento</text>
+      <rect class="d-caja roja" x="290" y="150" width="150" height="44" rx="10"/><text class="d-titulo" x="365" y="177" text-anchor="middle">Rechazado</text>
+      <path class="d-flecha" d="M160 85 H286" marker-end="url(#p4)"/><text class="d-texto" x="223" y="78" text-anchor="middle">enviar a revisión</text>
+      <path class="d-flecha" d="M440 85 H566" marker-end="url(#p4)"/><text class="d-texto" x="503" y="78" text-anchor="middle">aprobar y publicar</text>
+      <path class="d-flecha" d="M365 110 V146" marker-end="url(#p4)"/><text class="d-texto" x="375" y="134">rechazar</text>
+      <path class="d-flecha" d="M365 60 C365 15, 90 15, 90 56" marker-end="url(#p4)"/><text class="d-texto" x="228" y="28" text-anchor="middle">observar (vuelve a borrador)</text>
+
+      <text class="d-etiqueta" x="760" y="240">Inversión</text>
+      <rect class="d-caja" x="20" y="210" width="140" height="50" rx="10"/><text class="d-titulo" x="90" y="240" text-anchor="middle">Reservada</text>
+      <rect class="d-caja azul" x="290" y="210" width="150" height="50" rx="10"/><text class="d-titulo" x="365" y="240" text-anchor="middle">Firmada</text>
+      <rect class="d-caja verde" x="570" y="210" width="170" height="50" rx="10"/><text class="d-titulo" x="655" y="240" text-anchor="middle">Pagada</text>
+      <rect class="d-caja roja" x="150" y="300" width="140" height="44" rx="10"/><text class="d-titulo" x="220" y="327" text-anchor="middle">Vencida</text>
+      <rect class="d-caja roja" x="420" y="300" width="150" height="44" rx="10"/><text class="d-titulo" x="495" y="327" text-anchor="middle">Rechazada</text>
+      <path class="d-flecha" d="M160 235 H286" marker-end="url(#p4)"/><text class="d-texto" x="223" y="228" text-anchor="middle">firmar con OTP</text>
+      <path class="d-flecha" d="M440 235 H566" marker-end="url(#p4)"/><text class="d-texto" x="503" y="228" text-anchor="middle">confirmar pago</text>
+      <path class="d-flecha" d="M90 260 L190 296" marker-end="url(#p4)"/>
+      <path class="d-flecha" d="M330 260 L250 296" marker-end="url(#p4)"/>
+      <path class="d-flecha" d="M400 260 L470 296" marker-end="url(#p4)"/>
+      <text class="d-texto" x="220" y="362" text-anchor="middle">30 min sin pagar</text>
+      <text class="d-texto" x="495" y="362" text-anchor="middle">pago no aprobado</text>
+    </svg>
+  </div>
+  <p class="tenue">Cualquier flecha que no esté en el dibujo es una transición inválida y la API responde <b>409</b>. Las reglas viven en <code>Models/Projects/States/EstadoFicha.cs</code> (patrón State) y en <code>Models/Investments/Inversion.cs</code>.</p>
+</section>
+
+<!-- ============================ 12. DI ============================ -->
+<section class="seccion" id="di">
+  <p class="eyebrow">Sección 12</p>
+  <h2>Inyección de dependencias y configuración</h2>
+  <div class="breve"><strong>En breve</strong><p>Las clases piden lo que necesitan en su constructor y ASP.NET se lo entrega. Cada servicio se registra con un <b>ciclo de vida</b>. La configuración llega como <code>IOptions&lt;T&gt;</code> validado al arrancar; la hora, como <code>TimeProvider</code>; y una tarea de fondo libera las reservas vencidas.</p></div>
+
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Ciclo de vida</th><th>Una instancia por…</th><th>Ejemplos en Program.cs</th></tr></thead>
+    <tbody>
+      <tr><td><code>AddScoped</code></td><td>petición HTTP</td><td><code>AppDbContext</code> (lo pone <code>AddDbContext</code>), <code>TokenJwtService</code>, <code>OtpService</code>, <code>GestorInversiones</code>. Todo lo que usa el DbContext tiene que ser scoped o más corto.</td></tr>
+      <tr><td><code>AddSingleton</code></td><td>toda la aplicación</td><td><code>TimeProvider.System</code>, el almacén cifrado de archivos, los creadores del Factory Method (no guardan estado).</td></tr>
+      <tr><td><code>AddTransient</code></td><td>cada vez que se pide</td><td>No se usa: ningún servicio lo necesita.</td></tr>
+      <tr><td><code>AddHostedService</code></td><td>toda la aplicación, en segundo plano</td><td><code>VencimientoReservas</code>: cada minuto vence las reservas sin pagar.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Constructores primarios</h3>
+  <p class="texto">En vez de declarar campos y asignarlos en el constructor (como en los proyectos de clase), C# 12 permite poner los parámetros junto al nombre de la clase. El Carrito ya lo usaba en <code>AuthController</code>.</p>
+  <div class="rejilla-2">
+    <div class="codigo" style="margin:0"><div class="codigo-cabecera"><span>Forma clásica</span></div>
+<pre><code class="language-csharp">public class CarritoController : ControllerBase
+{
+    private readonly CarritoDbContext db;
+    public CarritoController(CarritoDbContext db)
+    {
+        this.db = db;
+    }
+}</code></pre></div>
+    <div class="codigo" style="margin:0"><div class="codigo-cabecera"><span>Constructor primario</span></div>
+<pre><code class="language-csharp">public class AdminBitacoraController(AppDbContext db)
+    : ControllerBase
+{
+    // db se usa directo en los métodos
+}</code></pre></div>
+  </div>
+
+  <h3>IOptions: configuración tipada y validada</h3>
+  <div class="codigo">
+    <div class="codigo-cabecera"><code>apps/api/Configuration/Opciones.cs</code> + <code>Program.cs</code></div>
+<pre><code class="language-csharp">public class PlazosOptions
+{
+    public const string Seccion = "Plazos";
+    [Range(5, 1440)] public int MinutosReserva { get; set; } = 30;
+    [Range(1, 180)]  public int DiasRonda { get; set; } = 30;
+}
+
+builder.Services.AddOptions&lt;PlazosOptions&gt;()
+    .Bind(builder.Configuration.GetSection("Plazos"))  // lee appsettings
+    .ValidateDataAnnotations()                          // aplica [Range]
+    .ValidateOnStart();                                 // si algo está mal, la API no arranca
+
+// y el servicio lo pide así:
+public class GestorInversiones(AppDbContext db, TimeProvider reloj, IOptions&lt;PlazosOptions&gt; plazos, …)</code></pre>
+  </div>
+  <ul class="explica">
+    <li>Mejor que <code>configuration["Plazos:MinutosReserva"]</code> suelto: tiene tipo, valores por defecto, se valida una vez y un error se ve al arrancar, no a mitad de una inversión.</li>
+    <li>Reemplaza al patrón Singleton para la configuración: no hay una clase global; cada servicio recibe la suya y en las pruebas se cambia con <code>UseSetting</code>.</li>
+  </ul>
+
+  <h3>De dónde sale cada valor</h3>
+  <p class="texto">ASP.NET lee varias fuentes y la última gana. En la API el orden es:</p>
+  <ol class="pasos">
+    <li>Claves generadas por <code>ClavesDesarrollo</code> (solo Development, la prioridad más baja). <span class="donde">App_Data/claves-desarrollo.json</span></li>
+    <li><code>appsettings.json</code>: valores comunes, sin secretos.</li>
+    <li><code>appsettings.Development.json</code>: el SQL Server y el correo del Docker local, y los usuarios de la semilla.</li>
+    <li><b>User secrets</b>: lo de cada máquina (<code>dotnet user-secrets set …</code>); viven fuera del repositorio.</li>
+    <li><b>Variables de entorno</b>, por ejemplo <code>ConnectionStrings__Principal</code>: lo que se usaría en un servidor.</li>
+  </ol>
+
+  <h3>TimeProvider, BackgroundService y CancellationToken</h3>
+  <ul class="texto">
+    <li><b><code>TimeProvider</code></b>: la hora se pide con <code>reloj.GetUtcNow()</code> en vez de <code>DateTime.Now</code>. En producción es el reloj real; en una prueba se puede adelantar 31 minutos y comprobar que la reserva venció sin esperar.</li>
+    <li><b><code>BackgroundService</code></b>: <code>VencimientoReservas</code> corre aparte de las peticiones con un <code>PeriodicTimer</code> de un minuto. Como no está dentro de una petición, crea su propio <i>scope</i> para pedir el <code>GestorInversiones</code> (que usa el DbContext, scoped).</li>
+    <li><b><code>CancellationToken ct</code></b>: casi todas las acciones lo reciben y lo pasan a EF Core. Si el cliente cierra la pestaña, la consulta a SQL Server se cancela en vez de seguir trabajando para nadie.</li>
+    <li><b><code>async</code>/<code>await</code></b> en todo lo que toca la base o el correo: mientras SQL Server responde, el hilo atiende otras peticiones.</li>
+  </ul>
+</section>
+
+<!-- ============================ 13. OPENAPI ============================ -->
+<section class="seccion" id="openapi">
+  <p class="eyebrow">Sección 13</p>
+  <h2>Swagger y Scalar</h2>
+  <div class="breve"><strong>En breve</strong><p>La API genera un documento <b>OpenAPI</b> (<code>/openapi/v1.json</code>) con el paquete oficial <code>Microsoft.AspNetCore.OpenApi</code>. Dos pantallas lo leen: <b>Swagger UI</b> (<code>/swagger</code>, la de clase) y <b>Scalar</b> (<code>/scalar</code>). Las descripciones salen de los comentarios <code>///</code> y los códigos posibles, de <code>[ProducesResponseType]</code>.</p></div>
+
+  <div class="tabla-scroll"><table class="tabla versus">
+    <thead><tr><th>Pieza</th><th>En clase (Swashbuckle)</th><th>En el proyecto</th></tr></thead>
+    <tbody>
+      <tr><td>Genera el documento</td><td><code>AddSwaggerGen()</code> + <code>UseSwagger()</code></td><td><code>AddOpenApi()</code> + <code>MapOpenApi()</code> (incluido en .NET 9 y 10)</td></tr>
+      <tr><td>Pantalla</td><td><code>UseSwaggerUI()</code></td><td>La misma <code>UseSwaggerUI()</code> (paquete <code>Swashbuckle.AspNetCore.SwaggerUI</code>), apuntando a <code>/openapi/v1.json</code>; más Scalar.</td></tr>
+      <tr><td>Esquema Bearer</td><td><code>AddSecurityDefinition("Bearer", …)</code></td><td>Transformador de documento <code>DocumentoOpenApi</code>.</td></tr>
+      <tr><td>Candado por ruta</td><td><code>SwaggerJwtOperationFilter : IOperationFilter</code></td><td>Transformador de operación <code>CandadoOpenApi : IOpenApiOperationTransformer</code>. Misma lógica: candado si hay <code>[Authorize]</code> y no hay <code>[AllowAnonymous]</code>.</td></tr>
+      <tr><td>Token persistente</td><td>—</td><td><code>EnablePersistAuthorization()</code>: el token pegado sobrevive a recargar la página.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="nota">Por qué la guía de examen de clase dice «desinstalar <code>Microsoft.AspNetCore.OpenApi</code>»: si se usan <b>los dos</b> generadores juntos (Swashbuckle y el oficial) chocan al compilar (CS0200). El proyecto usa solo el oficial para generar y de Swashbuckle solo la pantalla, así que no choca.</p>
+
+  <div class="codigo">
+    <div class="codigo-cabecera"><code>apps/api/Controllers/ProyectosController.cs</code><span>de dónde sale lo que muestra Swagger</span></div>
+<pre><code class="language-csharp">/// &lt;summary&gt;Elimina un borrador (204). Lo que ya pasó por evaluación no se borra (409).&lt;/summary&gt;
+/// &lt;response code="409"&gt;El estado del proyecto no permite eliminarlo.&lt;/response&gt;
+[HttpDelete("{id:guid}")]
+[ProducesResponseType(StatusCodes.Status204NoContent)]
+[ProducesResponseType&lt;Respuesta&gt;(StatusCodes.Status404NotFound)]
+[ProducesResponseType&lt;Respuesta&gt;(StatusCodes.Status409Conflict)]
+public async Task&lt;IActionResult&gt; Eliminar(Guid id, CancellationToken ct)</code></pre>
+  </div>
+  <p class="texto">Para que los <code>///</code> lleguen al documento, el <code>.csproj</code> tiene <code>&lt;GenerateDocumentationFile&gt;true&lt;/GenerateDocumentationFile&gt;</code>.</p>
+  <div class="capturas">
+    <figure class="captura"><button type="button"><img src="capturas-api/01-swagger-general.jpg" alt="Swagger UI con los endpoints agrupados por controlador" loading="lazy"></button><figcaption><b>Swagger UI.</b> Un grupo por controlador. Las rutas de <code>/api/auth</code> públicas no tienen candado; <code>/api/auth/yo</code> sí.</figcaption></figure>
+    <figure class="captura"><button type="button"><img src="capturas-api/11-scalar.jpg" alt="Scalar con la misma documentación" loading="lazy"></button><figcaption><b>Scalar.</b> El mismo documento OpenAPI con otro diseño y ejemplos de código para varios lenguajes.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============================ 14. SEGURIDAD ============================ -->
+<section class="seccion" id="seguridad">
+  <p class="eyebrow">Sección 14</p>
+  <h2>Más seguridad, aparte del JWT</h2>
+  <div class="breve"><strong>En breve</strong><p>Contraseñas con hash de Identity, bloqueo tras 5 intentos, códigos OTP guardados como hash, archivos de identidad cifrados con AES-256-GCM, HTTPS obligatorio y ningún secreto en el repositorio.</p></div>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Medida</th><th>Cómo</th><th>Dónde</th></tr></thead>
+    <tbody>
+      <tr><td>Contraseñas</td><td>Identity guarda un hash con sal (PBKDF2), nunca el texto. Largo mínimo configurable.</td><td><code>UserManager</code>, <code>ReglasSeguridad</code></td></tr>
+      <tr><td>Bloqueo de cuenta</td><td>5 intentos fallidos → 15 minutos (423) y un correo de aviso.</td><td><code>AuthController.Login</code>, <code>AvisoBloqueo</code></td></tr>
+      <tr><td>Código OTP</td><td>6 dígitos con <code>RandomNumberGenerator</code>, se guarda solo su hash SHA-256, vence a los 10 min, 3 intentos, se compara con <code>FixedTimeEquals</code>.</td><td><code>Services/Auth/OtpService.cs</code></td></tr>
+      <tr><td>Archivos (CI, selfie, títulos)</td><td>Cifrados con AES-256-GCM antes de tocar el disco; solo la API los abre.</td><td><code>Services/Files/AlmacenCifrado.cs</code></td></tr>
+      <tr><td>Transporte</td><td>HTTPS con redirección; el token nunca viaja en claro.</td><td><code>UseHttpsRedirection()</code></td></tr>
+      <tr><td>Secretos</td><td>Claves en <code>App_Data</code> (ignorado), user-secrets o variables de entorno. Sin ellas, fuera de Development la API no arranca.</td><td><code>ClavesDesarrollo.cs</code>, <code>ValidateOnStart</code></td></tr>
+      <tr><td>Caché</td><td>La respuesta del login lleva <code>Cache-Control: no-store</code>.</td><td><code>AuthController.Login</code></td></tr>
+      <tr><td>CORS</td><td>No hace falta: la web llama a <code>/api</code> en su mismo origen y Vite reenvía a la API.</td><td><code>apps/web/vite.config.js</code></td></tr>
+    </tbody>
+  </table></div>
+  <div class="capturas una">
+    <figure class="captura"><button type="button"><img src="capturas-api/12-mailpit-otp.jpg" alt="Mailpit con el aviso de bloqueo y el código OTP" loading="lazy"></button><figcaption><b>Mailpit.</b> El buzón de prueba recibe el código OTP de registro y el aviso de bloqueo. En desarrollo ningún correo sale a internet.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============================ 15. PRUEBAS ============================ -->
+<section class="seccion" id="pruebas">
+  <p class="eyebrow">Sección 15</p>
+  <h2>Pruebas automáticas</h2>
+  <div class="breve"><strong>En breve</strong><p><code>dotnet test tests/api</code> corre más de cien pruebas xUnit sin Docker. Las de <b>integración</b> levantan la API real en memoria con <code>WebApplicationFactory</code> y le hacen peticiones HTTP; la base es EF Core <b>InMemory</b> y el correo se guarda en una lista.</p></div>
+  <div class="codigo">
+    <div class="codigo-cabecera"><code>tests/api/Integration/TokenJwtTests.cs</code></div>
+<pre><code class="language-csharp">[Fact]
+public async Task Un_token_vencido_da_401()
+{
+    var ahora = DateTime.UtcNow;
+    var vencido = Token(f.ClaveJwt, desde: ahora.AddMinutes(-20), hasta: ahora.AddSeconds(-1));
+    Assert.Equal(HttpStatusCode.Unauthorized, await ConsultarYo(vencido));
+}</code></pre>
+  </div>
+  <ul class="explica">
+    <li><b><code>ApiFactory : WebApplicationFactory&lt;Program&gt;</code></b> arranca <code>Program.cs</code> en el entorno <code>Testing</code>, cambia SQL Server por InMemory y el SMTP por un correo en memoria, y pone claves de prueba con <code>UseSetting</code>. Por eso <code>Program.cs</code> termina con <code>public partial class Program;</code>.</li>
+    <li><b>Integration/</b>: el contrato HTTP (códigos, cabecera Location, roles, bloqueo, OTP, CRUD de proyectos, inversiones). <b>Patterns/</b>: cada patrón de diseño por separado.</li>
+    <li>Límite de InMemory: no aplica índices únicos ni claves foráneas. Por eso el CI repetido también se revisa en el controlador, antes de guardar.</li>
+  </ul>
+</section>
+
+<!-- ============================ 16. CLASE ============================ -->
+<section class="seccion" id="clase">
+  <p class="eyebrow">Sección 16</p>
+  <h2>Visto en clase y nuevo en el proyecto</h2>
+  <div class="breve"><strong>En breve</strong><p>La base es la de Web 3: controladores, EF Core con Fluent API, migraciones, DTO, Swagger, Identity y JWT. Encima, el proyecto usa piezas que en clase no se vieron o se vieron de pasada. Para cada una: qué es, dónde está y por qué se usó.</p></div>
+
+  <div class="filtros" id="filtro-clase" role="group" aria-label="Filtrar">
+    <button type="button" data-filtro="todas" aria-pressed="true">Todas</button>
+    <button type="button" data-filtro="visto" aria-pressed="false">Visto en clase</button>
+    <button type="button" data-filtro="pasada" aria-pressed="false">De pasada</button>
+    <button type="button" data-filtro="nuevo" aria-pressed="false">Nuevo</button>
+  </div>
+  <div class="tabla-scroll"><table class="tabla" id="tabla-clase">
+    <thead><tr><th>Tema</th><th>En clase</th><th>Dónde en el proyecto</th><th>Qué es y por qué se usó</th></tr></thead>
+    <tbody><!-- se llena con CLASE, en el script --></tbody>
+  </table></div>
+</section>
+
+<!-- ============================ 17. PATRONES ============================ -->
+<section class="seccion" id="patrones">
+  <p class="eyebrow">Sección 17</p>
+  <h2>Patrones de diseño en la API</h2>
+  <div class="breve"><strong>En breve</strong><p>Los patrones de Ingeniería de Software están en el código de la API, no solo en el informe. Los que más probablemente pregunten en Web 3 son los que se ven en <code>Program.cs</code>: Decorator, Proxy, Bridge, Strategy y Factory Method se notan en cómo se registran los servicios. El detalle completo está en <code>docs/patrones/README.md</code>.</p></div>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Patrón</th><th>Clase</th><th>Para qué</th></tr></thead>
+    <tbody>
+      <tr><td>Factory Method</td><td><code>CreadorProyectoEngorde</code> / <code>CreadorProyectoLecheria</code></td><td>Crear la ficha según la línea productiva (POST <code>/api/proyectos</code>).</td></tr>
+      <tr><td>State</td><td><code>EstadoFicha</code> (EnBorrador, EnRevisionTecnica…)</td><td>Qué acciones valen en cada estado; lo demás da 409.</td></tr>
+      <tr><td>Command</td><td><code>ComandosProyecto</code> + <code>GestorCicloProyecto</code></td><td>Cada acción sobre el proyecto queda en la bitácora <code>HistorialProyectos</code>.</td></tr>
+      <tr><td>Chain of Responsibility</td><td><code>RequisitosEnvio</code></td><td>Revisar en cadena los requisitos antes de enviar a revisión.</td></tr>
+      <tr><td>Observer</td><td><code>AvisarAlProductor</code>, <code>AvisarALosAnalistas</code></td><td>Quién recibe un aviso cuando cambia un proyecto.</td></tr>
+      <tr><td>Decorator</td><td><code>AlmacenCifrado</code> sobre <code>AlmacenDisco</code>; <code>CorreoConReintentos</code></td><td>Agregar cifrado o reintentos sin tocar la clase original.</td></tr>
+      <tr><td>Adapter</td><td><code>CorreoSmtpService</code></td><td>Adaptar el <code>SmtpClient</code> de .NET a la interfaz <code>ICorreoService</code>.</td></tr>
+      <tr><td>Proxy</td><td><code>VisorDocumentosProxy</code></td><td>Revisar permisos antes de abrir un documento.</td></tr>
+      <tr><td>Facade</td><td><code>VerificacionService</code></td><td>Un solo método para todos los pasos de verificar identidad.</td></tr>
+      <tr><td>Bridge</td><td><code>ICanalAviso</code> (<code>CanalCorreo</code>)</td><td>El aviso no depende del canal: mañana Telegram o push.</td></tr>
+      <tr><td>Strategy</td><td><code>IVerificadorIdentidad</code>, <code>ReglaReparto</code></td><td>Cambiar el verificador simulado por uno real sin tocar el resto.</td></tr>
+      <tr><td>Configuración inyectada</td><td><code>IOptions&lt;T&gt;</code></td><td>En lugar de Singleton para la configuración (sección <a href="#di">12</a>).</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ 18. WEB ============================ -->
+<section class="seccion" id="web">
+  <p class="eyebrow">Sección 18</p>
+  <h2>La web que la usa</h2>
+  <div class="breve"><strong>En breve</strong><p>La web en React + Vite llama siempre a <code>/api/...</code>. En desarrollo, Vite reenvía esas llamadas a <code>https://localhost:7080</code> (proxy), así que el navegador cree que todo viene del mismo sitio y no hace falta CORS. El token se guarda en <code>sessionStorage</code> y se agrega en cada pedido.</p></div>
+  <div class="rejilla-2">
+    <div class="codigo" style="margin:0">
+      <div class="codigo-cabecera"><code>apps/web/src/api.js</code></div>
+<pre><code class="language-javascript">async function pedir(ruta, init = {}) {
+  const headers = new Headers(init.headers)
+  if (token) headers.set('Authorization', `Bearer ${token}`)
+  return fetch(`/api${ruta}`, { ...init, headers })
+}
+// Un 401 fuera del login: token vencido → se borra y vuelve al login</code></pre>
+    </div>
+    <figure class="captura" style="margin:0"><button type="button"><img src="capturas-api/13-web-login.jpg" alt="Pantalla de inicio de sesión de la web" loading="lazy"></button><figcaption><b>Web.</b> El inicio de sesión llama a <code>POST /api/auth/login</code> y guarda el token.</figcaption></figure>
+  </div>
+  <ul class="texto">
+    <li><b>sessionStorage y no localStorage</b>: el token se borra al cerrar la pestaña. Menos tiempo expuesto si alguien usa la misma computadora.</li>
+    <li>Los errores 400 con <code>errors</code> se muestran debajo de cada casilla; un 403 se traduce a «Tu rol no tiene permiso para esta acción».</li>
+    <li>El menú muestra solo lo del rol, pero <b>la seguridad real está en la API</b>: aunque alguien escriba la URL a mano, sin el rol recibe 403.</li>
+  </ul>
+</section>
+
+<!-- ============================ 19. LÍMITES ============================ -->
+<section class="seccion" id="limites">
+  <p class="eyebrow">Sección 19</p>
+  <h2>Límites conocidos y siguiente paso</h2>
+  <div class="breve"><strong>En breve</strong><p>Decisiones tomadas a sabiendas para el alcance del proyecto. Saber nombrarlas, junto con cómo se resolverían, suele causar mejor impresión que no tenerlas pensadas.</p></div>
+  <div class="tabla-scroll"><table class="tabla">
+    <thead><tr><th>Límite</th><th>Por qué hoy está así</th><th>Cómo se resolvería</th></tr></thead>
+    <tbody>
+      <tr><td>Sin refresh token</td><td>Un solo token de 120 min alcanza para una sesión de uso.</td><td>Token de acceso corto + refresh token guardado en la base, rotado en cada uso.</td></tr>
+      <tr><td>Sin revocación del JWT</td><td>Validar sin consultar la base es la ventaja del JWT. Un rol cambiado rige al volver a entrar.</td><td>Guardar los <code>jti</code> revocados, o revisar el <code>SecurityStamp</code> de Identity en cada petición.</td></tr>
+      <tr><td>Sin política por defecto</td><td>Cada controlador declara su <code>[Authorize]</code>; solo <code>AuthController</code> es público a propósito.</td><td><code>FallbackPolicy</code> que exija usuario autenticado y <code>[AllowAnonymous]</code> en las rutas públicas.</td></tr>
+      <tr><td>Cupo con dos reservas simultáneas</td><td>Si dos personas reservan en el mismo instante, el cupo puede pasarse por poco. Con pocos usuarios se acepta (comentario en <code>Reservar</code>).</td><td>Token de concurrencia (<code>[Timestamp]</code> / <code>rowversion</code>) o una transacción serializable.</td></tr>
+      <tr><td>Dos formatos de error</td><td><code>ValidationProblemDetails</code> para campos y <code>{ mensaje }</code> para lo demás.</td><td>Unificar todo en <code>ProblemDetails</code>.</td></tr>
+      <tr><td>Lecturas con seguimiento</td><td>Las consultas no usan <code>AsNoTracking()</code>; el volumen es chico.</td><td>Agregarlo en los listados de solo lectura, o proyectar con <code>Select</code> directo al DTO.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ 20. PRÁCTICA ============================ -->
+<section class="seccion" id="practica">
+  <p class="eyebrow">Sección 20</p>
+  <h2>Preguntas para practicar</h2>
+  <div class="breve"><strong>En breve</strong><p>Intenta responder en voz alta antes de abrir la respuesta. Están agrupadas por tema.</p></div>
+  <div class="filtros" id="filtro-preguntas" role="group" aria-label="Filtrar por tema">
+    <button type="button" data-tema="todas" aria-pressed="true">Todas</button>
+    <button type="button" data-tema="jwt" aria-pressed="false">JWT y roles</button>
+    <button type="button" data-tema="http" aria-pressed="false">HTTP y REST</button>
+    <button type="button" data-tema="datos" aria-pressed="false">EF Core</button>
+    <button type="button" data-tema="csharp" aria-pressed="false">C# y .NET</button>
+    <button type="button" data-tema="entorno" aria-pressed="false">Entorno</button>
+  </div>
+  <div id="preguntas"><!-- se llena con PREGUNTAS, en el script --></div>
+</section>
+
+</div>
+</main>
+</div>
+
+<dialog id="visor" aria-label="Captura ampliada">
+  <button type="button" id="cerrar-visor">Cerrar</button>
+  <img id="visor-img" src="" alt="">
+  <p id="visor-texto"></p>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/highlight.min.js" integrity="sha384-F/bZzf7p3Joyp5psL90p/p89AZJsndkSoGwRpXcZhleCWhd8SnRuoYo4d0yirjJp" crossorigin="anonymous"></script>
+<script>
+// ======================= DATOS DE LA GUÍA =======================
+// Si cambia un endpoint, se corrige aquí (y en el controlador). Fuente: apps/api/Controllers/*.cs
+const ENDPOINTS = [
+  { ctrl: 'AuthController', ruta: '/api/auth', roles: 'Público (salvo /yo)', filas: [
+    ['POST', '/registro', 'Crea la cuenta de productor o inversionista y envía el OTP', '201 · 400 · 409'],
+    ['POST', '/otp/verificar', 'Confirma el correo con el código', '200 · 400'],
+    ['POST', '/otp/reenviar', 'Pide otro código (misma respuesta exista o no la cuenta)', '200 · 400'],
+    ['POST', '/login', 'Devuelve el JWT', '200 · 401 · 403 · 423'],
+    ['GET', '/yo', 'Datos del usuario del token (requiere token)', '200 · 401'],
+  ] },
+  { ctrl: 'ProyectosController', ruta: '/api/proyectos', roles: 'Productor, Administrador', principal: true, filas: [
+    ['POST', '', 'Crea la ficha en borrador (Factory Method)', '201 · 400'],
+    ['GET', '', 'Mis proyectos (el administrador ve todos)', '200'],
+    ['GET', '/{id}', 'Un proyecto', '200 · 404'],
+    ['PUT', '/{id}', 'Corrige la ficha; solo en borrador', '200 · 400 · 404 · 409'],
+    ['DELETE', '/{id}', 'Elimina un borrador', '204 · 404 · 409'],
+    ['GET', '/{id}/historial', 'Recurso relacionado: la bitácora del proyecto', '200 · 404'],
+    ['POST', '/{id}/enviar-revision', 'Pasa a revisión si cumple los requisitos', '200 · 404 · 409'],
+  ] },
+  { ctrl: 'DocumentosProductorController', ruta: '/api/productor/documentos', roles: 'Productor, Administrador', filas: [
+    ['GET', '', 'Mis documentos del predio y su estado', '200'],
+    ['POST', '', 'Sube RUNSA, título o contrato (multipart, PDF/JPG/PNG ≤ 5 MB)', '201 · 400'],
+    ['GET', '/{id}/archivo', 'Descarga uno de mis documentos, descifrado', '200 · 404'],
+  ] },
+  { ctrl: 'VerificacionController', ruta: '/api/verificacion', roles: 'Inversionista, Productor', filas: [
+    ['GET', '/estado', 'Estado de mi verificación con su historial', '200'],
+    ['POST', '', 'Envía CI y selfie con consentimiento (se guardan cifrados)', '200 · 400 · 409 · 422'],
+  ] },
+  { ctrl: 'AnalistaController', ruta: '/api/analista', roles: 'Analista, Administrador', filas: [
+    ['GET', '/verificaciones', 'Identidades en revisión manual', '200'],
+    ['POST', '/verificaciones/{usuarioId}/decision', 'Aprueba o rechaza una identidad', '200 · 400 · 404 · 409'],
+    ['GET', '/documentos', 'Documentos del predio por estado', '200'],
+    ['POST', '/documentos/{id}/decision', 'Aprueba o rechaza un documento', '200 · 400 · 404'],
+    ['GET', '/archivos/{id}', 'Abre un archivo cifrado', '200 · 404'],
+  ] },
+  { ctrl: 'EvaluacionProyectosController', ruta: '/api/analista/proyectos', roles: 'Analista, Administrador', filas: [
+    ['GET', '', 'Proyectos por estado (por defecto, en revisión)', '200'],
+    ['GET', '/{id}', 'Proyecto con productor e historial', '200 · 404'],
+    ['POST', '/{id}/decision', 'Observar, rechazar o aprobar y publicar', '200 · 400 · 404 · 409'],
+  ] },
+  { ctrl: 'CatalogoController', ruta: '/api/catalogo', roles: 'Inversionista, Administrador', filas: [
+    ['GET', '', 'Proyectos publicados, con filtros opcionales en la query', '200'],
+    ['GET', '/{id}', 'Un proyecto del catálogo', '200 · 404'],
+    ['POST', '/{id}/simulacion', 'Tres escenarios para un monto (Prototype)', '200 · 400 · 404'],
+  ] },
+  { ctrl: 'InversionesController', ruta: '/api/inversiones', roles: 'Inversionista, Administrador', filas: [
+    ['GET', '', 'Mis inversiones', '200'],
+    ['GET', '/{id}', 'Una de mis inversiones', '200 · 404'],
+    ['POST', '', 'Reserva el cupo por 30 minutos', '201 · 400 · 404 · 409'],
+    ['GET', '/{id}/contrato', 'Texto del contrato y riesgos', '200 · 404'],
+    ['POST', '/{id}/contrato/codigo', 'Envía el OTP para firmar (exige aceptar)', '200 · 400 · 404 · 409'],
+    ['POST', '/{id}/contrato/firmar', 'Firma con el OTP', '200 · 400 · 404 · 409'],
+    ['POST', '/{id}/pago', 'Genera el QR de pago simulado', '200 · 404 · 409'],
+    ['POST', '/{id}/pago/confirmar', 'Confirma o rechaza el pago', '200 · 404 · 409'],
+  ] },
+  { ctrl: 'PortafolioController', ruta: '/api/portafolio', roles: 'Inversionista, Administrador', filas: [
+    ['GET', '', 'Participaciones pagadas y total invertido', '200'],
+    ['GET', '/{inversionId}/constancia', 'Constancia de una participación', '200 · 404'],
+  ] },
+  { ctrl: 'AdminUsuariosController', ruta: '/api/admin/usuarios', roles: 'Administrador', filas: [
+    ['GET', '', 'Lista de cuentas con rol y bloqueo', '200'],
+    ['PUT', '/{id}/rol', 'Cambia el rol (rige al volver a entrar)', '200 · 400 · 404'],
+    ['POST', '/{id}/desbloquear', 'Quita el bloqueo', '200 · 404'],
+    ['DELETE', '/{id}', 'Elimina una cuenta sin actividad', '204 · 400 · 404 · 409'],
+  ] },
+  { ctrl: 'AdminBitacoraController', ruta: '/api/admin/bitacora', roles: 'Administrador', filas: [
+    ['GET', '', 'Hasta 500 eventos, con filtros desde, hasta y responsable', '200 · 400'],
+  ] },
+]
+
+// estado: 'visto' | 'pasada' | 'nuevo'
+const CLASE = [
+  ['Controladores con [ApiController] y rutas', 'visto', 'Controllers/', 'Igual que en clase: atributos [Route], [HttpGet], etc. Rutas con restricción {id:guid}.'],
+  ['EF Core + SQL Server con Fluent API', 'visto', 'Data/AppDbContext.cs', 'Mismo enfoque que HeroesFluent y el Carrito: OnModelCreating, HasIndex, HasConversion, relaciones.'],
+  ['Migraciones', 'visto', 'Data/Migrations/', 'Igual que Add-Migration / Update-Database, pero la API las aplica sola al arrancar (MigrateAsync).'],
+  ['DTO de entrada y salida', 'visto', 'Dtos/', 'Igual que en clase; la diferencia es la forma: class para entrar, record para salir (sección 10).'],
+  ['DataAnnotations y 400 automático', 'visto', 'Dtos/*.cs', '[Required], [Range], [StringLength], [EmailAddress], [RegularExpression].'],
+  ['Swagger UI', 'visto', 'Program.cs', 'La misma pantalla, pero el documento lo genera Microsoft.AspNetCore.OpenApi (sección 13).'],
+  ['JWT Bearer', 'visto', 'Program.cs, Services/Auth/', 'Misma validación que la guía del Carrito, con usuarios reales y roles (sección 5).'],
+  ['Identity, roles y [Authorize(Roles)]', 'visto', 'AuthController, Models/Roles.cs', 'En clase con MVC y cookies (HeroesSeguridad); aquí con AddIdentityCore y JWT, sin cookies.'],
+  ['async/await y Task<ActionResult<T>>', 'visto', 'todas las acciones', 'Igual que en clase. ActionResult<T> permite devolver el DTO o un NotFound() con el mismo tipo.'],
+  ['User secrets', 'pasada', 'apps/api/P11.Api.csproj (UserSecretsId)', 'Visto en la guía JWT. Aquí son opcionales: guardan lo propio de cada máquina.'],
+  ['record', 'pasada', 'Dtos/ (salida)', 'Clase inmutable con igualdad por valor y constructor corto. Usado en el Carrito sin explicarlo (sección 10).'],
+  ['Constructores primarios', 'pasada', 'controladores y servicios', 'C# 12: los parámetros van junto al nombre de la clase. Menos código que campo + constructor.'],
+  ['CreatedAtAction y cabecera Location', 'pasada', 'ProyectosController.CrearBorrador', 'El 201 dice dónde quedó el recurso nuevo, como manda REST.'],
+  ['IOptions<T> + ValidateOnStart', 'nuevo', 'Configuration/Opciones.cs', 'Configuración con tipo, validada al arrancar; reemplaza al Singleton (sección 12).'],
+  ['TimeProvider', 'nuevo', 'TokenJwtService, GestorInversiones', 'Reloj inyectable: en pruebas se adelanta la hora para probar vencimientos sin esperar.'],
+  ['BackgroundService', 'nuevo', 'Services/Investments/VencimientoReservas.cs', 'Tarea que corre cada minuto fuera de las peticiones para vencer reservas.'],
+  ['CancellationToken', 'nuevo', 'parámetro ct de las acciones', 'Si el cliente abandona, se cancela la consulta a la base.'],
+  ['ProblemDetails / ValidationProblemDetails', 'nuevo', 'respuestas 400', 'Formato estándar de error (RFC 9110); ValidationProblem(ModelState).'],
+  ['[ProducesResponseType] y comentarios ///', 'nuevo', 'todos los controladores', 'Documentan en Swagger cada código posible y su cuerpo.'],
+  ['Transformadores de OpenAPI y Scalar', 'nuevo', 'Configuration/DocumentoOpenApi.cs, CandadoOpenApi.cs', 'Equivalen a AddSecurityDefinition y al IOperationFilter de Swashbuckle.'],
+  ['JsonStringEnumConverter', 'nuevo', 'Program.cs', 'Los enums viajan como texto ("Engorde") y un número da 400.'],
+  ['Herencia TPH en EF Core', 'nuevo', 'ProyectoGanadero → Engorde / Lechería', 'Una tabla para dos clases, con columna discriminadora LineaProductiva.'],
+  ['DeleteBehavior.Restrict', 'nuevo', 'AppDbContext (historial, inversiones)', 'Impide que un borrado arrastre la bitácora o las inversiones.'],
+  ['WebApplicationFactory + EF InMemory', 'nuevo', 'tests/api/Integration/ApiFactory.cs', 'Pruebas que levantan la API real sin SQL Server (sección 15).'],
+  ['Docker Compose', 'nuevo', 'docker-compose.yml', 'SQL Server y Mailpit con un comando, igual en Windows, Linux y Mac.'],
+  ['Cifrado AES-256-GCM y hash de OTP', 'nuevo', 'Services/Files/AlmacenCifrado.cs, OtpService.cs', 'Datos sensibles guardados de forma que, sin la clave, no se leen (sección 14).'],
+]
+
+const PREGUNTAS = [
+  ['jwt', '¿Qué diferencia hay entre autenticación y autorización?', 'Autenticación es saber quién es (el middleware valida el JWT y arma User). Autorización es decidir si puede hacer algo ([Authorize(Roles)]). Si falla la primera, 401; si falla la segunda, 403.'],
+  ['jwt', '¿Qué valida la API de un token?', 'Firma con la clave (HS256 y ningún otro algoritmo), emisor p11-api, audiencia p11-clientes y vencimiento exacto (ClockSkew cero). Si algo falla, 401.'],
+  ['jwt', '¿Se puede leer un JWT sin la clave? ¿Es un problema?', 'Sí, el contenido es base64url, no está cifrado. No es problema porque no lleva nada secreto (id, correo, rol) y no se puede modificar sin romper la firma.'],
+  ['jwt', '¿Dónde está la clave de firma?', 'Nunca en el repositorio. En desarrollo la genera ClavesDesarrollo en App_Data/claves-desarrollo.json (ignorado por git). Fuera de desarrollo, en user-secrets o variables de entorno; si falta o tiene menos de 32 bytes, la API no arranca.'],
+  ['jwt', '¿Por qué el token dura 120 minutos y no 15 como en el Carrito?', 'No hay refresh token: con 15 minutos el usuario quedaría afuera a mitad de una inversión. Es configurable en Jwt:MinutosVigencia. Lo correcto a futuro es token corto + refresh token.'],
+  ['jwt', 'Si el administrador le cambia el rol a alguien, ¿cuándo se nota?', 'En su próximo inicio de sesión: el rol viaja dentro del token y el token no se consulta contra la base.'],
+  ['jwt', '¿Cómo sabe la API de quién es cada proyecto?', 'Por el claim sub del token (User.IdUsuario()). Nunca se toma el id del cuerpo de la petición; las consultas se filtran por ese id.'],
+  ['jwt', '¿Por qué lo ajeno responde 404 y no 403?', 'Para no confirmar que ese id existe. El 403 queda para «tu rol no puede usar esta ruta».'],
+  ['jwt', '¿Qué hace MapInboundClaims = false?', 'Evita que .NET renombre los claims a URLs largas (sub → nameidentifier). Así se leen como "sub" y "role", igual que en el token.'],
+  ['jwt', '¿Cómo se protege el login de ataques de fuerza bruta?', 'Identity bloquea la cuenta 15 minutos al 5.º intento fallido (423) y se avisa por correo. El mensaje de error no dice si falló el correo o la contraseña.'],
+  ['http', '¿Cuándo 400 y cuándo 409?', '400: el pedido está mal armado (un campo falta o está fuera de rango). 409: está bien, pero choca con el estado actual (editar un proyecto que ya no es borrador, monto mayor que el cupo).'],
+  ['http', '¿Por qué crear un proyecto responde 201 y qué es Location?', '201 Created indica que se creó un recurso; la cabecera Location trae su URL (/api/proyectos/{id}). Lo hace CreatedAtAction.'],
+  ['http', '¿Cuál es el recurso principal y cuál el relacionado?', 'Principal: /api/proyectos, con CRUD completo. Relacionado: /api/proyectos/{id}/historial, la bitácora de cambios de estado.'],
+  ['http', '¿Por qué enviar-revision es un POST y no un PUT?', 'No reemplaza la ficha: ejecuta una acción que cambia el estado y deja historial. Las acciones se modelan como POST a una sub-ruta.'],
+  ['http', '¿Qué es 415 y cuándo aparece?', 'Unsupported Media Type: el cuerpo no se mandó como application/json. Lo responde [ApiController] solo.'],
+  ['http', '¿Qué es 423?', 'Locked: la cuenta está bloqueada por intentos fallidos. El cuerpo dice hasta qué hora.'],
+  ['http', '¿Qué hace [ApiController]?', 'Responde 400 si el modelo no valida, lee el cuerpo como JSON sin [FromBody], exige el Content-Type y obliga a usar rutas por atributo.'],
+  ['datos', '¿Cómo se crea la base en una máquina nueva?', 'La API, al arrancar, aplica las migraciones pendientes con Database.MigrateAsync() y carga la semilla (roles, 4 usuarios y 2 proyectos).'],
+  ['datos', '¿Qué es TPH?', 'Table per hierarchy: ProyectoEngorde y ProyectoLecheria comparten la tabla Proyectos; la columna LineaProductiva dice cuál es cada fila.'],
+  ['datos', '¿Por qué los enums se guardan como texto?', 'HasConversion<string>(): la tabla se lee sola (EnRevision en vez de 1) y reordenar el enum no cambia el significado de los datos guardados.'],
+  ['datos', '¿Por qué Restrict y no Cascade?', 'Borrar un proyecto o un usuario no puede borrar su bitácora ni sus inversiones (trazabilidad, RNF-03). Por eso un usuario con actividad no se elimina (409).'],
+  ['datos', '¿Por qué no usan Include ni AsNoTracking como en clase?', 'Las relaciones no tienen propiedades de navegación: se busca por id, así que no hay nada que incluir. AsNoTracking sería una mejora menor en los listados de solo lectura.'],
+  ['datos', '¿Dónde se ve que AppDbContext incluye Identity?', 'Hereda de IdentityDbContext<Usuario, IdentityRole<Guid>, Guid>: por eso existen AspNetUsers, AspNetRoles, AspNetUserRoles, etc.'],
+  ['csharp', '¿Un record es un DTO?', 'Sí. DTO es el papel; record es una forma de escribir la clase. Las respuestas son records (inmutables, igualdad por valor); las entradas son class con validaciones.'],
+  ['csharp', '¿Qué genera el compilador para record Respuesta(string Mensaje)?', 'Una propiedad init, el constructor, igualdad por valor (Equals, ==, GetHashCode), ToString con los datos, deconstrucción y soporte para with.'],
+  ['csharp', '¿Qué diferencia hay entre AddScoped, AddSingleton y AddTransient?', 'Scoped: una instancia por petición (el DbContext). Singleton: una para toda la app (TimeProvider). Transient: una nueva cada vez que se pide (no se usa).'],
+  ['csharp', '¿Por qué IOptions en vez de leer IConfiguration directo?', 'Tiene tipo, valores por defecto y se valida al arrancar con ValidateOnStart: un error de configuración aparece antes de atender a nadie.'],
+  ['csharp', '¿Para qué sirve TimeProvider?', 'Para pedir la hora a un servicio inyectado: en las pruebas se adelanta el reloj y se comprueba que una reserva vence sin esperar 30 minutos.'],
+  ['csharp', '¿Qué hace VencimientoReservas?', 'Es un BackgroundService: cada minuto busca reservas vencidas sin pago, las marca como Vencida y libera el cupo. Crea su propio scope porque usa el DbContext.'],
+  ['csharp', '¿Cómo se prueba la API sin SQL Server?', 'WebApplicationFactory levanta Program.cs en el entorno Testing con EF Core InMemory y un correo en memoria; las pruebas hacen peticiones HTTP reales a esa API.'],
+  ['entorno', '¿Qué hace falta para correrla en una máquina nueva?', 'Docker, .NET 10 y Node. docker compose up -d --wait, dotnet run --project apps/api --launch-profile https y npm run dev en apps/web. No hay que crear archivos de configuración.'],
+  ['entorno', '¿La clave de SQL Server en appsettings.Development.json no es un secreto subido al repo?', 'Es una clave de prueba de un contenedor local que solo escucha en 127.0.0.1; no protege nada real. Las claves de verdad (JWT, AES) nunca se suben, y fuera de Development la API exige que vengan de afuera.'],
+  ['entorno', '¿Para qué está Mailpit?', 'Recibe los correos que manda la API en desarrollo (OTP, avisos de bloqueo) y los muestra en http://localhost:8025, sin enviar nada a internet.'],
+  ['entorno', '¿Por qué la web no necesita CORS?', 'Vite hace de proxy: el navegador llama a /api en el mismo origen de la web y Vite reenvía a https://localhost:7080.'],
+]
+
+// Token de un entorno de pruebas descartable (su clave ya no existe): solo para ver cómo es un JWT.
+const TOKEN_EJEMPLO = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYzkxY2ZmNy0yNGEyLTQ0M2EtODVlMC0wOGRmNGNmNzQ4ZjUiLCJlbWFpbCI6InByb2R1Y3RvckBwMTEubG9jYWwiLCJqdGkiOiJmYjNlZDkzZS1lNjExLTRlMzUtOThmMy0wZDhlN2Q5Y2EyNjciLCJyb2xlIjoiUHJvZHVjdG9yIiwibmJmIjoxNzk1ODMzNDQ2LCJleHAiOjE3OTU4NDA2NDYsImlzcyI6InAxMS1hcGkiLCJhdWQiOiJwMTEtY2xpZW50ZXMifQ.YafQno6Cf3smDImE1HJdOOi9VV9THqptentBLhujqAs'
+
+// ======================= COMPORTAMIENTO =======================
+const $ = (s, r = document) => r.querySelector(s)
+const $$ = (s, r = document) => [...r.querySelectorAll(s)]
+const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
+const indice = $('#indice'), botonIndice = $('#boton-indice'), visor = $('#visor')
+
+// Tablas de endpoints
+$('#tablas-endpoints').innerHTML = ENDPOINTS.map((g) => `
+  <div class="grupo-endpoints">
+    <h4>${escapar(g.ctrl)} <code>${escapar(g.ruta)}</code> ${g.principal ? '<span class="chip chip-ok">Recurso principal</span>' : ''}<span class="chip chip-azul">${escapar(g.roles)}</span></h4>
+    <div class="tabla-scroll"><table class="tabla"><thead><tr><th>Método</th><th>Ruta</th><th>Qué hace</th><th>Códigos</th></tr></thead><tbody>
+    ${g.filas.map(([m, r, q, c]) => `<tr><td><span class="metodo m-${m.toLowerCase()}">${m}</span></td><td class="ruta">${escapar(g.ruta + r)}</td><td>${escapar(q)}</td><td class="num">${escapar(c)}</td></tr>`).join('')}
+    </tbody></table></div>
+  </div>`).join('')
+
+// Visto en clase
+const ETIQUETA_CLASE = { visto: '<span class="chip chip-ok">Visto</span>', pasada: '<span class="chip chip-ocre">De pasada</span>', nuevo: '<span class="chip chip-azul">Nuevo</span>' }
+$('#tabla-clase tbody').innerHTML = CLASE.map(([tema, estado, donde, que]) =>
+  `<tr data-estado="${estado}"><td>${escapar(tema)}</td><td>${ETIQUETA_CLASE[estado]}</td><td><code>${escapar(donde)}</code></td><td>${escapar(que)}</td></tr>`).join('')
+$$('#filtro-clase button').forEach((b) => b.addEventListener('click', () => {
+  $$('#filtro-clase button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
+  $$('#tabla-clase tbody tr').forEach((tr) => { tr.hidden = b.dataset.filtro !== 'todas' && tr.dataset.estado !== b.dataset.filtro })
+}))
+
+// Preguntas
+const TEMAS = { jwt: 'JWT y roles', http: 'HTTP y REST', datos: 'EF Core', csharp: 'C# y .NET', entorno: 'Entorno' }
+$('#preguntas').innerHTML = PREGUNTAS.map(([tema, p, r]) =>
+  `<details class="pregunta" data-tema="${tema}"><summary><span class="chip">${TEMAS[tema]}</span>${escapar(p)}</summary><div class="respuesta"><p>${escapar(r)}</p></div></details>`).join('')
+$$('#filtro-preguntas button').forEach((b) => b.addEventListener('click', () => {
+  $$('#filtro-preguntas button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
+  $$('#preguntas .pregunta').forEach((p) => { p.hidden = b.dataset.tema !== 'todas' && p.dataset.tema !== b.dataset.tema })
+}))
+
+// Decodificador de JWT (solo lee; no verifica la firma)
+const EXPLICA_CLAIM = {
+  sub: 'Id del usuario (Guid). Es lo que usa User.IdUsuario().', email: 'Correo de la cuenta.',
+  role: 'Rol; lo lee [Authorize(Roles)].', jti: 'Id único de este token.',
+  nbf: 'No vale antes de esta fecha.', exp: 'Vence en esta fecha.', iat: 'Emitido en esta fecha.',
+  iss: 'Quién lo emitió.', aud: 'Para quién es.',
+}
+function b64url(texto) {
+  const b64 = texto.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(texto.length / 4) * 4, '=')
+  const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
+  return new TextDecoder().decode(bytes)
+}
+const fecha = (s) => new Date(s * 1000).toLocaleString('es-BO', { dateStyle: 'medium', timeStyle: 'short' })
+function decodificar() {
+  const t = $('#jwt-entrada').value.trim()
+  const partes = t.split('.')
+  if (partes.length !== 3) {
+    $('#jwt-crudo').textContent = ''
+    ;['#jwt-cabecera', '#jwt-contenido', '#jwt-firma'].forEach((s) => { $(s).textContent = '—' })
+    $('#jwt-aviso').textContent = 'Un JWT tiene tres partes separadas por puntos.'
+    return
+  }
+  $('#jwt-crudo').innerHTML = partes.map((p, i) => `<span class="p${i + 1}">${escapar(p)}</span>`).join('.')
+  try {
+    const cab = JSON.parse(b64url(partes[0])), cont = JSON.parse(b64url(partes[1]))
+    $('#jwt-cabecera').textContent = JSON.stringify(cab, null, 2)
+    $('#jwt-contenido').textContent = JSON.stringify(cont, null, 2)
+    $('#jwt-firma').textContent = `${partes[2].slice(0, 22)}…\n\nHMACSHA256(cabecera + "." + contenido, clave)`
+    const lineas = Object.keys(cont).map((k) => {
+      const v = ['exp', 'nbf', 'iat'].includes(k) ? fecha(cont[k]) : cont[k]
+      return `<dt>${escapar(k)} = ${escapar(v)}</dt><dd>${escapar(EXPLICA_CLAIM[k] ?? '')}</dd>`
+    }).join('')
+    const vencido = cont.exp && cont.exp * 1000 < Date.now()
+    $('#jwt-aviso').innerHTML = `<dl class="jwt-claims">${lineas}</dl>` +
+      (vencido ? '<p class="chip chip-peligro">Vencido: la API respondería 401</p>' : '<p class="chip chip-ok">Todavía no venció</p>')
+  } catch {
+    $('#jwt-aviso').textContent = 'No se pudo leer: revisa que el token esté completo.'
+  }
+}
+$('#jwt-entrada').value = TOKEN_EJEMPLO
+$('#jwt-entrada').addEventListener('input', decodificar)
+decodificar()
+
+// Resaltado del código (si la biblioteca no carga, el código se ve igual, sin colores)
+if (window.hljs) window.hljs.highlightAll()
+
+// Índice en celular
+botonIndice.addEventListener('click', () => {
+  const abierto = indice.classList.toggle('abierto')
+  botonIndice.setAttribute('aria-expanded', String(abierto))
+})
+$$('#indice a').forEach((a) => a.addEventListener('click', () => {
+  indice.classList.remove('abierto')
+  botonIndice.setAttribute('aria-expanded', 'false')
+}))
+
+// Índice: marca la sección que se está leyendo
+const enlaces = new Map($$('#indice a').map((a) => [a.getAttribute('href').slice(1), a]))
+const observador = new IntersectionObserver((entradas) => {
+  entradas.forEach((e) => {
+    if (!e.isIntersecting) return
+    enlaces.forEach((a) => a.classList.remove('activo'))
+    enlaces.get(e.target.id)?.classList.add('activo')
+  })
+}, { rootMargin: '-20% 0px -70% 0px' })
+$$('section.seccion').forEach((s) => observador.observe(s))
+
+// Recorrido: marca en el dibujo la parte que trabaja
+function marcarPaso(li) {
+  $$('#viaje li').forEach((x) => x.classList.toggle('activo', x === li))
+  $$('#recorrido .d-caja').forEach((c) => c.classList.toggle('prendida', c.id === li.dataset.nodo))
+}
+$$('#viaje li').forEach((li) => {
+  li.addEventListener('click', () => marcarPaso(li))
+  li.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); marcarPaso(li) } })
+})
+
+// Capturas: clic para verlas en grande
+$$('.captura button').forEach((b) => b.addEventListener('click', () => {
+  const img = $('img', b)
+  $('#visor-img').src = img.src
+  $('#visor-img').alt = img.alt
+  $('#visor-texto').textContent = $('figcaption', b.parentElement)?.textContent ?? ''
+  visor.showModal()
+}))
+$('#cerrar-visor').addEventListener('click', () => visor.close())
+visor.addEventListener('click', (e) => { if (e.target === visor) visor.close() })
+</script>
+</body>
+</html>

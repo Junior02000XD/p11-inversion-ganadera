@@ -2,23 +2,25 @@
 #   docker compose up -d --wait   → levanta SQL Server y Mailpit, y espera a que estén listos
 #   docker compose up -d mailpit  → solo Mailpit (si ya tienes SQL Server instalado, por ejemplo Express en Windows)
 #   http://localhost:8025          → correos que envía la API (OTP y avisos)
+#   docker compose down -v         → borra los contenedores y la base (la API la vuelve a crear al arrancar)
 #
-# La clave de SQL Server va en un archivo .env junto a este (copia .env.example); .env no se sube al repo.
-# Si algún puerto ya está ocupado en tu máquina, cámbialo en el .env (por ejemplo P11_PUERTO_SQL=1434)
-# y apunta la cadena de conexión de la API al puerto nuevo (ver apps/api/README.md).
+# Funciona sin configurar nada: la clave de prueba de SQL Server es la misma que trae
+# apps/api/appsettings.Development.json. Es solo para desarrollo, por eso los puertos se abren
+# únicamente en 127.0.0.1 (no se ven desde otras máquinas de la red).
+# Para cambiar la clave o un puerto ocupado, copia .env.example como .env (ver README.md).
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: p11-sqlserver
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${P11_SQL_CLAVE:?Falta P11_SQL_CLAVE en el archivo .env (ver .env.example)}
+      MSSQL_SA_PASSWORD: ${P11_SQL_CLAVE:-P11.Pruebas-2026}
       # sqlcmd la toma de acá para el chequeo de salud, sin escribirla en el comando.
-      SQLCMDPASSWORD: ${P11_SQL_CLAVE}
+      SQLCMDPASSWORD: ${P11_SQL_CLAVE:-P11.Pruebas-2026}
       # Tope de RAM para que no se coma la memoria de una laptop.
       MSSQL_MEMORY_LIMIT_MB: ${P11_SQL_MEMORIA_MB:-2048}
     ports:
-      - "${P11_PUERTO_SQL:-1433}:1433"
+      - "127.0.0.1:${P11_PUERTO_SQL:-1433}:1433"
     volumes:
       - p11-sqlserver-datos:/var/opt/mssql
     healthcheck:
@@ -32,8 +34,8 @@ services:
     image: axllent/mailpit:v1.27
     container_name: p11-mailpit
     ports:
-      - "${P11_PUERTO_SMTP:-1025}:1025"
-      - "${P11_PUERTO_CORREO_WEB:-8025}:8025"
+      - "127.0.0.1:${P11_PUERTO_SMTP:-1025}:1025"
+      - "127.0.0.1:${P11_PUERTO_CORREO_WEB:-8025}:8025"
 
 volumes:
   p11-sqlserver-datos:

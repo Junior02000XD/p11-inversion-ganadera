@@ -16,57 +16,34 @@ Repositorio: [github.com/Junior02000XD/p11-inversion-ganadera](https://github.co
 ## Requisitos
 
 - .NET SDK 10.0.x (el `global.json` del repositorio selecciona la versión compatible).
-- Docker y Docker Compose: el `docker-compose.yml` de la raíz levanta SQL Server 2022 (`localhost:1433`) y Mailpit, que recibe los correos de desarrollo.
-- En Windows también sirve un SQL Server 2022 Express o Developer instalado; en ese caso se levanta solo Mailpit.
+- Docker con Docker Compose: el `docker-compose.yml` de la raíz levanta SQL Server 2022 (`localhost:1433`) y Mailpit, que recibe los correos de desarrollo.
 
 ## Configurar y ejecutar
 
-La primera vez, desde la raíz del repositorio, copiar la plantilla y poner una clave para el usuario `sa` (mínimo 8 caracteres, con mayúsculas, minúsculas, números y símbolos). El `.env` no se sube al repositorio:
+Paso a paso desde cero y solución de errores frecuentes: [instalación en una máquina nueva](../../README.md#instalación-en-una-máquina-nueva). En resumen, desde la raíz del repositorio:
 
 ```bash
-cp .env.example .env
+docker compose up -d --wait                            # SQL Server y Mailpit; espera a que estén listos
+dotnet dev-certs https --trust                         # una vez por máquina
+dotnet run --project apps/api --launch-profile https   # crea la base, aplica migraciones y carga la semilla
 ```
 
-Cada vez que se vaya a trabajar, levantar SQL Server y Mailpit. `--wait` espera a que SQL Server acepte conexiones; si la API arranca antes, falla con un error de «inicio de sesión previo del protocolo de enlace»:
+No hace falta configurar nada. En Development, la cadena de conexión de `appsettings.Development.json` apunta al SQL Server del compose con su clave de prueba (`P11.Pruebas-2026`; el contenedor solo escucha en `127.0.0.1`), y la API genera sus claves de cifrado y de firma de tokens en `App_Data/claves-desarrollo.json` (ignorado por git).
 
-```bash
-docker compose up -d --wait
-```
-
-Con SQL Server instalado en Windows, levantar solo Mailpit con `docker compose up -d mailpit`.
-
-Configurar la cadena de conexión local sin guardar contraseñas en archivos versionados. En Windows, con autenticación integrada:
+Para usar otro SQL Server, otra clave u otro puerto, se guarda la cadena con `user-secrets`, que tiene prioridad sobre `appsettings.Development.json` y no se sube al repositorio. Por ejemplo, con SQL Server instalado en Windows y autenticación integrada (y solo Mailpit con `docker compose up -d mailpit`):
 
 ```powershell
 cd apps/api
 dotnet user-secrets set "ConnectionStrings:Principal" "Server=localhost;Database=P11;Trusted_Connection=True;TrustServerCertificate=True"
 ```
 
-Con el SQL Server del `docker-compose.yml` (o cualquiera con autenticación SQL), usar la clave del `.env`. Si cambiaste el puerto con `P11_PUERTO_SQL`, usá ese en lugar de 1433:
+La API también acepta la variable de entorno `ConnectionStrings__Principal`. Fuera de Development no se genera nada: `Jwt:ClaveFirma` (base64, 32 bytes o más) y `Archivos:ClaveBase64` (AES-256, 32 bytes) tienen que venir de user-secrets o de variables de entorno, o la API no arranca.
 
-```powershell
-dotnet user-secrets set "ConnectionStrings:Principal" "Server=localhost,1433;Database=P11;User Id=sa;Password=<tu_clave>;TrustServerCertificate=True"
-```
-
-Con `user-secrets` no se agrega la cadena ni la contraseña al repositorio. La aplicación también acepta la variable de entorno `ConnectionStrings__Principal`.
-
-Restaurar la herramienta local desde la raíz y aplicar las migraciones (opcional si se inicia la API, porque las aplica automáticamente al arrancar):
-
-```powershell
-dotnet tool restore
-cd apps/api
-dotnet ef database update
-```
-
-Confiar en el certificado HTTPS de desarrollo una vez por máquina y ejecutar la API:
-
-```powershell
-dotnet dev-certs https --trust
-dotnet run --launch-profile https
-```
+Las migraciones se aplican solas al arrancar. Para aplicarlas a mano, desde la raíz: `dotnet tool restore` y `dotnet ef database update --project apps/api`.
 
 - API: <https://localhost:7080>
 - Swagger UI: <https://localhost:7080/swagger>
+- Scalar: <https://localhost:7080/scalar>
 - Mailpit: <http://localhost:8025>
 
 ## Datos de prueba
